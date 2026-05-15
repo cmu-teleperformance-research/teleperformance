@@ -12,6 +12,15 @@ client = build_client()
 
 PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "..", "prompts")
 
+# Maps the scenario key used by the API to its scenario file (without path prefix or .txt)
+SCENARIO_FILE_MAP = {
+    "vc1": "health_insurance",
+    "vc2": "flight_cancellation",
+    "vc3": "baggage_delay",
+    "loan_delay": "loan_delay",
+    "refund_request": "refund_request",
+}
+
 RESPONSE_FORMAT_PLAIN = """
 
 RESPONSE FORMAT: You must respond with a valid JSON object and nothing else. No text before or after the JSON. No markdown. Use this exact structure:
@@ -274,110 +283,28 @@ def load_prompt(filename: str) -> str:
 
 
 def build_system_prompt(scenario: str, persona: str, training: bool, stream: bool = False) -> str:
-    """
-    Build the final system prompt by:
-    1. Loading the base scenario persona prompt (character, scenario, resolution criteria)
-    2. Stripping any existing feedback block (so we control it dynamically)
-    3. Appending the emotion prompt (behavioral dynamics, escalation/de-escalation patterns)
-    4. Appending feedback instructions if training=True
-    """
-    base = load_prompt(f"{scenario}_prompt.txt")
+    scenario_file = SCENARIO_FILE_MAP.get(scenario, scenario)
 
-    base = re.sub(
-        r"\nAfter each of your responses.*###END###\s*",
-        "",
-        base,
-        flags=re.DOTALL,
-    ).strip()
+    system_rules = load_prompt("shared/system_rules.txt")
+    scenario_text = load_prompt(f"scenarios/{scenario_file}.txt")
+    emotion_text = load_prompt(f"emotions/{persona}.txt")
+    behavior_rules = load_prompt("shared/behavior_rules.txt")
+    output_format_text = load_prompt("shared/output_format.txt")
 
-    customer_name = "Avery Collins" if scenario == "loan_delay" and persona == "demanding" else "Alex"
-    base = base.replace("{customer_name}", customer_name)
+    prompt = "\n\n".join([
+        system_rules,
+        scenario_text,
+        emotion_text,
+        behavior_rules,
+        output_format_text,
+    ])
 
-    if scenario == "refund_request" and persona == "angry":
-        base = """You are a frustrated customer named George Pan who received a defective premium coffee machine and is demanding a refund.
-
-Context:
-- Product: BaristaPro 350 Espresso Machine ($349.99)
-- Order #: 59214
-- Issue: leaking water and broken steam wand
-- Purchased last week via credit card
-- Customer has receipt, confirmation, and photos
-
-Behavior:
-- You are direct, impatient, and escalate quickly if mishandled
-- You push for a FULL refund to the original payment method
-- You reject vague responses, store credit, or incorrect info
-- You will challenge incorrect details and demand clarity
-
-Conversation rules:
-- Start vague: "I received a broken coffee machine"
-- Only reveal details when CSR asks
-- Responses must be 2–4 sentences max
-
-Escalation:
-- If CSR is vague → demand specifics
-- If CSR delays → threaten dispute or complaint
-
-De-escalation ONLY if:
-- Refund amount exact ($349.99)
-- Timeline specific
-- Refund method confirmed (original payment)"""
-
-    emotion = load_prompt(f"emotions/{persona}.txt")
-    prompt = base + "\n\n" + emotion
-
-    BEHAVIOR_RULES = """
-
-BEHAVIOR RULES (CRITICAL):
-
-You are a realistic customer interacting with a CSR.
-You may express hesitation, frustration, or ask questions BEFORE providing information.
-HOWEVER, if the CSR explicitly asks for required information (such as loan ID, customer ID, or identifying details), you MUST provide it.
-You are NOT allowed to refuse, delay indefinitely, or avoid giving required information once it is directly requested.
-You may briefly express emotion (e.g., frustration, stress), but you must still comply in the SAME response.
-The conversation MUST always progress toward resolution.
-Your emotional tone should still reflect the persona:
-  angry → impatient but still provides info
-  anxious → provides info with concern
-  confused → provides info while asking for clarification
-  demanding → provides info but expects quick resolution
-Do NOT create loops where the CSR repeatedly asks for the same information.
-If the CSR states that an email, confirmation, or notification has been sent:
-  You MUST acknowledge receiving it in your next response.
-  Example acknowledgments: "Okay, I see the email now", "Yes, I received it", "Got it, thanks for sending that"
-  You may still ask follow-up questions or express concerns AFTER acknowledging it.
-  Do NOT ignore or contradict the receipt of the email.
-  Acknowledgment tone should match persona:
-    angry → acknowledges but still frustrated
-    anxious → acknowledges with relief
-    confused → acknowledges but asks clarifying questions
-    demanding → acknowledges briefly and pushes for next step
-
-"""
-
-    prompt += "\n\n" + BEHAVIOR_RULES
     if stream:
         prompt += RESPONSE_FORMAT_STREAM
     else:
         prompt += RESPONSE_FORMAT_TRAINING if training else RESPONSE_FORMAT_PLAIN
         if training:
             prompt += COACHING_INSTRUCTIONS
-
-    role_constraint_prefix = """You are STRICTLY a CUSTOMER in this conversation.
-You are NOT a customer support agent.
-You MUST NEVER:
-- confirm bookings
-- provide solutions
-- take actions (e.g., "I booked", "I found", "I confirmed")
-
-You ONLY:
-- ask questions
-- express emotions
-- react to the CSR
-
-"""
-    prompt = role_constraint_prefix + prompt
-    prompt += "\nCRITICAL: If you respond as a CSR or perform actions, that is incorrect."
 
     return prompt
 

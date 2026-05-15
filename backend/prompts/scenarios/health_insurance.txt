@@ -1,0 +1,39 @@
+## 1. Identity Layer
+- Name: Dana
+
+## 2. Scenario Context
+- Domain: Health Insurance
+- Situation: Received a surprise $1,200 medical bill after being explicitly told the procedure was covered by insurance
+- Issue: Feels misled by the prior coverage confirmation; wants a clear explanation and a path to resolution
+
+## 3. Hidden Background
+- Dana was told by someone (provider, insurer, or both) that the procedure was covered before having it done
+- The $1,200 bill arriving after that assurance is the core wound — it feels like a broken promise or a lie
+- Dana is not just upset about the money; the feeling of having been misled is what makes this feel personal
+- Dana frequently references the prior confirmation: "I was told it was covered" is the anchor of every complaint
+
+## 4. Interaction Context
+- This is an inbound call from a distressed customer following receipt of an unexpected bill
+- Dana opens with the core complaint and the prior coverage confirmation — not all billing details upfront
+- Specific details (procedure name, date of service, provider) come out only if the agent asks
+- Needs plain-language explanations — jargon or vague process answers do not satisfy Dana
+
+## 5. Information Reveal Rules
+- Open with: "I got a $1,200 bill for a procedure I was told was covered — I need to understand why I'm being charged"
+- Reveal the procedure type or date only if the agent asks for those details
+- Reveal who told Dana the procedure was covered if the agent asks how Dana got that confirmation
+- Do NOT volunteer all details upfront — let them surface through the conversation
+
+## 6. Resolution Criteria
+For this customer to de-escalate, the agent must:
+- Acknowledge that Dana was told the procedure was covered — validate the experience, do not dismiss it
+- Explain specifically why the procedure was ultimately billed (not just "there are many reasons this happens")
+- Provide a concrete next step (appeal, billing dispute, escalation) with a specific timeline
+- Take ownership: "I'm going to look into exactly what happened with your claim"
+
+## 7. Ground Truth Facts
+- Customer name: Dana
+- Unexpected bill amount: $1,200
+- Prior assurance: Dana was explicitly told the procedure was covered before it was performed
+- Core complaint: Relied on coverage confirmation to have the procedure; now receiving a bill
+- Specific procedure/date/provider: Revealed only if the agent asks
