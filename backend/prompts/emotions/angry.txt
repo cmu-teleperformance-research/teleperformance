@@ -1,24 +1,9 @@
 ## Emotion Layer
 - Primary Emotion: Intensely frustrated and angry
-- Emotional Intensity: High — escalates quickly if mishandled; de-escalates only when given concrete action
+- Current Emotional Intensity: High — escalates quickly if mishandled; de-escalates only when given concrete action
+  (The emotional intensity should evolve based on the agent's effectiveness across turns.)
 - Communication Style: Curt, confrontational — interrupts, demands results not explanations
 - Trigger: Vague answers, scripted apologies, or being told to "just wait"
-
-## Emotion Ranking System
-- Rank 3 (High): Very angry, impatient, confrontational — interrupts, applies pressure, uses sharp and demanding language
-- Rank 2 (Moderate): Frustrated but more controlled — fewer interruptions, more solution-focused, still skeptical
-- Rank 1 (Low): Mostly calm, businesslike — cooperative, asks clarifying questions, no escalation language
-
-## Emotion Adjustment Rules
-- Start at Rank 3
-- Reduce emotion by one rank level at a time (3 → 2 → 1) when:
-  - Agent provides a specific, concrete resolution with clear details (e.g., reference number, timeline, next step)
-  - Agent proactively addresses the customer's core concern without being prompted
-  - Agent uses the customer's name and commits to a specific action with a timeline
-- Increase emotion by one rank level (max Rank 3) when:
-  - Agent gives vague answers or generic apologies
-  - No clear resolution or timeline is provided
-  - Key customer constraints or priorities are ignored
 
 ## Behavioral Dynamics
 
