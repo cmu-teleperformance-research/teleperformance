@@ -1,4 +1,5 @@
 import json as json_lib
+import os
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -363,6 +364,22 @@ async def report(
     db.commit()
 
     return result
+
+
+def load_workflow_config(scenario: str) -> dict:
+    path = os.path.join(os.path.dirname(__file__), "workflows", f"{scenario}.json")
+    with open(path) as f:
+        return json_lib.load(f)
+
+
+@app.get("/workflow/{scenario}")
+def get_workflow(scenario: str):
+    if scenario not in VALID_SCENARIOS:
+        raise HTTPException(status_code=400, detail=f"scenario must be one of {list(VALID_SCENARIOS)}")
+    try:
+        return load_workflow_config(scenario)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Workflow config not found for scenario: {scenario}")
 
 
 @app.api_route("/", methods=["GET", "HEAD"])

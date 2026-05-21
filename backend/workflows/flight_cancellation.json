@@ -1,0 +1,97 @@
+{
+  "scenario": "flight_cancellation",
+  "customer": {
+    "name": "Jordan Lee",
+    "booking": "UA-8821",
+    "tier": "Silver MileagePlus",
+    "phone": "(213) 555-0047",
+    "flight": "UA 4492",
+    "route": "LAX → ORD → JFK",
+    "depTime": "Today 11:30 AM",
+    "status": "CANCELLED – Weather (Ground Stop ORD)",
+    "reason": "Weather"
+  },
+  "rebooking": [
+    { "id": "F1", "flight": "UA 4510", "route": "LAX → JFK (Direct)", "dep": "Tomorrow 8:00 AM", "arr": "Tomorrow 4:22 PM", "seats": "Available", "type": "direct" },
+    { "id": "F2", "flight": "UA 4495", "route": "LAX → ORD → JFK", "dep": "Today 6:00 PM", "arr": "Tomorrow 12:15 AM", "seats": "Available", "type": "connecting" },
+    { "id": "F3", "flight": "AA 2341 (Partner)", "route": "LAX → JFK (Direct)", "dep": "Today 4:00 PM", "arr": "Today 11:55 PM", "seats": "3 Left", "type": "partner" }
+  ],
+  "policy": "IRREGULAR OPERATIONS POLICY – Flight Cancellations\n\nCancellation Reason: WEATHER (Uncontrollable)\n\nRebooking Rights\n  • Passenger entitled to rebooking on next available United flight\n  • Partner airline rebooking requires Supervisor approval\n  • Seat class: Rebook in same class or higher at no charge\n\nCompensation – Weather Cancellation (DOT Rules)\n  ┌──────────────────────────────────────────────┐\n  │  Cash/Miles Compensation:    NOT REQUIRED    │\n  │  Hotel Voucher:              NOT REQUIRED    │\n  │  Meal Voucher ($15):         ELIGIBLE ✓      │\n  │    (Applies: delay > 3 hrs from orig. dep.)  │\n  └──────────────────────────────────────────────┘\n\nNote: Cash refund is required ONLY if passenger chooses not\nto rebook. Full refund must be processed within 7 business days.",
+  "steps": [
+    {
+      "id": "lookup",
+      "label": "Passenger Lookup",
+      "icon": "🔍",
+      "prompt": { "type": "customer", "text": "Ask the passenger for their booking reference or last name + flight number." }
+    },
+    {
+      "id": "flight",
+      "label": "Flight Details",
+      "icon": "✈️",
+      "prompt": { "type": "action", "text": "Review the cancellation reason — this determines compensation eligibility. Then click 'View Rebooking Options'." }
+    },
+    {
+      "id": "rebook",
+      "label": "Rebooking Options",
+      "icon": "🔄",
+      "prompt": { "type": "customer", "text": "Return to the customer. Ask: 'I have a few options for you — do you prefer the earliest flight today, or a direct flight tomorrow morning?'" }
+    },
+    {
+      "id": "policy",
+      "label": "Compensation Policy",
+      "icon": "📋",
+      "prompt": { "type": "action", "text": "Review compensation eligibility before communicating to the passenger. Select what applies." }
+    },
+    {
+      "id": "apply",
+      "label": "Apply Actions",
+      "icon": "✅",
+      "prompt": { "type": "action", "text": "Select the passenger's preferred flight and issue the applicable compensation." }
+    },
+    {
+      "id": "communicate",
+      "label": "Communicate to Passenger",
+      "icon": "💬",
+      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the rebooking confirmation below." }
+    }
+  ],
+  "screens": {
+    "lookup": {
+      "searchPlaceholder": "Enter booking reference or last name...",
+      "searchButtonLabel": "Search",
+      "wrongButtons": ["Upgrade Seat", "New Booking", "Lost Baggage Claim"],
+      "advanceLabel": "View Disrupted Flight →",
+      "foundWrongButtons": ["View MileagePlus Account"]
+    },
+    "flight": {
+      "wrongButtons": ["Process Full Refund", "File Delay Report", "Upgrade to First Class"]
+    },
+    "rebook": {
+      "advanceLabel": "Select & Check Compensation →",
+      "wrongButtons": ["Hold Without Selecting"]
+    },
+    "policy": {
+      "correctValue": "rebook_meal",
+      "correctLabel": "✓ Rebooking + $15 Meal Voucher",
+      "wrongButtons": ["Rebooking + Hotel Voucher", "Rebooking + $300 Cash Comp", "Rebooking Only (No Comp)"],
+      "correctMessage": "Correct. Rebooking + $15 meal voucher applies for weather delays exceeding 3 hours."
+    },
+    "apply": {
+      "confirmData": [
+        ["New Flight", "UA 4510 — LAX → JFK Direct"],
+        ["New Departure", "Tomorrow 8:00 AM"],
+        ["New Confirmation", "UA-9934"],
+        ["Compensation", "$15 Meal Voucher — Issued to email"],
+        ["Hotel", "Not Applicable (Weather)"]
+      ],
+      "wrongButtons": ["Upgrade to Business Class", "Issue Hotel Voucher"]
+    },
+    "communicate": {
+      "customerName": "Jordan",
+      "script": "Jordan, I've taken care of everything for you. I've rebooked you on UA 4510, a direct flight from LAX to JFK departing tomorrow at 8:00 AM, arriving at 4:22 PM. Your new confirmation number is UA-9934.\n\nI've also issued a $15 meal voucher to your email on file, which you can use in any airport restaurant today. I do want to be upfront — because this cancellation was due to a weather ground stop in Chicago, we're not able to offer additional cash compensation under DOT guidelines, but we're doing everything we can to get you to your destination as quickly as possible.\n\nIs there anything else I can help you with today?",
+      "caseNumber": "IRROP-2024-08821",
+      "caseStatus": "Closed",
+      "resolution": "Rebooked UA-9934 + $15 meal voucher issued."
+    }
+  }
+}

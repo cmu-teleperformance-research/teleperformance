@@ -1,0 +1,106 @@
+{
+  "scenario": "baggage_delay",
+  "customer": {
+    "name": "Alex Rivera",
+    "booking": "UA-5521",
+    "flight": "UA 8834",
+    "route": "ORD → ATL → MIA",
+    "travelDate": "2 days ago",
+    "bagTag": "BA-0441219",
+    "pirRef": "MIA0441219",
+    "tier": "United MileagePlus",
+    "phone": "(312) 555-0183"
+  },
+  "trace": {
+    "status": "EXPEDITE – Active Search",
+    "lastScan": "ORD – Gate H7 area (Chicago O'Hare)",
+    "daysMissing": 2,
+    "pirFiled": "Yes – MIA Baggage Office",
+    "contents": "Blood pressure medication (14-day supply), formal clothes, client documents",
+    "estimatedResolution": "24–72 hours"
+  },
+  "policy": "DELAYED/MISSING BAGGAGE POLICY – United Airlines\n\nTracing Status: EXPEDITE (missing > 24 hours)\n\nInterim Expense Reimbursement\n  ┌──────────────────────────────────────────────────────┐\n  │  Daily Allowance:        Up to $100/day              │\n  │  Maximum Duration:       5 days ($500 max)           │\n  │  Clothing & Toiletries:  ELIGIBLE ✓                 │\n  │  Prescription Meds:      ELIGIBLE ✓ (with Rx proof) │\n  │  Electronics:            NOT ELIGIBLE ✗             │\n  └──────────────────────────────────────────────────────┘\n  Requires original receipts submitted within 30 days.\n\nMedical Priority Flag\n  • Bags containing medication should be flagged MEDICAL PRIORITY\n  • Triggers daily status checks and escalated search\n  • Advise passenger to contact pharmacy for emergency supply\n\nFinal Loss Settlement (if bag not found in 21 days)\n  • DOT domestic liability limit: $3,800\n  • Passenger must file claim with receipts / proof of contents",
+  "steps": [
+    {
+      "id": "lookup",
+      "label": "Passenger Lookup",
+      "icon": "🔍",
+      "prompt": { "type": "customer", "text": "Ask the passenger for their PIR reference number or bag tag number before searching." }
+    },
+    {
+      "id": "claim",
+      "label": "Baggage Claim Detail",
+      "icon": "🧳",
+      "prompt": { "type": "action", "text": "Review the bag details and filed PIR. Click 'Check WorldTracer Status' to see the current trace." }
+    },
+    {
+      "id": "trace",
+      "label": "WorldTracer Status",
+      "icon": "🌐",
+      "prompt": { "type": "action", "text": "Note the last scan location and estimated resolution. The bag contains medication — flag as Medical Priority." }
+    },
+    {
+      "id": "policy",
+      "label": "Interim Expenses Policy",
+      "icon": "📋",
+      "prompt": { "type": "action", "text": "Review what expenses can be reimbursed. Select the correct reimbursement package for this passenger." }
+    },
+    {
+      "id": "apply",
+      "label": "Apply Resolution",
+      "icon": "✅",
+      "prompt": { "type": "action", "text": "Flag the file as Medical Priority and authorize interim expense reimbursement. Then click Confirm." }
+    },
+    {
+      "id": "communicate",
+      "label": "Communicate to Passenger",
+      "icon": "💬",
+      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the update and next steps below." }
+    }
+  ],
+  "screens": {
+    "lookup": {
+      "searchPlaceholder": "Enter PIR reference or bag tag number...",
+      "searchButtonLabel": "Search",
+      "wrongButtons": ["New Booking", "File New Damage Claim", "Upgrade Seat"],
+      "advanceLabel": "Open Baggage Claim →",
+      "foundWrongButtons": ["View Booking Details", "Issue Flight Voucher"]
+    },
+    "claim": {
+      "wrongButtons": ["Close Claim as Found", "Issue Refund", "Transfer to Partner Airline"]
+    },
+    "trace": {
+      "medicalAlert": "⚠ Medical Contents Detected: Bag contains prescription medication. This file must be flagged as MEDICAL PRIORITY before proceeding.",
+      "correctLabel": "Flag as MEDICAL PRIORITY →",
+      "correctFlaggedLabel": "✓ MEDICAL PRIORITY Flagged",
+      "correctValue": "flagged",
+      "wrongButtons": ["Mark as Low Priority", "Close Trace"],
+      "correctMessage": "File flagged as MEDICAL PRIORITY. Daily status checks enabled."
+    },
+    "policy": {
+      "correctValue": "interim_medical",
+      "correctLabel": "✓ Authorize Interim Expenses + Medical Reimbursement",
+      "wrongButtons": [
+        "Authorize Interim Expenses Only (No Medical)",
+        "Issue Final Settlement Now",
+        "No Reimbursement — Weather Policy"
+      ],
+      "correctMessage": "Correct. Authorize up to $100/day for clothing/toiletries + medication reimbursement with prescription."
+    },
+    "apply": {
+      "priorityFlag": "MEDICAL PRIORITY ✓",
+      "traceStatus": "EXPEDITE – Est. resolution 24–72 hours",
+      "interimExpenses": "Authorized — up to $100/day (5 days max)",
+      "medicationReimbursement": "Eligible — pharmacy receipt + Rx required",
+      "submissionDeadline": "Within 30 days",
+      "wrongButtons": ["Escalate to Supervisor", "Issue Travel Credit Instead"]
+    },
+    "communicate": {
+      "customerName": "Alex",
+      "script": "Alex, I've pulled up your bag trace. Your bag is still in our system with EXPEDITE status — the last scan was in the gate area at Chicago O'Hare, and our team is actively working on it. The estimated resolution is 24 to 72 hours.\n\nBecause your bag contains prescription medication, I've flagged the file as Medical Priority, which means your case gets daily check-ins from our baggage team. For your medication specifically, please go to any pharmacy, get an emergency supply, and save the receipt along with a copy of your prescription — we'll reimburse that fully.\n\nI've also authorized interim expense reimbursement of up to $100 per day for up to five days for essentials like clothing and toiletries. I'm sending a reimbursement form to your email right now. Is there anything else I can help you with?",
+      "caseNumber": "BAG-2024-04412",
+      "caseStatus": "Open – EXPEDITE / Medical Priority",
+      "resolution": "Medical Priority flagged. Interim expenses authorized. Reimbursement form sent."
+    }
+  }
+}
