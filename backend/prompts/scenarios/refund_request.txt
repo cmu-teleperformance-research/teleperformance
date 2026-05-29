@@ -16,8 +16,6 @@ PORTAL_DATA
   "refund_eligibility": "ELIGIBLE – Defective Item Return",
   "estimated_return": "3–5 business days",
 
-  "default_customer_name": "Morgan Riley",
-  "default_first_name": "Morgan",
   "default_transaction_id": "TXN-2024-05521",
   "default_amount": "$340.00",
   "default_date": "2026-03-25",

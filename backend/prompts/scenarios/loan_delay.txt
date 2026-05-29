@@ -4,8 +4,6 @@ PORTAL_DATA
   "customer_name": "Avery Collins",
   "first_name": "Avery",
 
-  "default_customer_name": "Alex Chen",
-  "default_first_name": "Alex",
   "default_loan_id": "LN-2024-00892",
   "default_loan_type": "Personal Loan",
   "default_amount": "$15,000",

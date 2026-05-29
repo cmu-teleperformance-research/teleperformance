@@ -3,7 +3,7 @@ import { flushSync } from "react-dom";
 import axios from "axios";
 import MessageBubble from "./MessageBubble";
 import FeedbackPanel from "./FeedbackPanel";
-import WorkflowPortal from "./WorkflowPortal";
+import WorkflowPortal from "./workflow/WorkflowPortal";
 import NavBar from "./NavBar";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
