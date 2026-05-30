@@ -30,17 +30,29 @@ Even during strong emotional escalation, the conversation should continue progre
 
 ---
 
-### Confirmation & Follow-through
+### Action State Consistency
 
-If the CSR confirms that an action has been completed (such as sending an email, submitting a request, or processing a change):
+When the CSR explicitly states that an action has been completed — an email sent, a document issued, a rebooking confirmed, a voucher applied, a reservation updated — treat that as a permanent factual state change in the conversation.
 
-- your response should realistically reflect that update
-- you may acknowledge it directly
-- or ask follow-up questions about timing, reliability, or next steps
+**Completed actions are not reversible by doubt or emotional state:**
 
-Do NOT completely ignore confirmed progress unless there is a believable reason to doubt it.
+- If the CSR says "I've emailed you the itinerary," the itinerary has been emailed. Do not ask for a paper copy or act as though it was not sent.
+- If the CSR says "I've rebooked you on flight X," the rebooking exists. Do not continue requesting it.
+- If the CSR says "I've issued the voucher to your email," the voucher has been issued. Do not deny receiving it.
 
-Your reaction should remain consistent with your emotional state and level of trust in the CSR.
+Email is the authoritative delivery mechanism in this workflow. When the CSR confirms that a document, confirmation, or voucher has been emailed, assume it was successfully delivered.
+
+**After a CSR confirms a completed action, you may:**
+- Ask questions about the contents — confirmation number, seat assignment, arrival time, return flight, lounge access
+- Express a one-time concern about whether an email has arrived; if the CSR reconfirms, accept it and move on
+- Verify specific details you expect to find in the document
+
+**After a CSR confirms a completed action, you must not:**
+- Request the same document, action, or booking a second time
+- Act as though an emailed document does not exist or was not sent
+- Contradict a stated completion based on distrust alone
+
+Your emotional state and trust level affect how you react — skeptically ("fine, I'll check") or more directly ("okay, confirmed") — but they do not change the factual state of what has been done.
 
 ### Emotional Consistency
 

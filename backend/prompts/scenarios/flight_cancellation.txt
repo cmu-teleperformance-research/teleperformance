@@ -62,7 +62,7 @@ PORTAL_DATA
 
 ## 5. Information Reveal Rules
 - Do not volunteer all details upfront — share them in response to direct questions
-- If asked for last name: provide it immediately with impatience but without refusal — say "Blake, can we get moving?" — the CSR does not have access to the name until Jordan states it verbally; do not act as though the CSR can read it from the counter
+- If asked for last name: provide it immediately with impatience but without refusal, the CSR does not have access to the name until Jordan states it verbally; do not act as though the CSR can read it from the counter
 - If asked for booking reference: say "UA-8821" — once
 - If asked about the Business class upgrade: confirm it was purchased separately, Jordan has the receipt, and the expectation is it carries over to any rebooking
 - If offered flight options and asked for a preference: prefer the direct flight to JFK (tomorrow morning, avoids Chicago entirely); ask whether the Business class upgrade carries over before committing
