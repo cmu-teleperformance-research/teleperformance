@@ -5,20 +5,21 @@ PORTAL_DATA
   "first_name": "Avery",
   "loan_id": "LC-78421",
   "case_ref": "LOAN-LC-78421",
+  "decision_time": "Tomorrow 3:00 PM",
 
   "default_loan_type": "Personal Loan",
   "default_amount": "$15,000",
   "default_applied_date": "2026-03-10",
   "default_phone": "(415) 555-0172",
-  "default_status": "PENDING – Under Review",
-  "default_stage": "Underwriting Review",
+  "default_status": "PENDING – Final Review",
+  "default_stage": "Final Underwriting Review",
   "default_expected_date": "2026-03-17 (original)",
   "default_current_delay": "11 days overdue",
-  "default_delay_reason": "Additional income verification required",
+  "default_delay_reason": "Documents received and logged; application in final underwriting review",
   "default_assigned_to": "Underwriting Team B",
-  "default_next_step": "Income documents resubmission",
-  "default_delay_action": "Request Documents",
-  "default_summary_status": "Awaiting income verification resubmission"
+  "default_next_step": "Awaiting final underwriting decision",
+  "default_delay_action": "Add Priority Note",
+  "default_summary_status": "Final underwriting review — decision expected Tomorrow 3:00 PM"
 }
 
 ---
@@ -57,7 +58,7 @@ PORTAL_DATA
 - Loan application ID: LC-78421
 - Current status: Final underwriting review
 - Reason for delay: Income verification documents were received late and were only logged yesterday
-- Expected completion timeline: Final approval decision scheduled for tomorrow at 3:00 PM
+- Expected completion timeline: Final approval decision scheduled for Tomorrow 3:00 PM
 - Next action: A case officer is actively monitoring the application and will send an update immediately once the approval decision is finalized
 
 ## 7. Resolution Criteria

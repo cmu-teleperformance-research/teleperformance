@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from dotenv import load_dotenv
 from config import build_client, MODEL_NAME
 from llm_settings import CUSTOMER_SETTINGS, FEEDBACK_SETTINGS, REPORT_SETTINGS
@@ -8,6 +9,7 @@ from llm_settings import CUSTOMER_SETTINGS, FEEDBACK_SETTINGS, REPORT_SETTINGS
 
 LLM_TIMEOUT = 15
 DEBUG_PROMPTS = os.getenv("DEBUG_PROMPTS", "false").lower() == "true"
+DEBUG_LATENCY = os.getenv("DEBUG_LATENCY", "false").lower() == "true"
 
 load_dotenv()
 
@@ -33,6 +35,17 @@ SCENARIOS = {
         "opener": "refund_request",
     },
 }
+
+
+# --- Latency Logging ---
+
+def _log_latency(fn_name: str, fields: dict) -> None:
+    if not DEBUG_LATENCY:
+        return
+    lines = [f"[LATENCY] {fn_name}"]
+    for key, value in fields.items():
+        lines.append(f"{key}={value}")
+    print("\n".join(lines))
 
 
 # --- Prompt Loading ---
@@ -175,6 +188,8 @@ def _enforce_feedback_consistency(feedback: dict, csr_message: str) -> None:
 # --- Conversation Generation ---
 
 def start_conversation(scenario: str, persona: str, training: bool) -> dict:
+    t_start = time.perf_counter()
+
     system_prompt = build_system_prompt(scenario, persona, training)
     opener = load_opener(scenario)
 
@@ -183,6 +198,10 @@ def start_conversation(scenario: str, persona: str, training: bool) -> dict:
         {"role": "user", "content": opener},
     ]
 
+    system_prompt_chars = len(system_prompt)
+    payload_chars = sum(len(m["content"]) for m in messages)
+
+    t_llm_start = time.perf_counter()
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
@@ -193,6 +212,7 @@ def start_conversation(scenario: str, persona: str, training: bool) -> dict:
     except Exception as e:
         print(f"ERROR start_conversation LLM call failed: {e}")
         return {"customer_response": "I'm having trouble responding right now. Please try again.", "feedback": None}
+    t_llm_end = time.perf_counter()
 
     raw_text = response.choices[0].message.content.strip()
     if "###FEEDBACK###" in raw_text:
@@ -204,12 +224,27 @@ def start_conversation(scenario: str, persona: str, training: bool) -> dict:
     except (json.JSONDecodeError, AttributeError):
         pass
 
+    _log_latency("start_conversation", {
+        "model": MODEL_NAME,
+        "scenario": scenario,
+        "persona": persona,
+        "training": str(training).lower(),
+        "messages": len(messages),
+        "history_turns": 0,
+        "system_prompt_chars": system_prompt_chars,
+        "payload_chars": payload_chars,
+        "llm_time": f"{t_llm_end - t_llm_start:.2f}s",
+        "total_time": f"{time.perf_counter() - t_start:.2f}s",
+    })
+
     return {"customer_response": raw_text, "feedback": None}
 
 
 # --- Evaluation ---
 
 def call_llm(scenario: str, persona: str, training: bool, message: str, history: list[dict]) -> dict:
+    t_start = time.perf_counter()
+
     if DEBUG_PROMPTS:
         print("🚀 VERSION: ANALYSIS_FIX_V2")
 
@@ -227,6 +262,10 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
 
     messages = build_messages(history, system_prompt, message)
 
+    system_prompt_chars = len(system_prompt)
+    payload_chars = sum(len(m["content"]) for m in messages)
+
+    t_llm_start = time.perf_counter()
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
@@ -238,6 +277,7 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
     except Exception as e:
         print(f"ERROR call_llm LLM call failed: {e}")
         return {"customer_response": "I'm having trouble responding right now. Please try again.", "feedback": None}
+    t_llm_end = time.perf_counter()
 
     raw_text = response.choices[0].message.content
 
@@ -249,6 +289,18 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
             "focus": "Fallback applied due to missing analysis.",
             "why_it_improves_deescalation": "Ensures UI consistency.",
         },
+    }
+
+    _latency_fields = {
+        "model": MODEL_NAME,
+        "scenario": scenario,
+        "persona": persona,
+        "training": str(training).lower(),
+        "messages": len(messages),
+        "history_turns": len(history),
+        "system_prompt_chars": system_prompt_chars,
+        "payload_chars": payload_chars,
+        "llm_time": f"{t_llm_end - t_llm_start:.2f}s",
     }
 
     try:
@@ -270,6 +322,7 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
             print("=== FINAL FEEDBACK ===")
             print(json.dumps(feedback, indent=2))
 
+        _log_latency("call_llm", {**_latency_fields, "total_time": f"{time.perf_counter() - t_start:.2f}s"})
         return {
             "customer_response": parsed["customer_response"],
             "feedback": feedback,
@@ -287,6 +340,7 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
             print("=== FINAL FEEDBACK (exception fallback) ===")
             print(json.dumps(fallback_feedback, indent=2))
 
+        _log_latency("call_llm", {**_latency_fields, "total_time": f"{time.perf_counter() - t_start:.2f}s"})
         return {"customer_response": raw_text.strip(), "feedback": fallback_feedback}
 
 
@@ -294,12 +348,18 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
 
 def stream_llm_response(scenario: str, persona: str, message: str, history: list[dict]):
     """Generator that streams the customer response as plain text for /chat-stream."""
+    t_start = time.perf_counter()
+
     system_prompt = build_system_prompt(scenario, persona, training=False, stream=True)
     system_prompt = append_coaching_signal(system_prompt, history)
 
     messages = build_messages(history, system_prompt, message)
 
+    system_prompt_chars = len(system_prompt)
+    payload_chars = sum(len(m["content"]) for m in messages)
+
     try:
+        t_api_start = time.perf_counter()
         stream = client.chat.completions.create(
             model=MODEL_NAME,
             messages=messages,
@@ -307,10 +367,33 @@ def stream_llm_response(scenario: str, persona: str, message: str, history: list
             stream=True,
             timeout=LLM_TIMEOUT,
         )
+
+        full_response = ""
+        t_first_token = None
+
         for chunk in stream:
             content = chunk.choices[0].delta.content
             if content:
+                if t_first_token is None:
+                    t_first_token = time.perf_counter()
+                full_response += content
                 yield content
+
+        t_end = time.perf_counter()
+        _log_latency("stream_llm_response", {
+            "model": MODEL_NAME,
+            "scenario": scenario,
+            "persona": persona,
+            "training": "false",
+            "messages": len(messages),
+            "history_turns": len(history),
+            "system_prompt_chars": system_prompt_chars,
+            "payload_chars": payload_chars,
+            "time_to_first_token": f"{t_first_token - t_api_start:.2f}s" if t_first_token else "N/A",
+            "stream_duration": f"{t_end - t_api_start:.2f}s",
+            "response_chars": len(full_response),
+            "total_time": f"{t_end - t_start:.2f}s",
+        })
     except Exception as e:
         print(f"ERROR stream_llm_response failed: {e}")
         yield "I'm having trouble responding right now. Please try again."
@@ -320,6 +403,8 @@ def stream_llm_response(scenario: str, persona: str, message: str, history: list
 
 def generate_report(history: list[dict]) -> dict:
     """Generate session coaching from conversation history using empathyFirst/activeListening signals."""
+    t_start = time.perf_counter()
+
     _fallback = {
         "session_coaching": {
             "overallPerformance": "",
@@ -381,12 +466,18 @@ def generate_report(history: list[dict]) -> dict:
         "weakMoments": [describe_weak_moment(t) for t in weak_turns[:2]],
     }
 
+    report_prompt = load_evaluation_prompt("session_report")
+    session_payload = json.dumps(session_summary)
+    system_prompt_chars = len(report_prompt)
+    payload_chars = system_prompt_chars + len(session_payload)
+
+    t_llm_start = time.perf_counter()
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
-                {"role": "system", "content": load_evaluation_prompt("session_report")},
-                {"role": "user", "content": json.dumps(session_summary)},
+                {"role": "system", "content": report_prompt},
+                {"role": "user", "content": session_payload},
             ],
             response_format={"type": "json_object"},
             **REPORT_SETTINGS,
@@ -399,6 +490,7 @@ def generate_report(history: list[dict]) -> dict:
     except Exception as e:
         print(f"ERROR generate_report LLM call failed: {e}")
         return _fallback
+    t_llm_end = time.perf_counter()
 
     turn_by_turn = [
         {
@@ -410,5 +502,15 @@ def generate_report(history: list[dict]) -> dict:
         }
         for i, t in enumerate(turns)
     ]
+
+    _log_latency("generate_report", {
+        "model": MODEL_NAME,
+        "history_turns": n,
+        "messages": 2,
+        "system_prompt_chars": system_prompt_chars,
+        "payload_chars": payload_chars,
+        "llm_time": f"{t_llm_end - t_llm_start:.2f}s",
+        "total_time": f"{time.perf_counter() - t_start:.2f}s",
+    })
 
     return {"session_coaching": coaching, "turn_by_turn": turn_by_turn}

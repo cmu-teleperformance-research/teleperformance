@@ -3,33 +3,33 @@
   "steps": [
     {
       "id": "lookup",
-      "label": "Transaction Lookup",
+      "label": "Order Lookup",
       "icon": "🔍",
-      "prompt": { "type": "customer", "text": "Ask the customer for their transaction ID or the date and amount of the failed payment." }
+      "prompt": { "type": "customer", "text": "Ask the customer for their order number or the product they need to return." }
     },
     {
       "id": "details",
-      "label": "Payment Details",
-      "icon": "💳",
-      "prompt": { "type": "action", "text": "Review the transaction record and click the advance button to confirm the failure code." }
+      "label": "Product Return Details",
+      "icon": "📦",
+      "prompt": { "type": "action", "text": "Review the order record and reported defect. Click the advance button to confirm return eligibility." }
     },
     {
       "id": "eligibility",
-      "label": "Refund Eligibility",
+      "label": "Return Eligibility",
       "icon": "🧾",
-      "prompt": { "type": "action", "text": "Check the failure code against eligibility rules. Confirm the refund type that applies." }
+      "prompt": { "type": "action", "text": "Check the reported defect against return eligibility rules. Confirm the refund type that applies." }
     },
     {
       "id": "options",
       "label": "Refund Options",
       "icon": "📋",
-      "prompt": { "type": "action", "text": "Review the refund policy. Select the correct option for this transaction type." }
+      "prompt": { "type": "action", "text": "Review the defective product refund policy. Select the correct option for this return." }
     },
     {
       "id": "process",
       "label": "Process Refund",
       "icon": "✅",
-      "prompt": { "type": "action", "text": "Confirm the refund details. Add a case note, then click 'Initiate Refund'." }
+      "prompt": { "type": "action", "text": "Confirm the refund details. Add a case note, then click 'Confirm & Initiate Refund'." }
     },
     {
       "id": "communicate",
@@ -40,77 +40,81 @@
   ],
   "screenConfigs": [
     {
-      "title": "Transaction Search",
-      "placeholder": "Enter transaction ID or order ID...",
+      "title": "Order Lookup",
+      "placeholder": "Enter order number or product name...",
       "searchLabel": "Search",
       "searchKeys": ["{{transaction_id}}", "{{order_id}}"],
-      "wrongButtons": ["File Dispute Claim", "Block Card"],
+      "wrongButtons": ["File Dispute Claim", "Process Exchange"],
       "customer": {
         "name": "{{customer_name}}",
-        "transactionId": "{{transaction_id}}",
-        "amount": "{{default_amount}}",
-        "date": "{{default_date}}",
-        "merchant": "{{default_merchant}}",
-        "phone": "{{default_phone}}",
-        "status": "{{default_status}}"
+        "orderId": "{{transaction_id}}",
+        "product": "{{product}}",
+        "amount": "{{amount}}",
+        "date": "{{date}}",
+        "merchant": "{{merchant}}",
+        "phone": "{{phone}}",
+        "status": "{{status}}"
       },
-      "advanceLabel": "View Transaction Details →"
+      "advanceLabel": "View Order Details →"
     },
     {
-      "title": "Payment Details",
+      "title": "Product Return Details",
       "data": {
-        "type": "{{default_payment_type}}",
-        "processorRef": "{{default_processor_ref}}",
-        "failureCode": "{{default_failure_code}}",
-        "merchantResponse": "{{default_merchant_response}}",
-        "daysSince": "{{default_days_since}}",
-        "refundEligibility": "{{default_refund_eligibility}}",
-        "estimatedReturn": "{{default_estimated_return}}"
+        "paymentMethod": "{{payment_type}}",
+        "orderId": "{{transaction_id}}",
+        "returnReason": "{{failure_code}}",
+        "reportedDefect": "{{defect}}",
+        "merchantResponse": "{{merchant_response}}",
+        "daysSinceOrder": "{{days_since}}",
+        "returnEligibility": "{{refund_eligibility}}",
+        "refundTimeline": "{{estimated_return}}"
       },
-      "advanceLabel": "Check Eligibility →",
-      "wrongButtons": ["Chargeback to Merchant", "Flag for Fraud Investigation"]
+      "advanceLabel": "Check Return Eligibility →",
+      "wrongButtons": ["Request Exchange Instead", "Escalate to Manufacturer"]
     },
     {
-      "title": "Refund Eligibility Check",
+      "title": "Return Eligibility",
       "statusBadge": "ELIGIBLE",
       "badgeGood": true,
-      "statusText": "Transaction failure code {{default_failure_code}} qualifies for automatic reversal. Merchant has confirmed the transaction was not received on their end.",
-      "action": "Check Eligibility",
-      "advanceLabel": "Check Eligibility →",
-      "wrongButtons": ["Deny Refund – Dispute Required", "Escalate to Fraud Team"]
+      "statusText": "Return reason: {{failure_code}}. Reported defect: {{defect}}. Merchant has acknowledged the return request — order qualifies for a full refund under the defective product return policy.",
+      "action": "Confirm Eligibility",
+      "advanceLabel": "View Return Options →",
+      "wrongButtons": ["Deny Return — No Defect Evidence", "Request Exchange Only"]
     },
     {
       "title": "Refund Options",
-      "policy": "FAILED TRANSACTION REFUND POLICY\n\nAutomatic Reversal Eligibility\n  • Gateway timeout / failed authorizations:  ELIGIBLE ✓\n  • Duplicate charges:                         ELIGIBLE ✓\n  • Merchant disputes (no failure code):       Requires investigation\n\nProcessing Timelines\n  ┌─────────────────────────────────────────────────────┐\n  │  Automatic reversal:         1–3 business days       │\n  │  Manual refund initiation:   3–5 business days       │\n  │  Provisional credit:         Same day (if eligible)  │\n  └─────────────────────────────────────────────────────┘\n\nProvisional Credit\n  • Available for transactions > $100 pending > 2 business days\n  • Applied while investigation is in progress\n  • Reversed if merchant confirms transaction was successful",
-      "correctLabel": "✓ Automatic Reversal + Provisional Credit",
+      "policy": "DEFECTIVE PRODUCT REFUND POLICY\n\nDefective Item Return Eligibility\n  • Product defective on arrival:         ELIGIBLE ✓\n  • Manufacturer defect within warranty:  ELIGIBLE ✓\n  • Customer-caused damage:               NOT ELIGIBLE ✗\n\nProcessing Timelines\n  ┌──────────────────────────────────────────────────────────┐\n  │  Refund to original payment method:  3 business days     │\n  │  Prepaid return label:               Issued same day     │\n  │  Replacement option:                 Available on request │\n  └──────────────────────────────────────────────────────────┘\n\nRefund Requirements\n  • Item returned via prepaid label (CSR issues label)\n  • Refund issued to original payment method in full\n  • No restocking fee applies to defective returns",
+      "correctLabel": "✓ Full Refund — Defective Product Return",
       "wrongButtons": [
-        "Manual Refund Only (3–5 days)",
-        "Deny – Insufficient Evidence",
-        "Escalate to Merchant Relations"
+        "Issue Store Credit Only",
+        "Deny — No Photo Evidence",
+        "Offer Replacement Only (No Refund)"
       ],
-      "correctMessage": "Correct. Issue provisional credit today and initiate the automatic reversal process."
+      "correctMessage": "Correct. Issue a full refund and send a prepaid return shipping label to the customer."
     },
     {
       "title": "Process Refund",
       "summary": [
         ["Customer", "{{customer_name}}"],
-        ["Transaction ID", "{{transaction_id}}"],
-        ["Refund Amount", "{{default_amount}}"],
-        ["Method", "Automatic Reversal + Provisional Credit"],
-        ["Provisional Credit", "Applied today"],
-        ["Full Reversal ETA", "1–3 business days"]
+        ["Order ID", "{{transaction_id}}"],
+        ["Product", "{{product}}"],
+        ["Reported Defect", "{{defect}}"],
+        ["Refund Amount", "{{amount}}"],
+        ["Payment Method", "{{payment_type}}"],
+        ["Return Label", "Prepaid label sent to email"],
+        ["Refund ETA", "{{estimated_return}}"]
       ],
-      "wrongButtons": ["Issue Credit Only", "Escalate to Supervisor"],
-      "advanceLabel": "Initiate Refund →",
-      "notePlaceholder": "e.g. Customer called re: failed {{default_amount}} transaction on {{default_date_short}}. {{default_failure_code}} confirmed. Automatic reversal initiated. Provisional credit of {{default_amount}} applied today."
+      "wrongButtons": ["Issue Store Credit Only", "Escalate to Supervisor"],
+      "advanceLabel": "Confirm & Initiate Refund →",
+      "notePlaceholder": "e.g. Customer called re: defective {{product}}, order {{transaction_id}}. Defect: {{defect}}. Full refund of {{amount}} initiated to original {{payment_type}}. Prepaid return label sent. ETA {{estimated_return}}."
     },
     {
       "title": "Case Resolved — Communicate to Customer",
       "customerName": "{{first_name}}",
-      "script": "\"{{first_name}}, I've reviewed your account and confirmed that the {{default_amount}} transaction on {{default_date_display}} failed on our end — the failure code shows a gateway timeout, which means the merchant never actually received the funds.\n\nI've initiated an automatic reversal, which will return the {{default_amount}} to your account within 1 to 3 business days. I've also applied a provisional credit of {{default_amount}} to your account effective today so you have access to those funds right away.\n\nIs there anything else I can help you with?\"",
+      "script": "\"{{first_name}}, I've reviewed your order and confirmed the return request for your {{product}} — order {{transaction_id}}, purchased from {{merchant}}.\n\nBased on the reported defect — {{defect}} — this qualifies for a full refund under our defective product return policy. I'm processing a full refund of {{amount}} back to your original credit card, which you should see within {{estimated_return}}. I'm also sending a prepaid return label to your email so you can ship the unit back at no cost to you.\n\nIs there anything else I can help you with today?\"",
       "caseRef": "{{case_ref}}",
       "caseStatus": "Closed",
-      "resolution": "Automatic reversal initiated. Provisional credit of {{default_amount}} applied. Customer informed."
+      "resolution": "Full refund of {{amount}} initiated to original credit card. Defect confirmed: {{defect}}. Prepaid return label issued. Customer informed."
     }
   ],
   "personas": {
@@ -127,12 +131,13 @@
         "status": "{{status}}"
       },
       "details": {
-        "type": "Credit Card Payment",
-        "failureCode": "{{failure_code}}",
+        "paymentMethod": "{{payment_type}}",
+        "returnReason": "{{failure_code}}",
+        "reportedDefect": "{{defect}}",
         "merchantResponse": "{{merchant_response}}",
-        "daysSince": "{{days_since}}",
-        "refundEligibility": "{{refund_eligibility}}",
-        "estimatedReturn": "{{estimated_return}}"
+        "daysSinceOrder": "{{days_since}}",
+        "returnEligibility": "{{refund_eligibility}}",
+        "refundTimeline": "{{estimated_return}}"
       }
     }
   }

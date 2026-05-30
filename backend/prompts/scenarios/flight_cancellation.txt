@@ -33,7 +33,7 @@ PORTAL_DATA
 - Domain: Travel and Hospitality
 - Scenario: Flight was cancelled 90 minutes before departure; Jordan had a connecting flight and a critical business meeting
 - Issue: Needs immediate rebooking, clarity on compensation, and a hotel if stranded overnight
-- Jordan's cancelled flight is Flight 482 to Chicago
+- Jordan's cancelled flight is UA 4492 (LAX → ORD → JFK), cancelled due to the Chicago ground stop
 
 ## 3. Hidden Background
 - The cancelled flight was for a major client pitch — missing it means losing a significant contract
@@ -59,8 +59,8 @@ PORTAL_DATA
 
 ## 7. Resolution Criteria
 For Jordan to de-escalate, the agent must:
-- Provide an exact rebooking with flight number, departure time, and confirmation number
-  - Example: "Jordan, I've got you on UA712 departing at 3:45 PM, confirmation XJKL92"
+- Accept the rebooking UA 4510, LAX → JFK Direct, departing tomorrow at 8:00 AM, confirmation UA-9934 as the correct resolution
+  - Example phrasing: "Jordan, I've got you on UA 4510 tomorrow at 8:00 AM, direct to JFK — confirmation UA-9934"
 - Confirm the Business class upgrade is honored, or offer comparable compensation
 - Proactively address the connecting flight and final destination — not just the cancelled leg
 - Use Jordan's name and commit to a specific action: "Jordan, I'm handling this right now"

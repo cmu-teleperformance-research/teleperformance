@@ -74,43 +74,43 @@
       "title": "Delay Reason",
       "statusBadge": "DELAYED",
       "badgeGood": false,
-      "statusText": "Income verification documents are required. Customer must resubmit pay stubs or recent bank statements before underwriting can proceed.",
+      "statusText": "Income verification documents have been received and logged. Application is now in final underwriting review — decision expected {{decision_time}}.",
       "action": "{{default_delay_action}}",
-      "advanceLabel": "Request Documents →",
-      "wrongButtons": ["Deny Application", "Escalate to Legal"]
+      "advanceLabel": "Add Priority Note →",
+      "wrongButtons": ["Deny Application", "Request Additional Documents"]
     },
     {
       "title": "Resolution Options",
-      "policy": "LOAN PROCESSING POLICY – Personal Loans\n\nStandard Processing Timeline\n  • Application to decision:     5–7 business days (standard)\n  • Document verification:       2–3 business days\n  • Disbursement after approval: 1–2 business days\n\nDelay Causes & Actions\n  ┌──────────────────────────────────────────────────┐\n  │  Income Verification:  Request updated documents  │\n  │  Credit Flag:          Escalate to Risk Team      │\n  │  System Hold:          Escalate to Ops Support    │\n  │  Missing Documents:    Send document request      │\n  └──────────────────────────────────────────────────┘\n\nCustomer Communication Standard\n  • Delays > 3 business days: proactive outreach required\n  • Provide updated ETA and reason at every contact\n  • Document all customer contacts in case notes",
-      "correctLabel": "✓ Request Income Documents + Set 5-Day Deadline",
+      "policy": "LOAN PROCESSING POLICY – Personal Loans\n\nStandard Processing Timeline\n  • Application to decision:     5–7 business days (standard)\n  • Document verification:       2–3 business days\n  • Disbursement after approval: 1–2 business days\n\nFinal Underwriting Review — Agent Actions\n  ┌──────────────────────────────────────────────────────┐\n  │  Documents received:   Confirm decision ETA           │\n  │  Add priority note:    Always — for delayed accounts  │\n  │  Escalate:             Only if decision date unknown  │\n  │  Deny application:     Underwriting decision only     │\n  └──────────────────────────────────────────────────────┘\n\nCustomer Communication Standard\n  • Delays > 3 business days: proactive outreach required\n  • Provide updated ETA and reason at every contact\n  • Document all customer contacts in case notes",
+      "correctLabel": "✓ Confirm Timeline + Add Priority Note",
       "wrongButtons": [
-        "Deny Application – Income Unverified",
+        "Request Additional Documents",
         "Escalate to Risk Team",
         "Place on Hold Indefinitely"
       ],
-      "correctMessage": "Correct. Request updated income documents and provide a 5-day resubmission deadline."
+      "correctMessage": "Correct. Confirm the scheduled decision time with the customer and add a priority monitoring note to the case."
     },
     {
       "title": "Apply Actions",
       "summary": [
         ["Customer", "{{customer_name}}"],
         ["Loan ID", "{{loan_id}}"],
-        ["Action", "Document Request Issued"],
-        ["Deadline", "5 business days from today"],
+        ["Action", "Priority Note Added"],
+        ["Decision ETA", "{{decision_time}}"],
         ["Status", "{{default_summary_status}}"],
         ["Assigned", "{{default_assigned_to}}"]
       ],
       "wrongButtons": ["Escalate to Supervisor", "Cancel Application"],
       "advanceLabel": "Confirm & Apply →",
-      "notePlaceholder": "e.g. Customer called re: loan delay. Income verification required. Document request sent with 5-day deadline. ETA 3–5 days post-submission."
+      "notePlaceholder": "e.g. Customer called re: loan delay. Documents received and logged. Application in final underwriting review. Decision expected {{decision_time}}. Priority note added. Customer informed."
     },
     {
       "title": "Case Updated — Communicate to Customer",
       "customerName": "{{first_name}}",
-      "script": "\"{{first_name}}, I've looked into your loan application. It's currently in our underwriting review stage, and the delay is due to an additional income verification step required for your loan amount — this is a standard part of the process, not a rejection.\n\nI've just sent a document request to your email. Once we receive your updated income documents, our team will aim to complete the review within 3 to 5 business days.\n\nIs there anything else I can help clarify for you today?\"",
+      "script": "\"{{first_name}}, I've looked into your application. The good news is that your income verification documents have been received and logged — you're now in the final stage of underwriting review, and your application is progressing normally.\n\nThe decision is currently scheduled for {{decision_time}}. I've added a priority monitoring note to your case so our team stays on top of it, and you'll receive a notification as soon as the decision is finalized.\n\nIs there anything else I can help clarify for you today?\"",
       "caseRef": "{{case_ref}}",
-      "caseStatus": "Open – Awaiting Documents",
-      "resolution": "Document request issued. 5-day deadline set. Customer informed of expected timeline."
+      "caseStatus": "Open – Final Review",
+      "resolution": "Priority note added. Customer informed of final underwriting decision expected {{decision_time}}."
     }
   ]
 }
