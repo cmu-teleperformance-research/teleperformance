@@ -180,17 +180,24 @@ def _enforce_feedback_consistency(feedback: dict, csr_message: str) -> None:
     empathy = signals.get("empathyFirst", "Needs Work")
     al = signals.get("activeListening", "Needs Work")
 
-    # Coerce any scalar score fields to dicts before writing into them.
-    # The model occasionally returns e.g. "empathy_score": 0 instead of
-    # "empathy_score": {"score": 0, "reason": "..."}, which causes a TypeError
-    # when we try to subscript-assign into a non-dict value.
+    # Coerce scalar score fields to dicts. The model occasionally returns
+    # "empathy_score": 0 instead of {"score": 0, "reason": "..."}, which
+    # causes TypeError on subscript assignment.
     for key in ("empathy_score", "active_listening_score", "learn_from_this_practice"):
         if not isinstance(analysis.get(key), dict):
             analysis[key] = {}
 
-    # Numeric scores must exactly match signal labels — skills are independent
+    # Numeric scores must exactly match signal labels (always overwrite — enforcement)
     analysis["empathy_score"]["score"] = _LABEL_TO_SCORE.get(empathy, 0)
     analysis["active_listening_score"]["score"] = _LABEL_TO_SCORE.get(al, 0)
+
+    # Fill in required sub-fields only when absent — never overwrite valid model content
+    analysis["empathy_score"].setdefault("reason", "")
+    analysis["active_listening_score"].setdefault("reason", "")
+    lp = analysis["learn_from_this_practice"]
+    lp.setdefault("area", "")
+    lp.setdefault("focus", "")
+    lp.setdefault("why_it_improves_deescalation", "")
 
 
 # --- Conversation Generation ---
