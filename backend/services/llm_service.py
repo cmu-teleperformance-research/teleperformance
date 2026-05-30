@@ -275,7 +275,7 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
             timeout=LLM_TIMEOUT,
         )
     except Exception as e:
-        print(f"ERROR call_llm LLM call failed: {e}")
+        print(f"ERROR call_llm LLM call failed: {type(e).__name__}: {e}")
         return {"customer_response": "I'm having trouble responding right now. Please try again.", "feedback": None}
     t_llm_end = time.perf_counter()
 
@@ -303,8 +303,12 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
         "llm_time": f"{t_llm_end - t_llm_start:.2f}s",
     }
 
+    parsed = None
     try:
         parsed = json.loads(raw_text)
+        top_level_keys = list(parsed.keys()) if isinstance(parsed, dict) else type(parsed).__name__
+        print(f"DEBUG call_llm parsed OK — top-level keys: {top_level_keys}")
+
         feedback = parsed.get("feedback") if training else None
         if training:
             if not isinstance(feedback, dict):
@@ -329,7 +333,15 @@ Do NOT reference, draw from, or compare against any other CSR turn in the conver
         }
     except ValueError:
         raise
-    except Exception:
+    except Exception as e:
+        has_customer_response = isinstance(parsed, dict) and "customer_response" in parsed
+        print(
+            f"ERROR call_llm parse/extract failed: {type(e).__name__}: {e}\n"
+            f"  has_customer_response={has_customer_response}\n"
+            f"  raw_text_chars={len(raw_text)}\n"
+            f"  raw_text_preview={raw_text[:300]!r}"
+        )
+
         fallback_feedback = {
             "signals": {"empathyFirst": "", "activeListening": ""},
             "nextStep": "",
