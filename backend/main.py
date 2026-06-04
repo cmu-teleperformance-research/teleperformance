@@ -36,6 +36,7 @@ SCENARIO_LABELS = {
     "refund_request": "Refund Request",
 }
 
+print("BACKEND AUTODEPLOY TEST")
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
