@@ -110,10 +110,10 @@ def load_opener(scenario: str) -> str:
 
 def build_system_prompt(scenario: str, persona: str, training: bool, stream: bool = False) -> str:
     system_rules = load_shared("system_rules")
-    scenario_text = load_scenario_prompt(scenario)
-    emotion_text = load_emotion_prompt(persona)
     behavior_rules = load_shared("behavior_rules")
     output_format_text = load_shared("output_format")
+    scenario_text = load_scenario_prompt(scenario)
+    emotion_text = load_emotion_prompt(persona)
 
     if stream:
         mode = "stream"
@@ -124,11 +124,11 @@ def build_system_prompt(scenario: str, persona: str, training: bool, stream: boo
 
     full_prompt = "\n\n".join([
         system_rules,
-        scenario_text,
-        emotion_text,
         behavior_rules,
         output_format_text,
         response_rules,
+        scenario_text,
+        emotion_text,
     ])
 
     if DEBUG_PROMPTS:
