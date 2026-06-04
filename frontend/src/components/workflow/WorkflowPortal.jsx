@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import StepSidebar from "./StepSidebar";
 import PromptBanner from "./PromptBanner";
 import { screenMap } from "./utils/screenMaps";
-
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+import API_BASE_URL from "../../config";
 
 export default function WorkflowPortal({
   scenario,
@@ -22,7 +21,7 @@ export default function WorkflowPortal({
   useEffect(() => {
     setWorkflowLoading(true);
     setWorkflow(null);
-    fetch(`${BASE_URL}/workflow/${scenario}`)
+    fetch(`${API_BASE_URL}/workflow/${scenario}`)
       .then(r => r.json())
       .then(data => setWorkflow(data))
       .catch(() => setWorkflow(null))

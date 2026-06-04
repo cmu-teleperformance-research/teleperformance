@@ -5,10 +5,9 @@ import MessageBubble from "./MessageBubble";
 import FeedbackPanel from "./FeedbackPanel";
 import WorkflowPortal from "./workflow/WorkflowPortal";
 import NavBar from "./NavBar";
+import API_BASE_URL from "../config";
 
-const BASE_URL = import.meta.env.VITE_API_URL;
-console.log("BASE_URL:", BASE_URL);
-const API_URL = `${BASE_URL}/chat`;
+const API_URL = `${API_BASE_URL}/chat`;
 
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
@@ -93,7 +92,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
     async function startFresh() {
       const response = await axios.post(
-        `${BASE_URL}/start`,
+        `${API_BASE_URL}/start`,
         { scenario, persona, training },
         { headers: authHeaders, signal: controller.signal }
       );
@@ -113,7 +112,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           }
 
           const response = await axios.get(
-            `${BASE_URL}/sessions/${storedSessionId}`,
+            `${API_BASE_URL}/sessions/${storedSessionId}`,
             { headers: authHeaders, signal: controller.signal }
           );
           setSessionId(Number(storedSessionId));
@@ -163,7 +162,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     if (!training) {
       // ── Streaming path (evaluation mode) ──────────────────────────────────
       try {
-        const res = await fetch(`${BASE_URL}/chat-stream`, {
+        const res = await fetch(`${API_BASE_URL}/chat-stream`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
