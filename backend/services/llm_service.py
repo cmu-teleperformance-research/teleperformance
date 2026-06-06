@@ -324,144 +324,55 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
     history_text = _build_history_text(prior_history)
     t_pipeline = time.perf_counter()
 
-    l1_parts = [
+    input_parts = [
         f'Latest customer utterance: "{customer_msg}"',
         f'CSR\'s current utterance: "{csr_msg}"',
     ]
     if history_text:
-        l1_parts.append(f"\nRecent prior turns:\n{history_text}")
-    l1_input = "\n".join(l1_parts)
+        input_parts.append(f"\nRecent prior turns:\n{history_text}")
+    evaluator_input = "\n".join(input_parts)
 
-    l1_system = load_evaluation_prompt("layer1_stage_identifier")
-    _log_latency("layer1_context", {
-        "customer_msg_chars": len(customer_msg),
-        "csr_msg_chars": len(csr_msg),
-        "history_chars": len(history_text),
-    })
-    t_l1_api = time.perf_counter()
+    evaluator_system = load_evaluation_prompt("single_evaluator")
+    t_api = time.perf_counter()
     try:
-        l1_resp = client.chat.completions.create(
+        resp = client.chat.completions.create(
             model=MODEL_NAME,
-            messages=[{"role": "system", "content": l1_system}, {"role": "user", "content": l1_input}],
+            messages=[{"role": "system", "content": evaluator_system}, {"role": "user", "content": evaluator_input}],
             **FEEDBACK_SETTINGS,
             response_format={"type": "json_object"},
             timeout=LLM_TIMEOUT,
         )
     except Exception as e:
-        _log_pipeline_error("layer1", e)
+        _log_pipeline_error("single_evaluator", e)
         raise
-    t_l1_api_end = time.perf_counter()
-    t_l1_parse = time.perf_counter()
-    l1_raw = l1_resp.choices[0].message.content
-    l1_output = json.loads(l1_raw)
-    t_l1_parse_end = time.perf_counter()
-    l1_usage = _extract_usage(l1_resp)
-    _log_latency("layer1", {
-        "input_chars": len(l1_system) + len(l1_input),
-        "output_chars": len(l1_raw),
-        **l1_usage,
-        "api_time": f"{t_l1_api_end - t_l1_api:.2f}s",
-        "json_parse_time": f"{t_l1_parse_end - t_l1_parse:.2f}s",
-        "time": f"{t_l1_parse_end - t_l1_api:.2f}s",
-    })
+    t_api_end = time.perf_counter()
 
-    if DEBUG_PROMPTS:
-        print("=== LAYER 1 OUTPUT ===")
-        print(json.dumps(l1_output, indent=2))
-
-    l2_input = l1_input + f"\n\nLayer 1 output:\n{json.dumps(l1_output, indent=2)}"
-    l2_system = load_evaluation_prompt("layer2_skill_evaluator")
-    _log_latency("layer2_context", {
-        "customer_msg_chars": len(customer_msg),
-        "csr_msg_chars": len(csr_msg),
-        "history_chars": len(history_text),
-    })
-    t_l2_api = time.perf_counter()
-    try:
-        l2_resp = client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[{"role": "system", "content": l2_system}, {"role": "user", "content": l2_input}],
-            **FEEDBACK_SETTINGS,
-            response_format={"type": "json_object"},
-            timeout=LLM_TIMEOUT,
-        )
-    except Exception as e:
-        _log_pipeline_error("layer2", e)
-        raise
-    t_l2_api_end = time.perf_counter()
-    t_l2_parse = time.perf_counter()
-    l2_raw = l2_resp.choices[0].message.content
-    l2_output = json.loads(l2_raw)
-    t_l2_parse_end = time.perf_counter()
-    l2_usage = _extract_usage(l2_resp)
-    _log_latency("layer2", {
-        "input_chars": len(l2_system) + len(l2_input),
-        "output_chars": len(l2_raw),
-        **l2_usage,
-        "api_time": f"{t_l2_api_end - t_l2_api:.2f}s",
-        "json_parse_time": f"{t_l2_parse_end - t_l2_parse:.2f}s",
-        "time": f"{t_l2_parse_end - t_l2_api:.2f}s",
-    })
-
-    if DEBUG_PROMPTS:
-        print("=== LAYER 2 OUTPUT ===")
-        print(json.dumps(l2_output, indent=2))
-
-    l3_input = l2_input + f"\n\nLayer 2 output:\n{json.dumps(l2_output, indent=2)}"
-    l3_system = load_evaluation_prompt("layer3_feedback_generator")
-    _log_latency("layer3_context", {
-        "customer_msg_chars": len(customer_msg),
-        "csr_msg_chars": len(csr_msg),
-        "history_chars": len(history_text),
-    })
-    t_l3_api = time.perf_counter()
-    try:
-        l3_resp = client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[{"role": "system", "content": l3_system}, {"role": "user", "content": l3_input}],
-            **FEEDBACK_SETTINGS,
-            response_format={"type": "json_object"},
-            timeout=LLM_TIMEOUT,
-        )
-    except Exception as e:
-        _log_pipeline_error("layer3", e)
-        raise
-    t_l3_api_end = time.perf_counter()
-    t_l3_parse = time.perf_counter()
-    l3_raw = l3_resp.choices[0].message.content
-    l3_output = json.loads(l3_raw)
-    t_l3_parse_end = time.perf_counter()
-    l3_usage = _extract_usage(l3_resp)
-    _log_latency("layer3", {
-        "input_chars": len(l3_system) + len(l3_input),
-        "output_chars": len(l3_raw),
-        **l3_usage,
-        "api_time": f"{t_l3_api_end - t_l3_api:.2f}s",
-        "json_parse_time": f"{t_l3_parse_end - t_l3_parse:.2f}s",
-        "time": f"{t_l3_parse_end - t_l3_api:.2f}s",
-    })
-
-    if DEBUG_PROMPTS:
-        print("=== LAYER 3 OUTPUT ===")
-        print(json.dumps(l3_output, indent=2))
+    raw = resp.choices[0].message.content
+    output = json.loads(raw)
+    usage = _extract_usage(resp)
 
     _log_latency("evaluation_pipeline", {
-        "input_tokens": (l1_usage.get("input_tokens") or 0) + (l2_usage.get("input_tokens") or 0) + (l3_usage.get("input_tokens") or 0),
-        "output_tokens": (l1_usage.get("output_tokens") or 0) + (l2_usage.get("output_tokens") or 0) + (l3_usage.get("output_tokens") or 0),
-        "total_tokens": (l1_usage.get("total_tokens") or 0) + (l2_usage.get("total_tokens") or 0) + (l3_usage.get("total_tokens") or 0),
+        "input_chars": len(evaluator_system) + len(evaluator_input),
+        "output_chars": len(raw),
+        **usage,
+        "api_time": f"{t_api_end - t_api:.2f}s",
         "time": f"{time.perf_counter() - t_pipeline:.2f}s",
     })
 
+    if DEBUG_PROMPTS:
+        print("=== SINGLE EVALUATOR OUTPUT ===")
+        print(json.dumps(output, indent=2))
+
     return {
         "signals": {
-            "empathyFirst": l2_output["empathy_score"]["label"],
-            "activeListening": l2_output["active_listening_score"]["label"],
+            "empathyFirst": output["empathy_score"]["label"],
+            "activeListening": output["active_listening_score"]["label"],
         },
-        "nextStep": l3_output["learn_from_this_practice"]["focus"],
+        "nextStep": output["learn_from_this_practice"]["focus"],
         "analysis": {
-            "empathy_score": l3_output["empathy_score"],
-            "active_listening_score": l3_output["active_listening_score"],
-            "learn_from_this_practice": l3_output["learn_from_this_practice"],
+            "empathy_score": output["empathy_score"],
+            "active_listening_score": output["active_listening_score"],
+            "learn_from_this_practice": output["learn_from_this_practice"],
         },
     }
 
@@ -472,7 +383,7 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
     t_start = time.perf_counter()
 
     if DEBUG_PROMPTS:
-        print("🚀 VERSION: 3LAYER_PIPELINE_V1")
+        print("🚀 VERSION: SINGLE_EVALUATOR_V1")
 
     system_prompt = build_system_prompt(scenario, persona, training)
     system_prompt = append_coaching_signal(system_prompt, history)
