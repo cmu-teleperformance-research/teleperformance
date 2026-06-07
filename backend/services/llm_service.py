@@ -367,6 +367,7 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
         "signals": {
             "empathyFirst": output["empathy_score"]["label"],
             "activeListening": output["active_listening_score"]["label"],
+            "turn_stage": output.get("turn_stage", ""),
         },
         "nextStep": output["learn_from_this_practice"]["focus"],
         "analysis": {
