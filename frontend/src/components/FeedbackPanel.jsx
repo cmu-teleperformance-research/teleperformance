@@ -4,6 +4,13 @@ const SIGNAL_COLORS = {
   "Needs Work":    "bg-red-100 text-red-600",
 };
 
+const STAGE_LABELS = {
+  "opening_issue_presentation_clarification": "Opening / Issue Clarification",
+  "service_response_resolution":              "Service Response / Resolution",
+  "customer_uptake":                          "Customer Uptake",
+  "closing":                                  "Closing",
+};
+
 function SkillBadge({ label, value }) {
   const colorClass = SIGNAL_COLORS[value] ?? "bg-gray-100 text-gray-500";
   return (
@@ -28,6 +35,7 @@ export default function FeedbackPanel({ feedback }) {
   console.log("FEEDBACK PANEL DATA:", feedback);
 
   const signals = feedback.signals ?? {};
+  const stageLabel = STAGE_LABELS[signals.turn_stage] ?? signals.turn_stage ?? null;
   const empathyReason = feedback?.analysis?.empathy_score?.reason;
   const listeningReason = feedback?.analysis?.active_listening_score?.reason;
   const practice = feedback?.analysis?.learn_from_this_practice;
@@ -36,6 +44,14 @@ export default function FeedbackPanel({ feedback }) {
     <div className="p-5 space-y-4">
       <h3 className="text-base font-semibold text-gray-800">Turn Feedback</h3>
       <p className="text-xs text-gray-400 -mt-3">Click any blue message to view its feedback.</p>
+      {stageLabel && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Stage</span>
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+            {stageLabel}
+          </span>
+        </div>
+      )}
       <div className="bg-gray-50 rounded-lg p-3 space-y-1">
         <SkillBadge label="Empathy First" value={signals.empathyFirst} />
         <SkillBadge label="Active Listening" value={signals.activeListening} />
