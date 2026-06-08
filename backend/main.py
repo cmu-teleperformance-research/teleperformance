@@ -175,6 +175,7 @@ class ChatRequest(BaseModel):
 class SignalsModel(BaseModel):
     empathyFirst: str
     activeListening: str
+    turn_stage: str = ""
 
 
 class FeedbackModel(BaseModel):
