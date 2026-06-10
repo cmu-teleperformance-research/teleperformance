@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from services.llm_service import call_llm, start_conversation, generate_report, stream_llm_response
+from services.llm_service import call_llm, start_conversation, generate_report, stream_llm_response, run_feedback_pipeline
 from services.prompt_metadata import extract_portal_data, inject_metadata
 from database import engine, get_db, SessionLocal
 from auth import hash_password, verify_password, create_access_token, get_current_user
@@ -188,6 +188,7 @@ class ChatResponse(BaseModel):
     customer_response: str
     feedback: FeedbackModel | None = None
     session_id: int | None = None
+    user_message_id: int | None = None
 
 
 class StartRequest(BaseModel):
@@ -255,19 +256,19 @@ async def chat(
     result = call_llm(
         scenario=request.scenario,
         persona=request.persona,
-        training=request.training,
+        training=False,  # Eval pipeline runs separately via /feedback
         message=request.message,
         history=request.history,
     )
 
-    feedback = result.get("feedback") if request.training else None
-
-    db.add(models.MessageRecord(
+    user_msg = models.MessageRecord(
         session_id=request.session_id,
         role="user",
         content=request.message,
-        feedback_json=json_lib.dumps(feedback) if feedback else None,
-    ))
+    )
+    db.add(user_msg)
+    db.flush()  # Populate user_msg.id before commit
+
     db.add(models.MessageRecord(
         session_id=request.session_id,
         role="assistant",
@@ -275,7 +276,46 @@ async def chat(
     ))
     db.commit()
 
-    return ChatResponse(**result, session_id=request.session_id)
+    return ChatResponse(
+        customer_response=result["customer_response"],
+        session_id=request.session_id,
+        user_message_id=user_msg.id if request.training else None,
+    )
+
+
+class FeedbackRequest(BaseModel):
+    scenario: str
+    persona: str
+    message: str
+    history: list[dict]
+    session_id: int
+    user_message_id: int
+
+
+@app.post("/feedback")
+async def feedback(
+    request: FeedbackRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    session = db.query(models.SessionRecord).filter(
+        models.SessionRecord.id == request.session_id,
+        models.SessionRecord.user_id == current_user.id,
+    ).first()
+    if session is None:
+        raise HTTPException(status_code=400, detail="Invalid or missing session_id")
+
+    fb = run_feedback_pipeline(request.message, request.history)
+
+    msg_record = db.query(models.MessageRecord).filter(
+        models.MessageRecord.id == request.user_message_id,
+        models.MessageRecord.session_id == request.session_id,
+    ).first()
+    if msg_record:
+        msg_record.feedback_json = json_lib.dumps(fb)
+        db.commit()
+
+    return {"feedback": fb}
 
 
 def _stream_with_db_save(base_gen, session_id):

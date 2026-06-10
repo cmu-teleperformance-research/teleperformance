@@ -468,6 +468,41 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
     return {"customer_response": customer_response, "feedback": feedback}
 
 
+# --- Feedback Pipeline (called by /feedback endpoint) ---
+
+def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
+    """Run the evaluation pipeline for a CSR message and return the feedback dict."""
+    _default_analysis = {
+        "empathy_score": {"score": 0, "reason": "Fallback applied."},
+        "active_listening_score": {"score": 0, "reason": "Fallback applied."},
+        "learn_from_this_practice": {
+            "area": "Fallback",
+            "focus": "Fallback applied due to missing analysis.",
+            "why_it_improves_deescalation": "Ensures UI consistency.",
+        },
+    }
+    try:
+        customer_msg, prior_history = _extract_latest_customer_utterance(history)
+        t_pipeline_start = time.perf_counter()
+        feedback = _run_evaluation_pipeline(customer_msg, message, prior_history)
+        t_enforce_start = time.perf_counter()
+        _enforce_feedback_consistency(feedback, message)
+        t_enforce_end = time.perf_counter()
+        _log_latency("enforcement", {"time": f"{t_enforce_end - t_enforce_start:.2f}s"})
+        _log_latency("evaluation_pipeline_total", {"time": f"{t_enforce_end - t_pipeline_start:.2f}s"})
+        if DEBUG_PROMPTS:
+            print("=== FINAL FEEDBACK ===")
+            print(json.dumps(feedback, indent=2))
+        return feedback
+    except Exception as e:
+        print(f"ERROR run_feedback_pipeline failed: {type(e).__name__}: {e}")
+        return {
+            "signals": {"empathyFirst": "Needs Work", "activeListening": "Needs Work"},
+            "nextStep": "",
+            "analysis": _default_analysis,
+        }
+
+
 # --- Streaming ---
 
 def stream_llm_response(scenario: str, persona: str, message: str, history: list[dict]):

@@ -277,31 +277,42 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
       console.log("📥 FULL RESPONSE:", response.data);
 
-      const { customer_response, feedback } = response.data;
-
-      console.log("🧠 FEEDBACK:", feedback);
-      console.log("🧠 ANALYSIS:", feedback?.analysis);
-      console.log("🧠 PRACTICE:", feedback?.analysis?.learn_from_this_practice);
-
+      const { customer_response, user_message_id } = response.data;
       const csrIdx = updatedMessages.length - 1;
 
-      // Add customer response immediately — feedback attached after delay
-      setMessages(prev => {
-        const assistantMsg = { role: "assistant", content: customer_response };
-        console.log("🤖 Adding ASSISTANT message:", assistantMsg);
-        return [...prev, assistantMsg];
-      });
+      // Show customer response immediately and unblock the send button
+      setMessages(prev => [...prev, { role: "assistant", content: customer_response }]);
+      setLoading(false);
+      inputRef.current?.focus();
 
-      if (feedback) {
-        setFeedbackLoading(true);
-        setTimeout(() => {
+      // Fetch feedback from the separate evaluation pipeline
+      setFeedbackLoading(true);
+      try {
+        const fbRes = await axios.post(
+          `${API_BASE_URL}/feedback`,
+          {
+            scenario,
+            persona,
+            message: trimmed,
+            history: updatedMessages,
+            session_id: sessionId,
+            user_message_id,
+          },
+          { headers: authHeaders }
+        );
+        const fb = fbRes.data.feedback;
+        if (fb) {
           setMessages(prev =>
-            prev.map((m, i) => i === csrIdx ? { ...m, feedback } : m)
+            prev.map((m, i) => i === csrIdx ? { ...m, feedback: fb } : m)
           );
           console.log("🎯 Setting selectedIdx to:", csrIdx);
           setSelectedIdx(csrIdx);
-          setFeedbackLoading(false);
-        }, 2000);
+        }
+      } catch (fbErr) {
+        console.error("❌ FEEDBACK ERROR:", fbErr);
+        if (fbErr.response?.status === 401) { onAuthExpired(); return; }
+      } finally {
+        setFeedbackLoading(false);
       }
 
     } catch (err) {
