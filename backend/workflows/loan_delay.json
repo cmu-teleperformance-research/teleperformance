@@ -107,7 +107,15 @@
     {
       "title": "Case Updated — Communicate to Customer",
       "customerName": "{{first_name}}",
-      "script": "\"{{first_name}}, I've looked into your application. The good news is that your income verification documents have been received and logged — you're now in the final stage of underwriting review, and your application is progressing normally.\n\nThe decision is currently scheduled for {{decision_time}}. I've added a priority monitoring note to your case so our team stays on top of it, and you'll receive a notification as soon as the decision is finalized.\n\nIs there anything else I can help clarify for you today?\"",
+      "coaching": {
+        "items": [
+          "Confirm income verification documents have been received and logged",
+          "State the application is now in final underwriting review",
+          "Provide the expected decision date",
+          "Confirm a priority monitoring note has been added to the case",
+          "Explain they will be notified as soon as the decision is finalized"
+        ]
+      },
       "caseRef": "{{case_ref}}",
       "caseStatus": "Open – Final Review",
       "resolution": "Priority note added. Customer informed of final underwriting decision expected {{decision_time}}."

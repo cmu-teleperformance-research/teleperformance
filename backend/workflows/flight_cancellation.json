@@ -92,7 +92,17 @@
     },
     "communicate": {
       "customerName": "{{first_name}}",
-      "script": "{{first_name}}, here's what I have for you. I've rebooked you on {{new_flight}} — direct LAX to JFK, departing {{new_dep_time}} tomorrow and arriving {{new_arr_time}}. Your confirmation is {{new_confirmation}}. Your {{upgrade_class}} seat carries over to this flight at no additional charge.\n\nOn the hotel — I want to be straight with you. Because this cancellation is due to a weather ground stop in Chicago, it falls under DOT rules that do not require us to cover hotel accommodations for weather events. I know that's not what you wanted to hear, and I'm sorry you're in this position. What I can offer tonight is a $15 meal voucher for any terminal restaurant — I'm sending that to your email now — and as a Silver MileagePlus member you have access to the United Club lounge.\n\nYour return flight is also protected in your original booking record — no action needed on that end.\n\nIs there anything else you need before I close this out?",
+      "coaching": {
+        "items": [
+          "Confirm new flight number and departure time",
+          "Confirm arrival time and new confirmation number",
+          "State that seat class carries over — no additional charge",
+          "Explain hotel is not covered for weather events (DOT rules)",
+          "Offer the $15 meal voucher — confirm it has been sent to email",
+          "Mention United Club lounge access (Silver MileagePlus eligible)",
+          "Confirm return flight is protected in the original booking"
+        ]
+      },
       "caseNumber": "{{case_number}}",
       "caseStatus": "Closed",
       "resolution": "Rebooked {{new_confirmation}} + $15 meal voucher issued."

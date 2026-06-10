@@ -111,7 +111,15 @@
     {
       "title": "Case Resolved — Communicate to Customer",
       "customerName": "{{first_name}}",
-      "script": "\"{{first_name}}, I've reviewed your order and confirmed the return request for your {{product}} — order {{transaction_id}}, purchased from {{merchant}}.\n\nBased on the reported defect — {{defect}} — this qualifies for a full refund under our defective product return policy. I'm processing a full refund of {{amount}} back to your original credit card, which you should see within {{estimated_return}}. I'm also sending a prepaid return label to your email so you can ship the unit back at no cost to you.\n\nIs there anything else I can help you with today?\"",
+      "coaching": {
+        "items": [
+          "Confirm the return has been approved and state the defect reason",
+          "Confirm the refund amount and the payment method it will return to",
+          "Provide the estimated refund timeline",
+          "Confirm a prepaid return label has been sent to their email",
+          "Confirm the order number for their records"
+        ]
+      },
       "caseRef": "{{case_ref}}",
       "caseStatus": "Closed",
       "resolution": "Full refund of {{amount}} initiated to original credit card. Defect confirmed: {{defect}}. Prepaid return label issued. Customer informed."

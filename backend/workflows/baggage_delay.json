@@ -98,7 +98,16 @@
     },
     "communicate": {
       "customerName": "{{first_name}}",
-      "script": "{{first_name}}, I've pulled up your bag trace. Your bag is still in our system with EXPEDITE status — the last scan was in the gate area at Chicago O'Hare, and our team is actively working on it. The estimated resolution is 24 to 72 hours.\n\nBecause your bag contains prescription medication, I've flagged the file as Medical Priority, which means your case gets daily check-ins from our baggage team. For your medication specifically, please go to any pharmacy, get an emergency supply, and save the receipt along with a copy of your prescription — we'll reimburse that fully.\n\nI've also authorized interim expense reimbursement of up to $100 per day for up to five days for essentials like clothing and toiletries. I'm sending a reimbursement form to your email right now. Is there anything else I can help you with?",
+      "coaching": {
+        "items": [
+          "Share trace status: EXPEDITE — last scan at ORD Gate H7",
+          "Give estimated resolution timeframe (24–72 hours)",
+          "Confirm the Medical Priority flag has been applied",
+          "Advise getting an emergency medication supply — save receipt and Rx copy",
+          "Explain interim expense reimbursement ($100/day, up to 5 days)",
+          "Confirm the reimbursement form has been sent to their email"
+        ]
+      },
       "caseNumber": "{{case_number}}",
       "caseStatus": "Open – EXPEDITE / Medical Priority",
       "resolution": "Medical Priority flagged. Interim expenses authorized. Reimbursement form sent."
