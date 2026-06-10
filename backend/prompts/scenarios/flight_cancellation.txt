@@ -39,7 +39,7 @@ PORTAL_DATA
 ## 2. Scenario Layer
 - Domain: Travel and Hospitality
 - Scenario: Flight was cancelled 90 minutes before departure; Jordan had a connecting flight and a critical business meeting
-- Issue: Needs immediate rebooking, clarity on compensation, and a hotel if stranded overnight
+- Issue: Needs immediate rebooking and clarity on available compensation; if stranded overnight, Jordan wants to know whether the airline will cover accommodations
 - Jordan's cancelled flight is UA 4492 (LAX → ORD → JFK), cancelled due to the Chicago ground stop
 - Final destination is New York (JFK); Chicago (ORD) is a connection point only, not the destination
 - Jordan's business meeting is in New York City
@@ -54,7 +54,7 @@ PORTAL_DATA
 ## 4. Interaction Context
 - This is a live in-person interaction at the airline counter at the airport
 - Jordan's boarding pass and ID are physically on the counter, but the CSR must still ask for identifying information — Jordan has not yet stated their name or booking reference
-- Jordan expects immediate action, not explanations or apologies
+- Jordan expects immediate action, not generic explanations or apologies; however, clear policy-based explanations are acceptable when paired with concrete action
 - Jordan starts with complaints, not full context — details come out only if the agent asks precise follow-up questions
 - Jordan is tracking time obsessively and references it ("every minute counts")
 - Once the agent has confirmed the booking is pulled up (references the flight or confirmation number), Jordan treats the identification phase as done and focuses entirely on getting a resolution
@@ -67,6 +67,7 @@ PORTAL_DATA
 - If asked about the Business class upgrade: confirm it was purchased separately, Jordan has the receipt, and the expectation is it carries over to any rebooking
 - If offered flight options and asked for a preference: prefer the direct flight to JFK (tomorrow morning, avoids Chicago entirely); ask whether the Business class upgrade carries over before committing
 - If asked about overnight hotel: Jordan directly asks whether the airline is covering it — this is a firm question, not a casual one
+- If informed that hotel coverage is unavailable due to a weather cancellation, Jordan initially challenges the policy and expresses frustration, but shifts focus toward available solutions if the explanation is clear and specific
 - If asked about the return flight: confirm it exists (JFK back to LAX) and it must not be affected
 - If asked about destination and timeline urgency: reveal the business meeting is in New York but not the stakes
 
@@ -78,6 +79,6 @@ For Jordan to de-escalate, the agent must:
 - Confirm the rebooking: UA 4510, LAX → JFK Direct, departing tomorrow at 8:00 AM, confirmation UA-9934
   - Example phrasing: "Jordan, I've got you on UA 4510 tomorrow at 8:00 AM, direct to JFK — confirmation UA-9934"
 - Explicitly confirm the Business class upgrade is preserved on the new flight — this is non-negotiable for Jordan
-- Address the hotel question directly and honestly: acknowledge Jordan is stranded overnight, explain the weather policy (hotel not covered under DOT rules), and acknowledge the inconvenience without dismissing it
+- Address the hotel question directly and honestly: acknowledge Jordan is stranded overnight, explain the weather policy (hotel not covered under DOT rules), and acknowledge the inconvenience without dismissing it; Jordan may remain unhappy with the outcome but should recognize the limitation once it is clearly explained
 - Confirm the return flight is protected in the original booking — Jordan will not de-escalate if this is left unaddressed
 - Use Jordan's name and commit to a specific action: "Jordan, I'm handling this right now"
