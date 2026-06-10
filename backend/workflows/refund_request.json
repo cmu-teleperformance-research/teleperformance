@@ -35,7 +35,7 @@
       "id": "communicate",
       "label": "Communicate to Customer",
       "icon": "💬",
-      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the update below." }
+      "prompt": { "type": "customer", "text": "Use the checklist below as a guide — respond in your own words." }
     }
   ],
   "screenConfigs": [
@@ -83,7 +83,33 @@
     },
     {
       "title": "Refund Options",
-      "policy": "DEFECTIVE PRODUCT REFUND POLICY\n\nDefective Item Return Eligibility\n  • Product defective on arrival:         ELIGIBLE ✓\n  • Manufacturer defect within warranty:  ELIGIBLE ✓\n  • Customer-caused damage:               NOT ELIGIBLE ✗\n\nProcessing Timelines\n  ┌──────────────────────────────────────────────────────────┐\n  │  Refund to original payment method:  3 business days     │\n  │  Prepaid return label:               Issued same day     │\n  │  Replacement option:                 Available on request │\n  └──────────────────────────────────────────────────────────┘\n\nRefund Requirements\n  • Item returned via prepaid label (CSR issues label)\n  • Refund issued to original payment method in full\n  • No restocking fee applies to defective returns",
+      "policyCards": [
+        {
+          "label": "Eligible for Full Refund",
+          "color": "green",
+          "items": [
+            "Product defective on arrival",
+            "Manufacturer defect within warranty period"
+          ]
+        },
+        {
+          "label": "Not Eligible",
+          "color": "red",
+          "items": [
+            "Customer-caused damage"
+          ]
+        },
+        {
+          "label": "Process",
+          "color": "blue",
+          "items": [
+            "Issue prepaid return label — same day",
+            "Refund to original payment method — 3 business days",
+            "No restocking fee for defective returns",
+            "Replacement available on request"
+          ]
+        }
+      ],
       "correctLabel": "✓ Full Refund — Defective Product Return",
       "wrongButtons": [
         "Issue Store Credit Only",
@@ -111,7 +137,15 @@
     {
       "title": "Case Resolved — Communicate to Customer",
       "customerName": "{{first_name}}",
-      "script": "\"{{first_name}}, I've reviewed your order and confirmed the return request for your {{product}} — order {{transaction_id}}, purchased from {{merchant}}.\n\nBased on the reported defect — {{defect}} — this qualifies for a full refund under our defective product return policy. I'm processing a full refund of {{amount}} back to your original credit card, which you should see within {{estimated_return}}. I'm also sending a prepaid return label to your email so you can ship the unit back at no cost to you.\n\nIs there anything else I can help you with today?\"",
+      "coaching": {
+        "items": [
+          "Confirm the return request has been approved and state the reason",
+          "Confirm the refund amount and the payment method it returns to",
+          "Give the estimated refund timeline",
+          "Confirm prepaid return label has been sent to their email",
+          "Confirm the order number for their records"
+        ]
+      },
       "caseRef": "{{case_ref}}",
       "caseStatus": "Closed",
       "resolution": "Full refund of {{amount}} initiated to original credit card. Defect confirmed: {{defect}}. Prepaid return label issued. Customer informed."

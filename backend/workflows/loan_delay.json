@@ -35,7 +35,7 @@
       "id": "communicate",
       "label": "Communicate to Customer",
       "icon": "💬",
-      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the update below." }
+      "prompt": { "type": "customer", "text": "Use the checklist below as a guide — respond in your own words." }
     }
   ],
   "screenConfigs": [
@@ -81,7 +81,42 @@
     },
     {
       "title": "Resolution Options",
-      "policy": "LOAN PROCESSING POLICY – Personal Loans\n\nStandard Processing Timeline\n  • Application to decision:     5–7 business days (standard)\n  • Document verification:       2–3 business days\n  • Disbursement after approval: 1–2 business days\n\nFinal Underwriting Review — Agent Actions\n  ┌──────────────────────────────────────────────────────┐\n  │  Documents received:   Confirm decision ETA           │\n  │  Add priority note:    Always — for delayed accounts  │\n  │  Escalate:             Only if decision date unknown  │\n  │  Deny application:     Underwriting decision only     │\n  └──────────────────────────────────────────────────────┘\n\nCustomer Communication Standard\n  • Delays > 3 business days: proactive outreach required\n  • Provide updated ETA and reason at every contact\n  • Document all customer contacts in case notes",
+      "policyCards": [
+        {
+          "label": "Standard Timelines",
+          "color": "blue",
+          "items": [
+            "Application to decision: 5–7 business days",
+            "Document verification: 2–3 business days",
+            "Disbursement after approval: 1–2 business days"
+          ]
+        },
+        {
+          "label": "Agent Actions — Final Underwriting",
+          "color": "green",
+          "items": [
+            "Always add a priority note for delayed accounts",
+            "Confirm updated decision ETA with customer",
+            "Escalate only if decision date is unknown"
+          ]
+        },
+        {
+          "label": "Do Not",
+          "color": "red",
+          "items": [
+            "Do not approve or deny — underwriting decision only",
+            "Do not place on hold indefinitely without documented reason"
+          ]
+        },
+        {
+          "label": "Communication Standard",
+          "color": "gray",
+          "items": [
+            "Proactive outreach required for delays > 3 business days",
+            "Document all customer contacts in case notes"
+          ]
+        }
+      ],
       "correctLabel": "✓ Confirm Timeline + Add Priority Note",
       "wrongButtons": [
         "Request Additional Documents",
@@ -107,7 +142,15 @@
     {
       "title": "Case Updated — Communicate to Customer",
       "customerName": "{{first_name}}",
-      "script": "\"{{first_name}}, I've looked into your application. The good news is that your income verification documents have been received and logged — you're now in the final stage of underwriting review, and your application is progressing normally.\n\nThe decision is currently scheduled for {{decision_time}}. I've added a priority monitoring note to your case so our team stays on top of it, and you'll receive a notification as soon as the decision is finalized.\n\nIs there anything else I can help clarify for you today?\"",
+      "coaching": {
+        "items": [
+          "Confirm income verification documents have been received and logged",
+          "State the application is in final underwriting review",
+          "Provide the expected decision date",
+          "Confirm a priority monitoring note has been added to the case",
+          "Explain they will be notified as soon as the decision is finalized"
+        ]
+      },
       "caseRef": "{{case_ref}}",
       "caseStatus": "Open – Final Review",
       "resolution": "Priority note added. Customer informed of final underwriting decision expected {{decision_time}}."

@@ -16,7 +16,35 @@
     { "id": "F2", "flight": "UA 4495", "route": "LAX → ORD → JFK", "dep": "Today 6:00 PM", "arr": "Tomorrow 12:15 AM", "seats": "Available", "type": "connecting" },
     { "id": "F3", "flight": "AA 2341", "route": "LAX → JFK (Direct)", "dep": "Today 4:00 PM", "arr": "Today 11:55 PM", "seats": "3 Left", "type": "direct" }
   ],
-  "policy": "IRREGULAR OPERATIONS POLICY – Flight Cancellations\n\nCancellation Reason: WEATHER (Uncontrollable)\n\nRebooking Rights\n  • Passenger entitled to rebooking on next available United flight\n  • Seat class: Rebook in same class or higher at no charge\n  • Paid upgrades (Business/First): Carry over to replacement flight automatically\n\nCompensation – Weather Cancellation (DOT Rules)\n  ┌──────────────────────────────────────────────┐\n  │  Cash/Miles Compensation:    NOT REQUIRED    │\n  │  Hotel Voucher:              NOT REQUIRED    │\n  │  Meal Voucher ($15):         ELIGIBLE ✓      │\n  │    (Applies: delay > 3 hrs from orig. dep.)  │\n  └──────────────────────────────────────────────┘\n\nOvernight Stranding — Agent Guidance\n  • Hotel is NOT covered under DOT weather rules — communicate clearly and with empathy\n  • Do not imply hotel coverage where none exists\n  • Offer: $15 meal voucher + United Club access (Silver MileagePlus eligible)\n\nReturn Flight Protection\n  • Return itinerary in same PNR is automatically protected — verify and confirm to passenger\n\nNote: Cash refund is required ONLY if passenger chooses not\nto rebook. Full refund must be processed within 7 business days.",
+  "policyCards": [
+    {
+      "label": "Eligible",
+      "color": "green",
+      "items": [
+        "Rebooking on next available United flight",
+        "Same class or higher — no charge",
+        "Paid upgrades (Business/First) carry over automatically",
+        "$15 meal voucher (delay > 3 hrs from original departure)"
+      ]
+    },
+    {
+      "label": "Not Eligible",
+      "color": "red",
+      "items": [
+        "Hotel voucher — weather is uncontrollable under DOT rules",
+        "Cash or miles compensation"
+      ]
+    },
+    {
+      "label": "Key Rules",
+      "color": "blue",
+      "items": [
+        "Hotel not covered — communicate clearly and with empathy",
+        "Return itinerary in same PNR is automatically protected",
+        "Cash refund required only if passenger declines rebooking (7 business days)"
+      ]
+    }
+  ],
   "steps": [
     {
       "id": "lookup",
@@ -52,7 +80,7 @@
       "id": "communicate",
       "label": "Communicate to Passenger",
       "icon": "💬",
-      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the rebooking confirmation below." }
+      "prompt": { "type": "customer", "text": "Use the checklist below as a guide — respond in your own words." }
     }
   ],
   "screens": {
@@ -92,7 +120,16 @@
     },
     "communicate": {
       "customerName": "{{first_name}}",
-      "script": "{{first_name}}, here's what I have for you. I've rebooked you on {{new_flight}} — direct LAX to JFK, departing {{new_dep_time}} tomorrow and arriving {{new_arr_time}}. Your confirmation is {{new_confirmation}}. Your {{upgrade_class}} seat carries over to this flight at no additional charge.\n\nOn the hotel — I want to be straight with you. Because this cancellation is due to a weather ground stop in Chicago, it falls under DOT rules that do not require us to cover hotel accommodations for weather events. I know that's not what you wanted to hear, and I'm sorry you're in this position. What I can offer tonight is a $15 meal voucher for any terminal restaurant — I'm sending that to your email now — and as a Silver MileagePlus member you have access to the United Club lounge.\n\nYour return flight is also protected in your original booking record — no action needed on that end.\n\nIs there anything else you need before I close this out?",
+      "coaching": {
+        "items": [
+          "Confirm new flight number and departure time",
+          "Confirm arrival time and new confirmation number",
+          "State that seat class carries over — no additional charge",
+          "Explain hotel is not covered for weather events (DOT rules)",
+          "Offer the $15 meal voucher and United Club lounge access",
+          "Confirm return flight is protected in the original booking"
+        ]
+      },
       "caseNumber": "{{case_number}}",
       "caseStatus": "Closed",
       "resolution": "Rebooked {{new_confirmation}} + $15 meal voucher issued."
