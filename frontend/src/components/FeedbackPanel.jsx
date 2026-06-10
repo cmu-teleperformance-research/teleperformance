@@ -23,7 +23,15 @@ function SkillBadge({ label, value }) {
   );
 }
 
-export default function FeedbackPanel({ feedback }) {
+export default function FeedbackPanel({ feedback, feedbackLoading }) {
+  if (feedbackLoading) {
+    return (
+      <div className="h-full flex items-center justify-center text-gray-400 text-sm text-center p-6">
+        Evaluating response...
+      </div>
+    );
+  }
+
   if (!feedback) {
     return (
       <div className="h-full flex items-center justify-center text-gray-400 text-sm text-center p-6">

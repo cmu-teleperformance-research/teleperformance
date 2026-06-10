@@ -22,6 +22,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [portalStep, setPortalStep] = useState(0);
   const [portalCompleted, setPortalCompleted] = useState([]);
   const [error, setError] = useState(null);
@@ -284,23 +285,23 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
       const csrIdx = updatedMessages.length - 1;
 
+      // Add customer response immediately — feedback attached after delay
       setMessages(prev => {
-        const next = prev.map((m, i) =>
-          i === csrIdx ? { ...m, feedback } : m
-        );
-
         const assistantMsg = { role: "assistant", content: customer_response };
-
-        console.log("📝 Attaching feedback to USER message at idx:", csrIdx);
         console.log("🤖 Adding ASSISTANT message:", assistantMsg);
-        console.log("📦 FINAL MESSAGES STATE:", [...next, assistantMsg]);
-
-        return [...next, assistantMsg];
+        return [...prev, assistantMsg];
       });
 
       if (feedback) {
-        console.log("🎯 Setting selectedIdx to:", csrIdx);
-        setSelectedIdx(csrIdx);
+        setFeedbackLoading(true);
+        setTimeout(() => {
+          setMessages(prev =>
+            prev.map((m, i) => i === csrIdx ? { ...m, feedback } : m)
+          );
+          console.log("🎯 Setting selectedIdx to:", csrIdx);
+          setSelectedIdx(csrIdx);
+          setFeedbackLoading(false);
+        }, 2000);
       }
 
     } catch (err) {
@@ -457,7 +458,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
           {training && (
             <div className="w-72 bg-white border-l overflow-y-auto">
-              <FeedbackPanel feedback={activeFeedback} />
+              <FeedbackPanel feedback={activeFeedback} feedbackLoading={feedbackLoading} />
             </div>
           )}
         </div>
