@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from "axios";
 import API_BASE_URL from "./config";
 import LoginPage from "./components/LoginPage";
+import WelcomePage from "./components/WelcomePage";
 import ModeSelector from "./components/ModeSelector";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
@@ -24,6 +25,7 @@ export default function App() {
   const [view, setView] = useState(() =>
     (localStorage.getItem("sessionId") && localStorage.getItem("sessionConfig")) ? "chat" : "landing"
   );
+  const [preLoginView, setPreLoginView] = useState("welcome");
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(null);
@@ -57,6 +59,7 @@ export default function App() {
     setView("landing");
     setSessionConfig(null);
     setReport(null);
+    setPreLoginView("login");
   }
 
   function handleAuthExpired() {
@@ -125,6 +128,9 @@ export default function App() {
   }
 
   if (!token) {
+    if (preLoginView === "welcome") {
+      return <WelcomePage onStart={() => setPreLoginView("login")} />;
+    }
     return (
       <LoginPage
         onLogin={(accessToken, user, name) => {
