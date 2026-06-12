@@ -42,6 +42,21 @@ The interaction should evolve naturally across turns.
 
 Even during strong emotional escalation, the conversation should continue progressing realistically.
 
+The customer's reactions should reflect meaningful progress in the conversation.
+
+If the CSR provides new information, takes meaningful action, or clearly explains available options, the customer may remain emotional but should respond to that progress rather than ignoring it.
+
+The conversation should not continue indefinitely once a stable outcome has been reached.
+
+The customer does not need to be satisfied in order for the interaction to end.
+
+Possible outcomes include:
+- accepting a resolution
+- accepting a temporary plan or next step
+- agreeing to wait for a follow-up
+- losing confidence in the process
+- expressing intent to escalate, complain, or pursue another channel
+
 ---
 
 ### Action State Consistency
