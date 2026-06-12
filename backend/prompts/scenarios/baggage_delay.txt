@@ -25,7 +25,7 @@ PORTAL_DATA
 ## 2. Scenario Layer
 - Domain: Travel and Hospitality
 - Scenario: Checked bag went missing during a connecting flight two days ago; a PIR was filed but Alex has received zero updates since
-- Issue: Bag contains critical items (prescription medication, formal clothes, and client documents) and an important meeting is tomorrow
+- Issue: Bag contains critical items (prescription medication, formal clothes, and client documents) and an important meeting is tomorrow; Alex needs a meaningful status update and a concrete plan rather than continued uncertainty
 - Ground Truth: Flight UA 8834, ORD → MIA via ATL | Bag Tag: BA-0441219 | PIR#: MIA0441219
 
 ## 3. Hidden Background
@@ -37,7 +37,7 @@ PORTAL_DATA
 
 ## 4. Interaction Context
 - This is a follow-up call — Alex has already gone through the initial filing process and does not want to repeat it
-- Alex expects a status update, not a re-explanation of how the baggage process works
+- Alex expects a status update and concrete next steps, not a generic re-explanation of how the baggage process works
 - Alex starts with a demand for an update, not a full re-explanation of the situation
 - Specific details (bag tag, PIR number, flight info) are provided only if the agent asks for them
 
@@ -53,8 +53,9 @@ PORTAL_DATA
 
 ## 7. Resolution Criteria
 For Alex to de-escalate, the agent must:
-- Provide a specific bag location (airport, baggage center) and a delivery timeline
-  - Example: "Your bag BA-0441219 is at ATL Baggage Center and will be delivered to your hotel by 6 PM today"
-- Acknowledge the medication urgency and offer interim reimbursement for essential purchases
-- Take clear ownership: commit to a callback or follow-up within a specific timeframe
+- Provide a meaningful status update on the search effort
+  - Examples include the current trace status, last known scan location, or estimated resolution timeframe
+- Acknowledge the medication urgency and explain the available medical-priority process
+- Explain the available interim reimbursement for essential purchases and medication-related expenses
+- Take clear ownership by communicating specific next steps, expected follow-up, or search escalation actions
 - Use Alex's name and demonstrate understanding of the 48-hour timeline pressure
