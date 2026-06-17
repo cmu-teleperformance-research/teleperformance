@@ -34,6 +34,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     delayReason: "",
     resolution: "",
     caseNote: "",
+    caseOutcome: "",
   });
 
   const isDragging = useRef(false);
@@ -392,7 +393,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
               onReset={() => {
                 setPortalStep(0);
                 setPortalCompleted([]);
-                setWorkflowData({ searchQuery: "", applicationStatus: false, searchNotFound: false, delayReason: "", resolution: "", caseNote: "" });
+                setWorkflowData({ searchQuery: "", applicationStatus: false, searchNotFound: false, delayReason: "", resolution: "", caseNote: "", caseOutcome: "" });
               }}
               onGoToStep={goToStep}
               workflowData={workflowData}
