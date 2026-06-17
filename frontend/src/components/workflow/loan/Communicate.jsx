@@ -5,11 +5,7 @@ export default function LoanCommunicate({ workflow, onReset, workflowData, updat
   const outcome = workflowData.caseOutcome;
   const resolved = outcome === "resolved";
 
-  const title = !outcome
-    ? "Case Outcome"
-    : resolved
-    ? "Case Resolved — Communicate to Customer"
-    : "Case Not Resolved — Communicate to Customer";
+  const title = "Communicate to Customer";
 
   const status = resolved ? "Resolved" : "Awaiting Follow-Up";
   const statusColor = resolved ? "text-green-700" : "text-amber-600";

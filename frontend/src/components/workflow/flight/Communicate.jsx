@@ -5,11 +5,7 @@ export default function FlightCommunicate({ onReset, workflow, workflowData, upd
   const outcome = workflowData.caseOutcome;
   const resolved = outcome === "resolved";
 
-  const title = !outcome
-    ? "Case Outcome"
-    : resolved
-    ? "Case Resolved — Communicate to Customer"
-    : "Case Not Resolved — Communicate to Customer";
+  const title = "Communicate to Passenger";
 
   const status = resolved ? "Closed" : "Escalated";
   const statusColor = resolved ? "text-green-700" : "text-amber-600";
