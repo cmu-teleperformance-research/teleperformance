@@ -14,7 +14,6 @@ export default function RefundPolicy({ workflow, onAdvance, workflowData, update
         {cfg.policy}
       </pre>
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-2">Select what applies:</p>
         <div className="flex gap-2 flex-wrap">
           <ActionButton
             label={cfg.correctLabel}

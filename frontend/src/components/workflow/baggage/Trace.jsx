@@ -26,7 +26,6 @@ export default function Trace({ onAdvance, workflowData, updateData, workflow })
         {sc.medicalAlert}
       </div>
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-2">Required Action:</p>
         <div className="flex gap-2 flex-wrap">
           <ActionButton
             label={flagged ? sc.correctFlaggedLabel : sc.correctLabel}

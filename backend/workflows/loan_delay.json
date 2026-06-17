@@ -88,7 +88,7 @@
         "Escalate to Risk Team",
         "Place on Hold Indefinitely"
       ],
-      "correctMessage": "Correct. Confirm the scheduled decision time with the customer and add a priority monitoring note to the case."
+      "correctMessage": "Correct. Decision ETA confirmed. Priority monitoring note added to case."
     },
     {
       "title": "Apply Actions",
@@ -105,7 +105,7 @@
       "notePlaceholder": "e.g. Customer called re: loan delay. Documents received and logged. Application in final underwriting review. Decision expected {{decision_time}}. Priority note added. Customer informed."
     },
     {
-      "title": "Case Updated — Communicate to Customer",
+      "title": "Case Updated",
       "customerName": "{{first_name}}",
       "coaching": {
         "items": [

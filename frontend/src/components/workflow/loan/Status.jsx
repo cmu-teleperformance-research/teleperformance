@@ -33,7 +33,6 @@ export default function LoanStatus({ workflow, onAdvance, workflowData, updateDa
       </div>
       {done && (
         <div className="bg-green-50 border border-green-300 rounded-xl p-4 space-y-2">
-          <p className="text-sm font-semibold text-green-800">Done. Proceed to review available options.</p>
           <ActionButton label="Review Options →" variant="primary" onClick={onAdvance} />
         </div>
       )}

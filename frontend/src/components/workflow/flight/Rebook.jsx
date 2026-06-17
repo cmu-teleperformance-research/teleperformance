@@ -12,9 +12,6 @@ export default function Rebook({ onAdvance, workflowData, updateData, workflow }
   return (
     <div className="space-y-4">
       <h2 className="text-base font-semibold text-gray-800">Rebooking Options — {customer.name}</h2>
-      <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-        ↩ Ask the passenger their preference before selecting a flight.
-      </p>
       <div className="space-y-3">
         {rebooking.map(f => (
           <div

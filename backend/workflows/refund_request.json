@@ -109,7 +109,7 @@
       "notePlaceholder": "e.g. Customer called re: defective {{product}}, order {{transaction_id}}. Defect: {{defect}}. Full refund of {{amount}} initiated to original {{payment_type}}. Prepaid return label sent. ETA {{estimated_return}}."
     },
     {
-      "title": "Case Resolved — Communicate to Customer",
+      "title": "Case Resolved",
       "customerName": "{{first_name}}",
       "coaching": {
         "items": [

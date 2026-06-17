@@ -15,7 +15,6 @@ export default function BaggagePolicy({ onAdvance, workflowData, updateData, wor
         {policy}
       </pre>
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-2">Select what applies to this passenger:</p>
         <div className="flex gap-2 flex-wrap">
           <ActionButton
             label={sc.correctLabel}
