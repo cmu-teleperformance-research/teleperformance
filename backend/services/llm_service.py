@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import traceback
 from dotenv import load_dotenv
 from config import build_client, MODEL_NAME
 from llm_settings import CUSTOMER_SETTINGS, FEEDBACK_SETTINGS, REPORT_SETTINGS
@@ -329,7 +330,18 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
     t_api_end = time.perf_counter()
 
     raw = resp.choices[0].message.content
+
+    print("\n================ RAW EVALUATOR RESPONSE ================")
+    print(raw)
+    print("========================================================")
+
     output = json.loads(raw)
+
+    print("\n================ PARSED JSON ===========================")
+    print(json.dumps(output, indent=2))
+    print("Top-level keys:", list(output.keys()))
+    print("========================================================")
+
     usage = _extract_usage(resp)
 
     _log_latency("evaluation_pipeline", {
@@ -343,6 +355,14 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
     if DEBUG_PROMPTS:
         print("=== SINGLE EVALUATOR OUTPUT ===")
         print(json.dumps(output, indent=2))
+
+    if "learn_from_this_practice" not in output:
+        print("WARNING: learn_from_this_practice missing from evaluator output.")
+        print("Available keys:", list(output.keys()))
+
+    print("\n================ OUTPUT BEFORE RETURN ==================")
+    print(json.dumps(output, indent=2))
+    print("========================================================")
 
     return {
         "signals": {
@@ -431,6 +451,10 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
         _enforce_feedback_consistency(feedback, message)
         t_enforce_end = time.perf_counter()
 
+        print("\n================ FINAL FEEDBACK ========================")
+        print(json.dumps(feedback, indent=2))
+        print("========================================================")
+
         _log_latency("enforcement", {"time": f"{t_enforce_end - t_enforce_start:.2f}s"})
         _log_latency("evaluation_pipeline_total", {"time": f"{t_enforce_end - t_pipeline_start:.2f}s"})
 
@@ -438,7 +462,11 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
             print("=== FINAL FEEDBACK ===")
             print(json.dumps(feedback, indent=2))
     except Exception as e:
-        print(f"ERROR call_llm evaluation pipeline failed: {type(e).__name__}: {e}")
+        print("\n================ EVALUATION PIPELINE FAILED =============")
+        print(f"Exception: {type(e).__name__}")
+        print(f"Message: {e}")
+        traceback.print_exc()
+        print("=========================================================")
         feedback = {
             "signals": {"empathyFirst": "Needs Work", "activeListening": "Needs Work"},
             "nextStep": "",
@@ -469,6 +497,11 @@ def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
         t_enforce_start = time.perf_counter()
         _enforce_feedback_consistency(feedback, message)
         t_enforce_end = time.perf_counter()
+
+        print("\n================ FINAL FEEDBACK ========================")
+        print(json.dumps(feedback, indent=2))
+        print("========================================================")
+
         _log_latency("enforcement", {"time": f"{t_enforce_end - t_enforce_start:.2f}s"})
         _log_latency("evaluation_pipeline_total", {"time": f"{t_enforce_end - t_pipeline_start:.2f}s"})
         if DEBUG_PROMPTS:
@@ -476,7 +509,11 @@ def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
             print(json.dumps(feedback, indent=2))
         return feedback
     except Exception as e:
-        print(f"ERROR run_feedback_pipeline failed: {type(e).__name__}: {e}")
+        print("\n================ FEEDBACK PIPELINE FAILED ================")
+        print(f"Exception: {type(e).__name__}")
+        print(f"Message: {e}")
+        traceback.print_exc()
+        print("=========================================================")
         return {
             "signals": {"empathyFirst": "Needs Work", "activeListening": "Needs Work"},
             "nextStep": "",
