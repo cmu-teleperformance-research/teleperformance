@@ -5,6 +5,7 @@ import MessageBubble from "./MessageBubble";
 import FeedbackPanel from "./FeedbackPanel";
 import WorkflowPortal from "./workflow/WorkflowPortal";
 import NavBar from "./NavBar";
+import { HomeGuideContent } from "./WelcomePage";
 import API_BASE_URL from "../config";
 
 const API_URL = `${API_BASE_URL}/chat`;
@@ -27,6 +28,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   const [portalCompleted, setPortalCompleted] = useState([]);
   const [error, setError] = useState(null);
   const [portalHeight, setPortalHeight] = useState(280);
+  const [showGuide, setShowGuide] = useState(false);
   const [workflowData, setWorkflowData] = useState({
     searchQuery: "",
     applicationStatus: false,
@@ -353,8 +355,13 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         </div>
         <div className="flex items-center gap-6">
           <button
+            onClick={() => setShowGuide(true)}
+            className="text-sm text-blue-600 hover:text-blue-800 font-medium transition"
+          >
+            Home Guide
+          </button>
+          <button
             onClick={() => {
-              // ADD: Clear persisted messages when session ends
               if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
               onEndSession(messages, sessionId);
             }}
@@ -475,6 +482,25 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           )}
         </div>
       </div>
+
+      {showGuide && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-gray-50 rounded-2xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+              <span className="font-semibold text-gray-800">Home Guide</span>
+              <button
+                onClick={() => setShowGuide(false)}
+                className="text-gray-400 hover:text-gray-600 text-xl leading-none transition"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-8">
+              <HomeGuideContent />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
