@@ -42,11 +42,14 @@ const HOW_IT_WORKS = [
   "Continue until the conversation ends",
 ];
 
-export default function WelcomePage({ onStart }) {
+import NavBar from "./NavBar";
+
+export default function WelcomePage({ onStart, navProps }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-6 py-3">
+      <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <span className="font-semibold text-gray-800">CSR Simulator</span>
+        {navProps && <NavBar {...navProps} />}
       </header>
 
       <main className="flex-1 overflow-y-auto">

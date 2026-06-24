@@ -150,29 +150,10 @@ export default function App() {
 
   if (view === "landing") {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-          <span className="font-semibold text-gray-800">CSR Simulator</span>
-          <NavBar {...navProps} />
-        </header>
-        <div className="flex-1 flex flex-col items-center justify-center p-8">
-          <div className="max-w-xl text-center space-y-6">
-            <h1 className="text-4xl font-bold text-gray-900">
-              CSR Conflict Resolution Simulator
-            </h1>
-            <p className="text-lg text-gray-600">
-              Practice handling difficult customer service scenarios using AI-powered
-              role-play. Get real-time feedback on empathy, transparency, and ownership.
-            </p>
-            <button
-              onClick={() => setView("mode-select")}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition"
-            >
-              Start Session
-            </button>
-          </div>
-        </div>
-      </div>
+      <WelcomePage
+        onStart={() => setView("mode-select")}
+        navProps={navProps}
+      />
     );
   }
 
