@@ -1,6 +1,6 @@
 import CaseOutcomeSelector from "../CaseOutcomeSelector";
 
-export default function RefundCommunicate({ workflow, workflowData, updateData }) {
+export default function RefundCommunicate({ onAdvance, workflow, workflowData, updateData }) {
   const cfg = workflow.screenConfigs[5];
   const outcome = workflowData.caseOutcome;
   const resolved = outcome === "resolved";
@@ -10,13 +10,18 @@ export default function RefundCommunicate({ workflow, workflowData, updateData }
   const status = resolved ? "Closed" : "Pending";
   const statusColor = resolved ? "text-green-700" : "text-amber-600";
 
+  function handleSelect(val) {
+    updateData("caseOutcome", val);
+    if (!outcome) onAdvance();
+  }
+
   return (
     <div className="space-y-4">
       <h2 className="text-base font-semibold text-gray-800">{title}</h2>
 
       <CaseOutcomeSelector
         outcome={outcome}
-        onSelect={(val) => updateData("caseOutcome", val)}
+        onSelect={handleSelect}
       />
 
       {outcome && (

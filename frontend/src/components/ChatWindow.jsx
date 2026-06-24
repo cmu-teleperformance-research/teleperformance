@@ -387,8 +387,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
               step={portalStep}
               completed={portalCompleted}
               onAdvance={(stepId) => {
-                setPortalCompleted(prev => [...prev, stepId]);
-                setPortalStep(s => s + 1);
+                setPortalCompleted(prev => prev.includes(stepId) ? prev : [...prev, stepId]);
+                setPortalStep(s => Math.min(s + 1, 5));
               }}
               onReset={() => {
                 setPortalStep(0);
