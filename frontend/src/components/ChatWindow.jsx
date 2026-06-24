@@ -165,6 +165,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
     if (!training) {
       // ── Streaming path (evaluation mode) ──────────────────────────────────
+      const csrIdx = updatedMessages.length - 1;
+      let userMessageId = null;
       try {
         const res = await fetch(`${API_BASE_URL}/chat-stream`, {
           method: "POST",
@@ -185,6 +187,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         if (res.status === 401) { onAuthExpired(); return; }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
+        userMessageId = res.headers.get("X-User-Message-Id");
+
         if (!res.body) {
           setMessages(prev => [...prev, { role: "assistant", content: "Streaming is not supported in this environment. Please try again." }]);
           return;
@@ -203,13 +207,10 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
             if (!started) {
               started = true;
-              // flushSync bypasses React 18 batching so the first token
-              // renders immediately (hides typing indicator, shows message).
               flushSync(() => {
                 setMessages(prev => [...prev, { role: "assistant", content: chunk }]);
               });
             } else {
-              // Accumulate into prev state — avoids stale closure capture.
               flushSync(() => {
                 setMessages(prev => {
                   const next = [...prev];
@@ -250,6 +251,23 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       } finally {
         setLoading(false);
         inputRef.current?.focus();
+      }
+
+      // Run evaluation pipeline in background (hidden from participant, saved to DB)
+      if (userMessageId) {
+        axios.post(
+          `${API_BASE_URL}/feedback`,
+          {
+            scenario, persona,
+            message: trimmed,
+            history: updatedMessages,
+            session_id: sessionId,
+            user_message_id: Number(userMessageId),
+          },
+          { headers: authHeaders }
+        ).catch(err => {
+          console.error("❌ BACKGROUND FEEDBACK ERROR:", err);
+        });
       }
       return;
     }

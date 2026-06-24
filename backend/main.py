@@ -24,6 +24,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-User-Message-Id"],
 )
 
 VALID_SCENARIOS = {"flight_cancellation", "baggage_delay", "loan_delay", "refund_request"}
@@ -279,7 +280,7 @@ async def chat(
     return ChatResponse(
         customer_response=result["customer_response"],
         session_id=request.session_id,
-        user_message_id=user_msg.id if request.training else None,
+        user_message_id=user_msg.id,
     )
 
 
@@ -352,13 +353,21 @@ async def chat_stream(
     if not request.message.strip():
         raise HTTPException(status_code=400, detail="message cannot be empty")
 
+    user_message_id = None
     if request.session_id is not None:
-        db.add(models.MessageRecord(
+        user_msg = models.MessageRecord(
             session_id=request.session_id,
             role="user",
             content=request.message,
-        ))
+        )
+        db.add(user_msg)
+        db.flush()
+        user_message_id = user_msg.id
         db.commit()
+
+    headers = {}
+    if user_message_id is not None:
+        headers["X-User-Message-Id"] = str(user_message_id)
 
     return StreamingResponse(
         _stream_with_db_save(
@@ -371,6 +380,7 @@ async def chat_stream(
             request.session_id,
         ),
         media_type="text/plain",
+        headers=headers,
     )
 
 
