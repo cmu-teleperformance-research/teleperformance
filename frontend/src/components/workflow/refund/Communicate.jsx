@@ -1,6 +1,6 @@
 import CaseOutcomeSelector from "../CaseOutcomeSelector";
 
-export default function RefundCommunicate({ workflow, onReset, workflowData, updateData }) {
+export default function RefundCommunicate({ workflow, workflowData, updateData }) {
   const cfg = workflow.screenConfigs[5];
   const outcome = workflowData.caseOutcome;
   const resolved = outcome === "resolved";
@@ -29,8 +29,6 @@ export default function RefundCommunicate({ workflow, onReset, workflowData, upd
           {resolved && <p>Resolution: {cfg.resolution}</p>}
         </div>
       )}
-
-      <button onClick={onReset} className="text-sm text-blue-600 hover:underline">↺ Start New Case</button>
     </div>
   );
 }

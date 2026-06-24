@@ -1,6 +1,6 @@
 import CaseOutcomeSelector from "../CaseOutcomeSelector";
 
-export default function FlightCommunicate({ onReset, workflow, workflowData, updateData }) {
+export default function FlightCommunicate({ workflow, workflowData, updateData }) {
   const sc = workflow.screens.communicate;
   const outcome = workflowData.caseOutcome;
   const resolved = outcome === "resolved";
@@ -29,8 +29,6 @@ export default function FlightCommunicate({ onReset, workflow, workflowData, upd
           {resolved && <p>Resolution: {sc.resolution}</p>}
         </div>
       )}
-
-      <button onClick={onReset} className="text-sm text-blue-600 hover:underline">↺ Start New Case</button>
     </div>
   );
 }
