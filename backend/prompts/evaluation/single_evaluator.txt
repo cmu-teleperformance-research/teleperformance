@@ -159,9 +159,9 @@ Return JSON only in exactly this format:
 "score": 0,
 "label": "Needs Work"
 },
-"improvement": {
+"learn_from_this_practice": {
 "area": "Short behavior-based area name",
 "focus": "One concise sentence telling the CSR what to do differently next time.",
-"why_it_matters": "One concise sentence explaining how this helps de-escalation or customer trust."
+"why_it_improves_deescalation": "One concise sentence explaining how this helps de-escalation or customer trust."
 }
 }
