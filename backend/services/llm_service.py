@@ -184,23 +184,6 @@ def _enforce_feedback_consistency(feedback: dict, csr_message: str) -> None:
 
     print(f"DEBUG _enforce_feedback_consistency PRE-REPAIR analysis: {json.dumps(analysis)}")
 
-    # --- Flat-reason migration ---
-    # The model sometimes returns a single analysis.reason string instead of
-    # nesting it inside empathy_score and active_listening_score.  Migrate it
-    # into both skill dicts before the coercion loop runs, so the explanation
-    # is not lost when the scalar score fields are promoted to dicts.
-    flat_reason = analysis.pop("reason", None)
-    if flat_reason:
-        # Only write into skill dicts if they don't already carry their own reason.
-        # At this point the skill fields may be scalars (e.g. 0) or dicts or absent.
-        for key in ("empathy_score", "active_listening_score"):
-            existing = analysis.get(key)
-            if not isinstance(existing, dict):
-                # Will be coerced to {} below; seed it now so the reason survives.
-                analysis[key] = {"reason": flat_reason}
-            else:
-                existing.setdefault("reason", flat_reason)
-
     # --- Minimal message rule ---
     if len(csr_message.strip().split()) <= 4:
         signals["empathyFirst"] = "Needs Work"
@@ -222,8 +205,6 @@ def _enforce_feedback_consistency(feedback: dict, csr_message: str) -> None:
     analysis["active_listening_score"]["score"] = _LABEL_TO_SCORE.get(al, 0)
 
     # Fill in required sub-fields only when absent — never overwrite valid model content
-    analysis["empathy_score"].setdefault("reason", "")
-    analysis["active_listening_score"].setdefault("reason", "")
     lp = analysis["learn_from_this_practice"]
     lp.setdefault("area", "")
     lp.setdefault("focus", "")
@@ -433,8 +414,8 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
         return {"customer_response": customer_response, "feedback": None}
 
     _default_analysis = {
-        "empathy_score": {"score": 0, "reason": "Fallback applied."},
-        "active_listening_score": {"score": 0, "reason": "Fallback applied."},
+        "empathy_score": {"score": 0},
+        "active_listening_score": {"score": 0},
         "learn_from_this_practice": {
             "area": "Fallback",
             "focus": "Fallback applied due to missing analysis.",
@@ -473,8 +454,8 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
 def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
     """Run the evaluation pipeline for a CSR message and return the feedback dict."""
     _default_analysis = {
-        "empathy_score": {"score": 0, "reason": "Fallback applied."},
-        "active_listening_score": {"score": 0, "reason": "Fallback applied."},
+        "empathy_score": {"score": 0},
+        "active_listening_score": {"score": 0},
         "learn_from_this_practice": {
             "area": "Fallback",
             "focus": "Fallback applied due to missing analysis.",
