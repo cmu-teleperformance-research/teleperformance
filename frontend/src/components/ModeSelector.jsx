@@ -254,18 +254,18 @@ function StepMode({ scenario, persona, onSelect, onBack }) {
     {
       id: "training",
       label: "Training Mode",
-      badge: "Feedback Enabled",
+      badge: "Explicit Feedback",
       badgeColor: "bg-green-100 text-green-800",
       description:
-        "Receive live coaching feedback on empathy, transparency, and ownership after each of your responses. Best for skill building.",
+        "Receive explicit coaching feedback after each customer interaction to support skill development and reflection.",
     },
     {
       id: "evaluation",
       label: "Evaluation Mode",
-      badge: "No Feedback",
+      badge: "Implicit Feedback",
       badgeColor: "bg-yellow-100 text-yellow-800",
       description:
-        "Handle the scenario without coaching. Your responses are assessed only at the end. Best for testing your readiness.",
+        "Practice the scenario without turn-by-turn coaching. Feedback is provided after the conversation to support reflection on your overall performance.",
     },
   ];
 
