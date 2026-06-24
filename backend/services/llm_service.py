@@ -337,7 +337,7 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
 
     output = json.loads(raw)
 
-    print("\n================ PARSED JSON ===========================")
+    print("\n================ PARSED EVALUATOR JSON =================")
     print(json.dumps(output, indent=2))
     print("Top-level keys:", list(output.keys()))
     print("========================================================")
@@ -357,8 +357,12 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
         print(json.dumps(output, indent=2))
 
     if "learn_from_this_practice" not in output:
-        print("WARNING: learn_from_this_practice missing from evaluator output.")
+        print("\n================ MISSING KEY ===========================")
+        print("learn_from_this_practice is missing from evaluator output.")
         print("Available keys:", list(output.keys()))
+        print("Full evaluator output:")
+        print(json.dumps(output, indent=2))
+        print("========================================================")
 
     print("\n================ OUTPUT BEFORE RETURN ==================")
     print(json.dumps(output, indent=2))
