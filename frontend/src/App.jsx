@@ -38,7 +38,7 @@ export default function App() {
     setToken(accessToken);
     setUsername(user);
     setDisplayName(name);
-    setView("landing");
+    setView("mode-select");
   }
 
   function clearStoredSession() {
