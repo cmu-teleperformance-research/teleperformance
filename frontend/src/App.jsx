@@ -7,6 +7,7 @@ import ModeSelector from "./components/ModeSelector";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
 import ProfilePage from "./components/ProfilePage";
+import ResearchDashboard from "./components/ResearchDashboard";
 import NavBar from "./components/NavBar";
 
 export default function App() {
@@ -145,6 +146,7 @@ export default function App() {
   const navProps = {
     displayName: displayName || username,
     onProfile: () => setView("profile"),
+    onResearch: () => setView("research"),
     onLogout: handleLogout,
   };
 
@@ -163,6 +165,10 @@ export default function App() {
 
   if (view === "profile") {
     return <ProfilePage token={token} navProps={navProps} onBack={() => setView("landing")} />;
+  }
+
+  if (view === "research") {
+    return <ResearchDashboard token={token} navProps={navProps} onBack={() => setView("landing")} />;
   }
 
   if (view === "report") {

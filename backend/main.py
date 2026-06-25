@@ -162,6 +162,83 @@ def get_session(
     }
 
 
+# ── Research dashboard ────────────────────────────────────────────────────────
+
+@app.get("/research/sessions")
+def research_list_sessions(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    sessions = (
+        db.query(models.SessionRecord, models.User)
+        .join(models.User, models.SessionRecord.user_id == models.User.id)
+        .order_by(models.SessionRecord.created_at.desc())
+        .all()
+    )
+    result = []
+    for s, u in sessions:
+        report = db.query(models.ReportRecord).filter(models.ReportRecord.session_id == s.id).first()
+        result.append({
+            "id": s.id,
+            "user_id": u.id,
+            "username": u.username,
+            "display_name": u.name,
+            "scenario": s.scenario,
+            "scenario_label": SCENARIO_LABELS.get(s.scenario, s.scenario),
+            "persona": s.persona,
+            "training": s.training,
+            "created_at": s.created_at.isoformat(),
+            "has_report": report is not None,
+        })
+    return result
+
+
+@app.get("/research/sessions/{session_id}")
+def research_get_session(
+    session_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    row = (
+        db.query(models.SessionRecord, models.User)
+        .join(models.User, models.SessionRecord.user_id == models.User.id)
+        .filter(models.SessionRecord.id == session_id)
+        .first()
+    )
+    if not row:
+        raise HTTPException(status_code=404, detail="Session not found")
+    session, user = row
+
+    messages = (
+        db.query(models.MessageRecord)
+        .filter(models.MessageRecord.session_id == session_id)
+        .order_by(models.MessageRecord.id)
+        .all()
+    )
+    report_record = db.query(models.ReportRecord).filter(models.ReportRecord.session_id == session_id).first()
+
+    return {
+        "id": session.id,
+        "user_id": user.id,
+        "username": user.username,
+        "display_name": user.name,
+        "scenario": session.scenario,
+        "scenario_label": SCENARIO_LABELS.get(session.scenario, session.scenario),
+        "persona": session.persona,
+        "training": session.training,
+        "created_at": session.created_at.isoformat(),
+        "messages": [
+            {
+                "role": m.role,
+                "content": m.content,
+                "feedback": json_lib.loads(m.feedback_json) if m.feedback_json else None,
+            }
+            for m in messages
+        ],
+        "report": json_lib.loads(report_record.report_json) if report_record and report_record.report_json else None,
+    }
+
+
 # ── Chat ──────────────────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
