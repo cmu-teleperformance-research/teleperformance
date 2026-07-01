@@ -165,7 +165,7 @@ function BackButton({ onClick }) {
 function StepDomain({ onSelect }) {
   return (
     <div>
-      <StepHeader step={1} total={4} label="Choose a Domain" />
+      <StepHeader step={1} total={3} label="Choose a Domain" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
         {ALL_DOMAINS.map((d) => (
           <button
@@ -202,7 +202,7 @@ function StepScenario({ domain, onSelect, onBack }) {
   return (
     <div>
       <BackButton onClick={onBack} />
-      <StepHeader step={2} total={4} label={`Choose a Scenario — ${domain.label}`} />
+      <StepHeader step={2} total={3} label={`Choose a Scenario — ${domain.label}`} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
         {domain.scenarios.map((s) => (
           <button
@@ -272,9 +272,9 @@ function StepMode({ scenario, persona, onSelect, onBack }) {
   return (
     <div>
       <BackButton onClick={onBack} />
-      <StepHeader step={4} total={4} label="Choose a Mode" />
+      <StepHeader step={3} total={3} label="Choose a Mode" />
       <p className="text-center text-sm text-gray-500 mb-6 -mt-4">
-        Scenario: <strong>{scenario.label}</strong> &nbsp;·&nbsp; Persona: <strong>{persona.emoji} {persona.label}</strong>
+        Scenario: <strong>{scenario.label}</strong>
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
         {modes.map((m) => (
@@ -300,6 +300,8 @@ function StepMode({ scenario, persona, onSelect, onBack }) {
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 import NavBar from "./NavBar";
 
+const ANGRY_PERSONA = PERSONAS.find((p) => p.id === "angry");
+
 export default function ModeSelector({ onSelect, navProps }) {
   const [step, setStep] = useState(1);
   const [selectedDomain, setSelectedDomain] = useState(null);
@@ -308,10 +310,11 @@ export default function ModeSelector({ onSelect, navProps }) {
 
   function handleDomainSelect(domain) {
     setSelectedDomain(domain);
-    // If only one scenario, skip the scenario step
+    // If only one scenario, skip the scenario step and auto-set angry persona
     if (domain.scenarios.length === 1) {
       setSelectedScenario(domain.scenarios[0]);
-      setStep(3);
+      setSelectedPersona(ANGRY_PERSONA);
+      setStep(4);
     } else {
       setStep(2);
     }
@@ -319,11 +322,8 @@ export default function ModeSelector({ onSelect, navProps }) {
 
   function handleScenarioSelect(scenario) {
     setSelectedScenario(scenario);
-    setStep(3);
-  }
-
-  function handlePersonaSelect(persona) {
-    setSelectedPersona(persona);
+    // Persona step is skipped — angry is always used
+    setSelectedPersona(ANGRY_PERSONA);
     setStep(4);
   }
 
@@ -341,12 +341,14 @@ export default function ModeSelector({ onSelect, navProps }) {
 
   function handleBack() {
     if (step === 2) { setStep(1); setSelectedDomain(null); }
-    else if (step === 3) {
-      // If domain had only one scenario, we skipped step 2 — go back to step 1
-      if (selectedDomain.scenarios.length === 1) { setStep(1); setSelectedDomain(null); setSelectedScenario(null); }
-      else { setStep(2); setSelectedScenario(null); }
+    else if (step === 4) {
+      // Persona step is skipped — go back to scenario or domain
+      if (selectedDomain.scenarios.length === 1) {
+        setStep(1); setSelectedDomain(null); setSelectedScenario(null); setSelectedPersona(null);
+      } else {
+        setStep(2); setSelectedScenario(null); setSelectedPersona(null);
+      }
     }
-    else if (step === 4) { setStep(3); setSelectedPersona(null); }
   }
 
   return (
@@ -360,9 +362,6 @@ export default function ModeSelector({ onSelect, navProps }) {
         {step === 1 && <StepDomain onSelect={handleDomainSelect} />}
         {step === 2 && selectedDomain && (
           <StepScenario domain={selectedDomain} onSelect={handleScenarioSelect} onBack={handleBack} />
-        )}
-        {step === 3 && (
-          <StepPersona onSelect={handlePersonaSelect} onBack={handleBack} scenario={selectedScenario} />
         )}
         {step === 4 && selectedScenario && selectedPersona && (
           <StepMode
