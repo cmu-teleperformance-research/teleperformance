@@ -4,13 +4,6 @@ import API_BASE_URL from "../config";
 import NavBar from "./NavBar";
 import { TurnFeedbackCard } from "./FeedbackPanel";
 
-const PERSONA_EMOJIS = {
-  angry: "😡",
-  confused: "😕",
-  demanding: "😤",
-  anxious: "😰",
-};
-
 function SessionDetail({ session, onBack }) {
   const { messages = [], report } = session;
   const coaching = report?.session_coaching;
@@ -49,7 +42,6 @@ function SessionDetail({ session, onBack }) {
           <div><span className="text-gray-500">Session ID:</span> <span className="font-medium text-gray-800">{session.id}</span></div>
           <div><span className="text-gray-500">Participant:</span> <span className="font-medium text-gray-800">{session.display_name} (@{session.username})</span></div>
           <div><span className="text-gray-500">Scenario:</span> <span className="font-medium text-gray-800">{session.scenario_label}</span></div>
-          <div><span className="text-gray-500">Persona:</span> <span className="font-medium text-gray-800">{PERSONA_EMOJIS[session.persona]} {session.persona}</span></div>
           <div><span className="text-gray-500">Mode:</span> <span className="font-medium text-gray-800">{modeLabel}</span></div>
           <div><span className="text-gray-500">Date:</span> <span className="font-medium text-gray-800">{new Date(session.created_at).toLocaleString()}</span></div>
         </div>
@@ -206,7 +198,6 @@ export default function ResearchDashboard({ token, navProps, onBack }) {
                 onClick={() => loadSession(s.id)}
                 className="w-full bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-blue-300 hover:shadow-sm transition flex items-center gap-4"
               >
-                <span className="text-2xl flex-shrink-0">{PERSONA_EMOJIS[s.persona]}</span>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900">
                     {s.scenario_label}
@@ -214,8 +205,6 @@ export default function ResearchDashboard({ token, navProps, onBack }) {
                   </p>
                   <p className="text-sm text-gray-500">
                     {s.display_name} (@{s.username})
-                    {" · "}
-                    {s.persona}
                     {" · "}
                     {s.training ? "Explicit Feedback" : "Implicit Feedback"}
                     {" · "}
