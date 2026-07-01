@@ -14,6 +14,20 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
+RESEARCHER_USERNAMES = {
+    "dishakew",
+    "yichiaw",
+    "shiyu",
+    "simret",
+    "joyceBWang",
+    "robertekraut1",
+    "hz",
+}
+
+
+def get_role(username: str) -> str:
+    return "researcher" if username in RESEARCHER_USERNAMES else "participant"
+
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8")[:72], bcrypt.gensalt()).decode("utf-8")
@@ -25,7 +39,8 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def create_access_token(user_id: int, username: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    return jwt.encode({"sub": str(user_id), "username": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+    role = get_role(username)
+    return jwt.encode({"sub": str(user_id), "username": username, "role": role, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
@@ -44,3 +59,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+
+def require_researcher(current_user: models.User = Depends(get_current_user)) -> models.User:
+    if get_role(current_user.username) != "researcher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Researcher access required")
+    return current_user

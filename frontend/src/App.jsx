@@ -14,6 +14,7 @@ export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [username, setUsername] = useState(() => localStorage.getItem("username"));
   const [displayName, setDisplayName] = useState(() => localStorage.getItem("displayName"));
+  const [role, setRole] = useState(() => localStorage.getItem("role") || "participant");
   const [sessionConfig, setSessionConfig] = useState(() => {
     try {
       const id = localStorage.getItem("sessionId");
@@ -32,13 +33,15 @@ export default function App() {
   const [reportError, setReportError] = useState(null);
   const [sessionExpiredMessage, setSessionExpiredMessage] = useState(null);
 
-  function handleLogin(accessToken, user, name) {
+  function handleLogin(accessToken, user, name, userRole = "participant") {
     localStorage.setItem("token", accessToken);
     localStorage.setItem("username", user);
     localStorage.setItem("displayName", name);
+    localStorage.setItem("role", userRole);
     setToken(accessToken);
     setUsername(user);
     setDisplayName(name);
+    setRole(userRole);
     setView("mode-select");
   }
 
@@ -53,10 +56,12 @@ export default function App() {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("displayName");
+    localStorage.removeItem("role");
     clearStoredSession();
     setToken(null);
     setUsername(null);
     setDisplayName(null);
+    setRole("participant");
     setView("landing");
     setSessionConfig(null);
     setReport(null);
@@ -67,10 +72,12 @@ export default function App() {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("displayName");
+    localStorage.removeItem("role");
     // Keep sessionId + sessionConfig so session can be restored after re-login
     setToken(null);
     setUsername(null);
     setDisplayName(null);
+    setRole("participant");
     setSessionConfig(null);
     setReport(null);
     setSessionExpiredMessage("Session expired. Please log in again.");
@@ -146,7 +153,7 @@ export default function App() {
   const navProps = {
     displayName: displayName || username,
     onProfile: () => setView("profile"),
-    onResearch: () => setView("research"),
+    onResearch: role === "researcher" ? () => setView("research") : undefined,
     onLogout: handleLogout,
   };
 
@@ -168,6 +175,10 @@ export default function App() {
   }
 
   if (view === "research") {
+    if (role !== "researcher") {
+      setView("landing");
+      return null;
+    }
     return <ResearchDashboard token={token} navProps={navProps} onBack={() => setView("landing")} />;
   }
 

@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from services.llm_service import call_llm, start_conversation, generate_report, stream_llm_response, run_feedback_pipeline
 from services.prompt_metadata import extract_portal_data, inject_metadata
 from database import engine, get_db, SessionLocal
-from auth import hash_password, verify_password, create_access_token, get_current_user
+from auth import hash_password, verify_password, create_access_token, get_current_user, get_role, require_researcher
 import models
 
 models.Base.metadata.create_all(bind=engine)
@@ -58,7 +58,7 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name}
+    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name, "role": get_role(user.username)}
 
 
 @app.post("/login")
@@ -66,12 +66,12 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.username == request.username).first()
     if not user or not verify_password(request.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name}
+    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name, "role": get_role(user.username)}
 
 
 @app.get("/me")
 def me(current_user: models.User = Depends(get_current_user)):
-    return {"id": current_user.id, "name": current_user.name, "username": current_user.username}
+    return {"id": current_user.id, "name": current_user.name, "username": current_user.username, "role": get_role(current_user.username)}
 
 
 class ChangePasswordRequest(BaseModel):
@@ -167,7 +167,7 @@ def get_session(
 @app.get("/research/sessions")
 def research_list_sessions(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
+    current_user: models.User = Depends(require_researcher),
 ):
     sessions = (
         db.query(models.SessionRecord, models.User)
@@ -197,7 +197,7 @@ def research_list_sessions(
 def research_get_session(
     session_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
+    current_user: models.User = Depends(require_researcher),
 ):
     row = (
         db.query(models.SessionRecord, models.User)

@@ -14,7 +14,7 @@ function LoginForm({ onLogin, onSwitch }) {
     setLoading(true);
     try {
       const res = await axios.post(`${API_BASE_URL}/login`, { username, password });
-      onLogin(res.data.access_token, username, res.data.name);
+      onLogin(res.data.access_token, username, res.data.name, res.data.role);
     } catch (err) {
       setError(err.response?.data?.detail || "Login failed. Please try again.");
     } finally {
@@ -88,7 +88,7 @@ function RegisterForm({ onLogin, onSwitch }) {
     setLoading(true);
     try {
       const res = await axios.post(`${API_BASE_URL}/register`, { name, username, password });
-      onLogin(res.data.access_token, username, res.data.name);
+      onLogin(res.data.access_token, username, res.data.name, res.data.role);
     } catch (err) {
       setError(err.response?.data?.detail || "Registration failed. Please try again.");
     } finally {
