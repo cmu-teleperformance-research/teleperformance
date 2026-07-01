@@ -3,13 +3,6 @@ import axios from "axios";
 import API_BASE_URL from "../config";
 import NavBar from "./NavBar";
 
-const PERSONA_EMOJIS = {
-  angry: "😡",
-  confused: "😕",
-  demanding: "😤",
-  anxious: "😰",
-};
-
 const SIGNAL_COLORS = {
   "Strong":     "bg-green-100 text-green-700",
   "Developing": "bg-yellow-100 text-yellow-700",
@@ -35,11 +28,10 @@ function SessionDetail({ session, onBack }) {
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-1">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{PERSONA_EMOJIS[session.persona]}</span>
           <div>
             <h2 className="font-bold text-gray-900 text-lg">{session.scenario_label}</h2>
             <p className="text-sm text-gray-500">
-              {session.persona.charAt(0).toUpperCase() + session.persona.slice(1)} · {session.training ? "Training" : "Evaluation"} · {new Date(session.created_at).toLocaleDateString()}
+              {session.training ? "Training" : "Evaluation"} · {new Date(session.created_at).toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -220,11 +212,10 @@ export default function ProfilePage({ token, navProps, onBack }) {
                 onClick={() => loadSession(s.id)}
                 className="w-full bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-blue-300 hover:shadow-sm transition flex items-center gap-4"
               >
-                <span className="text-2xl flex-shrink-0">{PERSONA_EMOJIS[s.persona]}</span>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900">{s.scenario_label}</p>
                   <p className="text-sm text-gray-500">
-                    {s.persona.charAt(0).toUpperCase() + s.persona.slice(1)} · {s.training ? "Training" : "Evaluation"} · {new Date(s.created_at).toLocaleDateString()}
+                    {s.training ? "Training" : "Evaluation"} · {new Date(s.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 {s.has_report ? (

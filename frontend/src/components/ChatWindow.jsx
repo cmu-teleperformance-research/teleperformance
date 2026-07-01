@@ -16,7 +16,7 @@ const SCENARIO_LABELS = {
 };
 
 export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed }) {
-  const { scenario, persona, training, scenarioLabel, personaEmoji, personaLabel } = sessionConfig;
+  const { scenario, persona, training, scenarioLabel } = sessionConfig;
 
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
@@ -369,7 +369,6 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         <div className="flex items-center gap-4">
           <span className="font-semibold text-gray-800">CSR Simulator</span>
           <span className="text-sm text-gray-400">{headerLabel}</span>
-          <span className="text-sm text-gray-400">· {personaEmoji} {personaLabel}</span>
         </div>
         <div className="flex items-center gap-6">
           <button

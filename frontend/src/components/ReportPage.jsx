@@ -52,9 +52,9 @@ function TurnCard({ turn }) {
 }
 
 export default function ReportPage({ report, sessionConfig, navProps, onNewSession }) {
-  const { scenario, persona, training, personaEmoji, personaLabel } = sessionConfig ?? {};
+  const { scenario, persona, training } = sessionConfig ?? {};
   const modeLabel = training ? "Training" : "Evaluation";
-  const sessionLabel = `${modeLabel} — ${SCENARIO_LABELS[scenario] ?? scenario} · ${personaEmoji ?? ""} ${personaLabel ?? ""}`.trim();
+  const sessionLabel = `${modeLabel} — ${SCENARIO_LABELS[scenario] ?? scenario}`;
 
   const coaching = report?.session_coaching;
   const turns = report?.turn_by_turn ?? [];
