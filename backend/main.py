@@ -66,7 +66,10 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.username == request.username).first()
     if not user or not verify_password(request.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
-    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name, "role": get_role(user.username)}
+    role = get_role(user.username)
+    from auth import RESEARCHER_USERNAMES
+    print(f"[DEBUG login] username={user.username!r}  role={role!r}  in_allowlist={user.username in RESEARCHER_USERNAMES}")
+    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name, "role": role}
 
 
 @app.get("/me")

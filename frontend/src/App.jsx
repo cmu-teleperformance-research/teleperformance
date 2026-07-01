@@ -38,6 +38,7 @@ export default function App() {
     localStorage.setItem("username", user);
     localStorage.setItem("displayName", name);
     localStorage.setItem("role", userRole);
+    console.log("[DEBUG handleLogin] stored user:", { username: user, displayName: name, role: userRole });
     setToken(accessToken);
     setUsername(user);
     setDisplayName(name);
@@ -150,10 +151,12 @@ export default function App() {
     );
   }
 
+  const isResearcher = role === "researcher";
+  console.log("[DEBUG navProps] role:", role, "  isResearcher:", isResearcher, "  → Research button rendered:", isResearcher);
   const navProps = {
     displayName: displayName || username,
     onProfile: () => setView("profile"),
-    onResearch: role === "researcher" ? () => setView("research") : undefined,
+    onResearch: isResearcher ? () => setView("research") : undefined,
     onLogout: handleLogout,
   };
 
