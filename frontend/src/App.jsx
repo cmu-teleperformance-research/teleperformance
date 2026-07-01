@@ -34,6 +34,7 @@ export default function App() {
   const [sessionExpiredMessage, setSessionExpiredMessage] = useState(null);
 
   function handleLogin(accessToken, user, name, userRole = "participant") {
+    console.log("[DEBUG handleLogin] raw userRole arg:", userRole, "(undefined means caller dropped it)");
     localStorage.setItem("token", accessToken);
     localStorage.setItem("username", user);
     localStorage.setItem("displayName", name);
@@ -142,7 +143,8 @@ export default function App() {
     }
     return (
       <LoginPage
-        onLogin={(accessToken, user, name) => {
+        onLogin={(accessToken, user, name, roleArg) => {
+          console.log("[DEBUG LoginPage onLogin callback] user:", user, "roleArg received:", roleArg, "roleArg passed to handleLogin:", roleArg);
           setSessionExpiredMessage(null);
           handleLogin(accessToken, user, name);
         }}
