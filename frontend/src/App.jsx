@@ -146,7 +146,7 @@ export default function App() {
         onLogin={(accessToken, user, name, roleArg) => {
           console.log("[DEBUG LoginPage onLogin callback] user:", user, "roleArg received:", roleArg, "roleArg passed to handleLogin:", roleArg);
           setSessionExpiredMessage(null);
-          handleLogin(accessToken, user, name);
+          handleLogin(accessToken, user, name, roleArg);
         }}
         message={sessionExpiredMessage}
       />
