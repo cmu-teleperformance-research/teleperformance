@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config";
 
-export default function EntryPage({ onParticipantJoin, onResearcherLogin, message }) {
+export default function EntryPage({ onParticipantJoin, onResearcherLogin, onBack, message }) {
   const [pid, setPid] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -38,6 +38,14 @@ export default function EntryPage({ onParticipantJoin, onResearcherLogin, messag
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 w-full max-w-sm space-y-8">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-700 transition"
+          >
+            ← Back
+          </button>
+        )}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">CSR Simulator</h1>
         </div>

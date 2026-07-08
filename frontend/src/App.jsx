@@ -28,7 +28,7 @@ export default function App() {
   const [view, setView] = useState(() =>
     (localStorage.getItem("sessionId") && localStorage.getItem("sessionConfig")) ? "chat" : "landing"
   );
-  const [preLoginView, setPreLoginView] = useState("entry");
+  const [preLoginView, setPreLoginView] = useState("welcome");
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(null);
@@ -68,7 +68,7 @@ export default function App() {
     setView("landing");
     setSessionConfig(null);
     setReport(null);
-    setPreLoginView("entry");
+    setPreLoginView("welcome");
   }
 
   function handleAuthExpired() {
@@ -139,6 +139,9 @@ export default function App() {
   }
 
   if (!token) {
+    if (preLoginView === "welcome") {
+      return <WelcomePage onStart={() => setPreLoginView("entry")} />;
+    }
     if (preLoginView === "login") {
       return (
         <LoginPage
@@ -152,6 +155,7 @@ export default function App() {
         />
       );
     }
+    // preLoginView === "entry"
     return (
       <EntryPage
         onParticipantJoin={(accessToken, user, name, roleArg) => {
@@ -159,6 +163,7 @@ export default function App() {
           handleLogin(accessToken, user, name, roleArg);
         }}
         onResearcherLogin={() => setPreLoginView("login")}
+        onBack={() => setPreLoginView("welcome")}
         message={sessionExpiredMessage}
       />
     );
