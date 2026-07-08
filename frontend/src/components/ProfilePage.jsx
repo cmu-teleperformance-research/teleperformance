@@ -103,7 +103,7 @@ function SessionDetail({ session, onBack }) {
   );
 }
 
-export default function ProfilePage({ token, navProps, onBack }) {
+export default function ProfilePage({ token, role, navProps, onBack }) {
   const [user, setUser] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
@@ -185,9 +185,9 @@ export default function ProfilePage({ token, navProps, onBack }) {
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs — password tab only shown to researchers */}
         <div className="flex border-b border-gray-200">
-          {["sessions", "password"].map(t => (
+          {(role === "researcher" ? ["sessions", "password"] : ["sessions"]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -231,8 +231,8 @@ export default function ProfilePage({ token, navProps, onBack }) {
           </div>
         )}
 
-        {/* Change password tab */}
-        {tab === "password" && (
+        {/* Change password tab — researcher only */}
+        {tab === "password" && role === "researcher" && (
           <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-sm">
             <h3 className="font-semibold text-gray-800 mb-4">Change Password</h3>
             <form onSubmit={handleChangePassword} className="space-y-4">

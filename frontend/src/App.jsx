@@ -192,7 +192,7 @@ export default function App() {
   }
 
   if (view === "profile") {
-    return <ProfilePage token={token} navProps={navProps} onBack={() => setView("landing")} />;
+    return <ProfilePage token={token} role={role} navProps={navProps} onBack={() => setView("landing")} />;
   }
 
   if (view === "research") {
