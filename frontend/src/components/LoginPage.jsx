@@ -164,16 +164,24 @@ function RegisterForm({ onLogin, onSwitch }) {
   );
 }
 
-export default function LoginPage({ onLogin, message }) {
+export default function LoginPage({ onLogin, message, onBack }) {
   const [view, setView] = useState("login");
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 w-full max-w-sm space-y-6">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-700 transition"
+          >
+            ← Back
+          </button>
+        )}
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold text-gray-900">CSR Simulator</h1>
           <p className="text-sm text-gray-500">
-            {view === "login" ? "Sign in to continue" : "Create your account"}
+            {view === "login" ? "Researcher sign in" : "Create your account"}
           </p>
         </div>
 

@@ -50,6 +50,31 @@ class RegisterRequest(BaseModel):
     password: str
 
 
+class ParticipantJoinRequest(BaseModel):
+    pid: str
+
+
+@app.post("/participant/join")
+def participant_join(request: ParticipantJoinRequest, db: Session = Depends(get_db)):
+    pid = request.pid.strip()
+    if not pid:
+        raise HTTPException(status_code=400, detail="Participant ID cannot be empty")
+    user = db.query(models.User).filter(models.User.username == pid).first()
+    if not user:
+        # Hash a random secret so this account can never be accessed via password login
+        random_hash = hash_password(os.urandom(32).hex())
+        user = models.User(name=pid, username=pid, hashed_password=random_hash)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    return {
+        "access_token": create_access_token(user.id, user.username),
+        "token_type": "bearer",
+        "name": user.name,
+        "role": get_role(user.username),
+    }
+
+
 @app.post("/register")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(models.User).filter(models.User.username == request.username).first():

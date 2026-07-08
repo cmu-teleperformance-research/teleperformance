@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from "axios";
 import API_BASE_URL from "./config";
+import EntryPage from "./components/EntryPage";
 import LoginPage from "./components/LoginPage";
 import WelcomePage from "./components/WelcomePage";
 import ModeSelector from "./components/ModeSelector";
@@ -27,7 +28,7 @@ export default function App() {
   const [view, setView] = useState(() =>
     (localStorage.getItem("sessionId") && localStorage.getItem("sessionConfig")) ? "chat" : "landing"
   );
-  const [preLoginView, setPreLoginView] = useState("welcome");
+  const [preLoginView, setPreLoginView] = useState("entry");
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(null);
@@ -67,7 +68,7 @@ export default function App() {
     setView("landing");
     setSessionConfig(null);
     setReport(null);
-    setPreLoginView("login");
+    setPreLoginView("entry");
   }
 
   function handleAuthExpired() {
@@ -138,16 +139,26 @@ export default function App() {
   }
 
   if (!token) {
-    if (preLoginView === "welcome") {
-      return <WelcomePage onStart={() => setPreLoginView("login")} />;
+    if (preLoginView === "login") {
+      return (
+        <LoginPage
+          onLogin={(accessToken, user, name, roleArg) => {
+            console.log("[DEBUG LoginPage onLogin callback] user:", user, "roleArg received:", roleArg, "roleArg passed to handleLogin:", roleArg);
+            setSessionExpiredMessage(null);
+            handleLogin(accessToken, user, name, roleArg);
+          }}
+          message={sessionExpiredMessage}
+          onBack={() => setPreLoginView("entry")}
+        />
+      );
     }
     return (
-      <LoginPage
-        onLogin={(accessToken, user, name, roleArg) => {
-          console.log("[DEBUG LoginPage onLogin callback] user:", user, "roleArg received:", roleArg, "roleArg passed to handleLogin:", roleArg);
+      <EntryPage
+        onParticipantJoin={(accessToken, user, name, roleArg) => {
           setSessionExpiredMessage(null);
           handleLogin(accessToken, user, name, roleArg);
         }}
+        onResearcherLogin={() => setPreLoginView("login")}
         message={sessionExpiredMessage}
       />
     );
