@@ -49,7 +49,7 @@ export function HomeGuideContent() {
     <div className="space-y-10">
       <div className="space-y-3">
         <h1 className="text-3xl font-bold text-gray-900">
-          CSR De-escalation Training Simulator
+          CSR De-escalation Training Simulator (Deployment Test)
         </h1>
         <p className="text-base text-gray-600 leading-relaxed">
           In this simulation, you will interact with virtual customers and practice
