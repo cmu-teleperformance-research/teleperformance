@@ -1,0 +1,34 @@
+# --- Version control ---------------------------------------------------
+.git/
+.gitignore
+
+# --- Dependencies / build output (regenerated inside the image) --------
+node_modules/
+dist/
+build/
+
+# --- Secrets / local env ---------------------------------------------
+.env
+.env.local
+.env.*.local
+
+# --- Editor / IDE metadata ------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS metadata ------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# --- Logs ------------------------------------------------------------
+*.log
+npm-debug.log*
+
+# --- Docker build files (irrelevant inside the image) ------------------
+Dockerfile
+.dockerignore
+
+# --- Docs -------------------------------------------------------------
+README.md
