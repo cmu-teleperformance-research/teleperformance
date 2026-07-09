@@ -42,7 +42,7 @@ steps:
   #    aren't passed here (concurrency, memory, ingress, auth, env vars, etc.)
   #    are left untouched on the service, not reset to defaults.
   - id: deploy
-    name: gcr.io/google-cloud-sdk/slim
+    name: us-docker.pkg.dev/google.com/cloudsdktool/google-cloud-cli:slim
     entrypoint: gcloud
     args:
       - run
