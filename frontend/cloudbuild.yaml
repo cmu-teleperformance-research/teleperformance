@@ -1,0 +1,59 @@
+# Cloud Build config for the CSR Conflict Resolution Simulator frontend.
+#
+# Trigger scope: this file should only fire on changes under frontend/**
+# (configure that filter on the Cloud Build Trigger itself — see repo docs).
+#
+# Steps run with /workspace = repo root regardless of where this file lives,
+# so paths below are repo-root-relative even though this file sits in frontend/.
+
+substitutions:
+  _REGION: us-central1
+  _SERVICE_NAME: tp-virtualcustomer
+  _AR_REPO: cloud-run-source-deploy
+  _IMAGE_NAME: tp-virtualcustomer-frontend
+  _BACKEND_URL: https://tp-backend-408239274811.us-central1.run.app
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE_NAME}:$SHORT_SHA
+
+steps:
+  # 1. Build the image. VITE_API_URL is a build-time arg because Vite inlines
+  #    import.meta.env.VITE_* into the static JS bundle at `npm run build` —
+  #    it cannot be changed later via a Cloud Run runtime env var.
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=VITE_API_URL=${_BACKEND_URL}
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE_NAME}:$SHORT_SHA
+      - -f
+      - frontend/Dockerfile
+      - frontend
+
+  # 2. Push the image to Artifact Registry.
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE_NAME}:$SHORT_SHA
+
+  # 3. Deploy the new image to the existing Cloud Run service. Flags that
+  #    aren't passed here (concurrency, memory, ingress, auth, env vars, etc.)
+  #    are left untouched on the service, not reset to defaults.
+  - id: deploy
+    name: gcr.io/google-cloud-sdk/slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE_NAME}
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE_NAME}:$SHORT_SHA
+      - --region=${_REGION}
+      - --revision-suffix=$SHORT_SHA
+      - --quiet
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s
