@@ -16,14 +16,12 @@ const SCENARIO_LABELS = {
   refund_request: "Refund Request",
 };
 
-export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed, onSessionAssigned }) {
-  // scenario/persona/training start from sessionConfig if the caller already
-  // knows them (e.g. resuming a stored session), but for a fresh participant
-  // session none of these are known yet — the backend assigns them as part
-  // of the /start response below, not the caller.
-  const [scenario, setScenario] = useState(sessionConfig?.scenario ?? null);
-  const [persona, setPersona] = useState(sessionConfig?.persona ?? null);
-  const [training, setTraining] = useState(sessionConfig?.training ?? null);
+export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, initialSessionId, initialCustomerResponse, onSessionRestoreFailed }) {
+  // scenario/persona/training are always already known by the time this
+  // component mounts — either from InstructionsPage's /start call (fresh
+  // session, see initialSessionId/initialCustomerResponse below) or from
+  // sessionStorage (resuming a stored session after a page reload).
+  const { scenario, persona, training } = sessionConfig;
 
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
@@ -103,28 +101,6 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   useEffect(() => {
     const controller = new AbortController();
 
-    async function startFresh() {
-      // scenario/persona/training are only non-null here if the caller
-      // already assigned them (e.g. a future researcher-driven flow) — the
-      // participant flow sends none of these and lets the backend assign.
-      const response = await axios.post(
-        `${API_BASE_URL}/start`,
-        { scenario, persona, training },
-        { headers: authHeaders, signal: controller.signal }
-      );
-      setScenario(response.data.scenario);
-      setPersona(response.data.persona);
-      setTraining(response.data.training);
-      onSessionAssigned?.({
-        scenario: response.data.scenario,
-        persona: response.data.persona,
-        training: response.data.training,
-      });
-      setSessionId(response.data.session_id);
-      onSessionStarted(response.data.session_id);
-      setMessages([{ role: "assistant", content: response.data.customer_response }]);
-    }
-
     async function init() {
       setLoading(true);
       try {
@@ -139,30 +115,27 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             `${API_BASE_URL}/sessions/${storedSessionId}`,
             { headers: authHeaders, signal: controller.signal }
           );
-          setScenario(response.data.scenario);
-          setPersona(response.data.persona);
-          setTraining(response.data.training);
           setSessionId(Number(storedSessionId));
           setMessages(response.data.messages);
           return;
         }
-        await startFresh();
+
+        // Fresh session — InstructionsPage already called /start and
+        // resolved scenario/persona/mode before this component ever mounted,
+        // so there's no network call here: just adopt what it got.
+        setSessionId(initialSessionId);
+        setMessages([{ role: "assistant", content: initialCustomerResponse }]);
       } catch (err) {
         if (axios.isCancel(err)) return;
         if (err.response?.status === 401) { onAuthExpired(); return; }
 
         if (storedSessionId) {
+          // No /start fallback here anymore — bounce back to the landing
+          // flow so a fresh session can be assigned via InstructionsPage.
           onSessionRestoreFailed();
-          try {
-            await startFresh();
-          } catch (err2) {
-            if (axios.isCancel(err2)) return;
-            if (err2.response?.status === 401) { onAuthExpired(); return; }
-            setError("Failed to start session. Please try again.");
-          }
-        } else {
-          setError("Failed to start session. Please try again.");
+          return;
         }
+        setError("Failed to start session. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -170,9 +143,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
     init();
     return () => controller.abort();
-    // Runs once on mount — a fresh ChatWindow instance is one session, and
-    // scenario/persona/training are populated BY this effect (via /start),
-    // so depending on them here would refire it the moment they're set.
+    // Runs once on mount — a fresh ChatWindow instance is one session.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

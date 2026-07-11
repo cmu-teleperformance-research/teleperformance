@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import API_BASE_URL from "./config";
 import WelcomePage from "./components/WelcomePage";
+import InstructionsPage from "./components/InstructionsPage";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
 import ProfilePage from "./components/ProfilePage";
@@ -27,6 +28,16 @@ export default function ParticipantApp() {
   const [view, setView] = useState(() =>
     (sessionStorage.getItem("sessionId") && sessionStorage.getItem("sessionConfig")) ? "chat" : "landing"
   );
+  // Captured once at mount, not read live — distinguishes "resuming a
+  // session from a prior page load" from "just began a fresh one via
+  // InstructionsPage this page load" (handleBegin below writes a new
+  // sessionId to sessionStorage, but that must not retroactively make
+  // ChatWindow think this render is a resume).
+  const [storedSessionId] = useState(() => sessionStorage.getItem("sessionId"));
+  // The session InstructionsPage just started this page load (if any) —
+  // handed to ChatWindow directly so it never re-fetches what /start
+  // already returned.
+  const [pendingSession, setPendingSession] = useState(null);
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(null);
@@ -102,20 +113,26 @@ export default function ParticipantApp() {
     setSessionExpiredMessage("Reconnecting...");
   }
 
-  // The backend assigns scenario/persona/mode (see /start) — this just
-  // records what it decided so refreshes and /report can use the same
-  // values without re-asking the backend or letting the frontend choose.
-  function handleSessionAssigned(config) {
+  // InstructionsPage already called /start and got scenario/persona/mode
+  // plus the session itself assigned — this just records that result (for
+  // refreshes and /report) and hands the already-started session to
+  // ChatWindow so it never re-fetches what /start already returned.
+  function handleBegin({ scenario, persona, training, sessionId, customerResponse }) {
+    const config = { scenario, persona, training };
     sessionStorage.setItem("sessionConfig", JSON.stringify(config));
+    sessionStorage.setItem("sessionId", String(sessionId));
     setSessionConfig(config);
-  }
-
-  function handleSessionStarted(id) {
-    sessionStorage.setItem("sessionId", String(id));
+    setPendingSession({ sessionId, customerResponse });
+    setView("chat");
   }
 
   function handleSessionRestoreFailed() {
-    sessionStorage.removeItem("sessionId");
+    // ChatWindow no longer self-heals with its own /start call — bounce
+    // back to landing so a fresh session can be assigned via
+    // InstructionsPage instead.
+    clearStoredSession();
+    setSessionConfig(null);
+    setView("landing");
   }
 
   async function handleEndSession(messages, sessionId) {
@@ -180,8 +197,19 @@ export default function ParticipantApp() {
   if (view === "landing") {
     return (
       <WelcomePage
-        onStart={() => setView("chat")}
+        onStart={() => setView("instructions")}
         navProps={navProps}
+      />
+    );
+  }
+
+  if (view === "instructions") {
+    return (
+      <InstructionsPage
+        token={token}
+        navProps={navProps}
+        onBegin={handleBegin}
+        onAuthExpired={handleAuthExpired}
       />
     );
   }
@@ -237,22 +265,21 @@ export default function ParticipantApp() {
 
   return (
     <ChatWindow
-      // sessionConfig is null until the backend assigns scenario/persona/mode
-      // (see onSessionAssigned). Deliberately NOT keying off scenario/persona/
-      // training: a key that changes from "null-null-null" to real values
-      // after /start resolves would force React to unmount+remount this
-      // component, aborting the in-flight /start request via its
-      // AbortController cleanup. There's only one entry point into chat now,
-      // so a stable key is sufficient.
+      // Stable key, deliberately not derived from scenario/persona/training:
+      // both are already resolved by the time ChatWindow renders now (via
+      // InstructionsPage or a resumed sessionConfig), so there's no
+      // null-to-real transition here to worry about — but keeping this
+      // stable regardless, since ChatWindow's own /start-era AbortController
+      // history is exactly why a key change would abort in-flight requests.
       key="active-session"
       sessionConfig={sessionConfig}
       token={token}
       navProps={navProps}
       onEndSession={handleEndSession}
       onAuthExpired={handleAuthExpired}
-      onSessionAssigned={handleSessionAssigned}
-      storedSessionId={sessionStorage.getItem("sessionId")}
-      onSessionStarted={handleSessionStarted}
+      storedSessionId={storedSessionId}
+      initialSessionId={pendingSession?.sessionId}
+      initialCustomerResponse={pendingSession?.customerResponse}
       onSessionRestoreFailed={handleSessionRestoreFailed}
     />
   );
