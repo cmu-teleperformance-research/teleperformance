@@ -19,9 +19,9 @@ COPY . .
 # runtime — unlike the backend, this can't be changed by setting an
 # env var on the Cloud Run service after deploy. Accept it as a build
 # arg so CI/CD can point the frontend at the tp-backend Cloud Run URL.
-# Falls back to the current Render backend URL if not provided, matching
+# Falls back to the production Cloud Run backend if not provided, matching
 # frontend/src/config.js's existing default.
-ARG VITE_API_URL=https://claude-code-tutorial.onrender.com
+ARG VITE_API_URL=https://tp-backend-408239274811.us-central1.run.app
 ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build
