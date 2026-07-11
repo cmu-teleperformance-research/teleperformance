@@ -52,10 +52,17 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
-    except (JWTError, TypeError, ValueError):
+    except (JWTError, TypeError, ValueError) as e:
+        # TEMPORARY DEBUG LOGGING — remove once /start 401 is diagnosed
+        print(f"[DEBUG get_current_user] jwt.decode failed: {type(e).__name__}: {e}")
         raise credentials_exception
 
+    # TEMPORARY DEBUG LOGGING — remove once /start 401 is diagnosed
+    print(f"[DEBUG get_current_user] decoded sub={payload.get('sub')!r} -> user_id={user_id}")
+
     user = db.query(models.User).filter(models.User.id == user_id).first()
+    # TEMPORARY DEBUG LOGGING — remove once /start 401 is diagnosed
+    print(f"[DEBUG get_current_user] lookup for id={user_id} found={('yes: ' + user.username) if user else 'NO MATCHING ROW'}")
     if user is None:
         raise credentials_exception
     return user
