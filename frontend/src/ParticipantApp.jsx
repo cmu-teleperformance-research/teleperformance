@@ -173,7 +173,8 @@ export default function ParticipantApp() {
   const navProps = {
     displayName: displayName || username,
     onProfile: () => setView("profile"),
-    onLogout: handleLogout,
+    // Sign out is intentionally not wired here — participants are
+    // auto-provisioned by PID, there's no session to sign out of.
   };
 
   if (view === "landing") {
