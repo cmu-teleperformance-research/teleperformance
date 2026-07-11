@@ -115,7 +115,7 @@ export default function ProfilePage({ token, role, navProps, onBack }) {
   const [pwSuccess, setPwSuccess] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
 
-  const headers = { Authorization: `Bearer ${token}` };
+  const headers = { "X-App-Token": token };
 
   useEffect(() => {
     axios.get(`${API_BASE_URL}/me`, { headers }).then(r => setUser(r.data));

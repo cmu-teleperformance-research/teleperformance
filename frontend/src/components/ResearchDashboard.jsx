@@ -133,7 +133,7 @@ export default function ResearchDashboard({ token, navProps, onBack }) {
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
-  const headers = { Authorization: `Bearer ${token}` };
+  const headers = { "X-App-Token": token };
 
   useEffect(() => {
     axios.get(`${API_BASE_URL}/research/sessions`, { headers })

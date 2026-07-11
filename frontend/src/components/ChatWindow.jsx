@@ -46,7 +46,9 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
-  const authHeaders = { Authorization: `Bearer ${token}` };
+  // App auth rides on a custom header, not Authorization — that header is
+  // reserved for Cloud Run's own "Require authentication" identity check.
+  const authHeaders = { "X-App-Token": token };
 
   useEffect(() => {
     function onMouseMove(e) {
@@ -173,7 +175,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           headers: {
             "Content-Type": "application/json",
             "Accept": "text/plain",
-            Authorization: `Bearer ${token}`,
+            "X-App-Token": token,
           },
           cache: "no-store",
           body: JSON.stringify({

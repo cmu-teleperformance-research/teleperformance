@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 import bcrypt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
 from database import get_db
 import models
@@ -12,7 +12,11 @@ SECRET_KEY = os.getenv("SECRET_KEY", "changeme-use-a-real-secret-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+# App-level auth travels on its own header, not Authorization — Cloud Run's
+# "Require authentication" setting reserves Authorization for Google-signed
+# identity tokens at the infra layer, and a browser tool injecting one of
+# those clobbers the app's own JWT if they share a header.
+app_token_scheme = APIKeyHeader(name="X-App-Token", auto_error=False)
 
 RESEARCHER_USERNAMES = {
     "dishakew",
@@ -43,26 +47,20 @@ def create_access_token(user_id: int, username: str) -> str:
     return jwt.encode({"sub": str(user_id), "username": username, "role": role, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
+def get_current_user(token: str = Depends(app_token_scheme), db: Session = Depends(get_db)) -> models.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid or expired token",
-        headers={"WWW-Authenticate": "Bearer"},
     )
+    if not token:
+        raise credentials_exception
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
-    except (JWTError, TypeError, ValueError) as e:
-        # TEMPORARY DEBUG LOGGING — remove once /start 401 is diagnosed
-        print(f"[DEBUG get_current_user] jwt.decode failed: {type(e).__name__}: {e}")
+    except (JWTError, TypeError, ValueError):
         raise credentials_exception
 
-    # TEMPORARY DEBUG LOGGING — remove once /start 401 is diagnosed
-    print(f"[DEBUG get_current_user] decoded sub={payload.get('sub')!r} -> user_id={user_id}")
-
     user = db.query(models.User).filter(models.User.id == user_id).first()
-    # TEMPORARY DEBUG LOGGING — remove once /start 401 is diagnosed
-    print(f"[DEBUG get_current_user] lookup for id={user_id} found={('yes: ' + user.username) if user else 'NO MATCHING ROW'}")
     if user is None:
         raise credentials_exception
     return user

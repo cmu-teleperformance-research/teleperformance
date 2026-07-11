@@ -133,7 +133,7 @@ export default function ParticipantApp() {
           history: messages,
           session_id: sessionId,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { "X-App-Token": token } }
       );
       setReport(response.data);
     } catch (err) {
