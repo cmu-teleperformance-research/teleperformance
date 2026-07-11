@@ -27,7 +27,7 @@ const SCENARIO_INSTRUCTIONS = {
   baggage_delay:
     "You'll be speaking with a customer whose checked bag has been missing for two days. Practice de-escalating their frustration while tracing the bag and arranging appropriate interim expenses.",
   refund_request:
-    "You'll be speaking with a customer requesting a refund for a failed or incorrect transaction. Practice de-escalating their urgency while setting clear expectations toward a resolution.",
+    "You'll be speaking with a customer requesting a refund for a defected item. Practice de-escalating their urgency while setting clear expectations toward a resolution.",
 };
 
 export default function InstructionsPage({ token, navProps, onBegin, onAuthExpired }) {
