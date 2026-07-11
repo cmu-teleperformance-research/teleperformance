@@ -86,10 +86,10 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     console.log("📊 CURRENT MESSAGES:", messages);
   }, [messages]);
 
-  // ADD: Persist messages to localStorage per session
+  // ADD: Persist messages to sessionStorage per session
   useEffect(() => {
     if (sessionId && messages.length > 0) {
-      localStorage.setItem(`messages_${sessionId}`, JSON.stringify(messages));
+      sessionStorage.setItem(`messages_${sessionId}`, JSON.stringify(messages));
     }
   }, [messages, sessionId]);
 
@@ -112,7 +112,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       try {
         if (storedSessionId) {
           // ADD: Show cached messages instantly before backend responds
-          const cached = localStorage.getItem(`messages_${storedSessionId}`);
+          const cached = sessionStorage.getItem(`messages_${storedSessionId}`);
           if (cached) {
             try { setMessages(JSON.parse(cached)); } catch {}
           }
@@ -381,7 +381,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           </button>
           <button
             onClick={() => {
-              if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
+              if (sessionId) sessionStorage.removeItem(`messages_${sessionId}`);
               onEndSession(messages, sessionId);
             }}
             className="text-sm text-gray-500 hover:text-red-500 transition"

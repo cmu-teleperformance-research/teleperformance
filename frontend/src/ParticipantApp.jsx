@@ -9,24 +9,24 @@ import ProfilePage from "./components/ProfilePage";
 import NavBar from "./components/NavBar";
 
 export default function ParticipantApp() {
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
-  const [username, setUsername] = useState(() => localStorage.getItem("username"));
-  const [displayName, setDisplayName] = useState(() => localStorage.getItem("displayName"));
-  const [role, setRole] = useState(() => localStorage.getItem("role") || "participant");
+  const [token, setToken] = useState(() => sessionStorage.getItem("token"));
+  const [username, setUsername] = useState(() => sessionStorage.getItem("username"));
+  const [displayName, setDisplayName] = useState(() => sessionStorage.getItem("displayName"));
+  const [role, setRole] = useState(() => sessionStorage.getItem("role") || "participant");
   const [provisionError, setProvisionError] = useState(null);
   const provisioning = useRef(false);
 
   const [sessionConfig, setSessionConfig] = useState(() => {
     try {
-      const id = localStorage.getItem("sessionId");
-      const raw = localStorage.getItem("sessionConfig");
+      const id = sessionStorage.getItem("sessionId");
+      const raw = sessionStorage.getItem("sessionConfig");
       return (id && raw) ? JSON.parse(raw) : null;
     } catch {
       return null;
     }
   });
   const [view, setView] = useState(() =>
-    (localStorage.getItem("sessionId") && localStorage.getItem("sessionConfig")) ? "chat" : "landing"
+    (sessionStorage.getItem("sessionId") && sessionStorage.getItem("sessionConfig")) ? "chat" : "landing"
   );
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
@@ -35,7 +35,7 @@ export default function ParticipantApp() {
 
   // Auto-provision a participant session on first load. Refreshing the page
   // does not re-run this because `token` is already populated from
-  // localStorage by the time this effect checks it.
+  // sessionStorage by the time this effect checks it.
   useEffect(() => {
     if (token || provisioning.current) return;
     provisioning.current = true;
@@ -47,15 +47,15 @@ export default function ParticipantApp() {
         // Reuse the existing PID (e.g. after a token expiry) rather than
         // minting a new one, so a participant's identity survives across
         // the same browser session even once the JWT itself has expired.
-        const existingPid = urlPid ? urlPid.trim() : localStorage.getItem("username");
+        const existingPid = urlPid ? urlPid.trim() : sessionStorage.getItem("username");
         const res = existingPid
           ? await axios.post(`${API_BASE_URL}/participant/join`, { pid: existingPid })
           : await axios.post(`${API_BASE_URL}/participant/new`);
 
-        localStorage.setItem("token", res.data.access_token);
-        localStorage.setItem("username", res.data.pid || res.data.name);
-        localStorage.setItem("displayName", res.data.name);
-        localStorage.setItem("role", res.data.role);
+        sessionStorage.setItem("token", res.data.access_token);
+        sessionStorage.setItem("username", res.data.pid || res.data.name);
+        sessionStorage.setItem("displayName", res.data.name);
+        sessionStorage.setItem("role", res.data.role);
         setToken(res.data.access_token);
         setUsername(res.data.pid || res.data.name);
         setDisplayName(res.data.name);
@@ -71,17 +71,17 @@ export default function ParticipantApp() {
   }, [token]);
 
   function clearStoredSession() {
-    const sessionId = localStorage.getItem("sessionId");
-    if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
-    localStorage.removeItem("sessionId");
-    localStorage.removeItem("sessionConfig");
+    const sessionId = sessionStorage.getItem("sessionId");
+    if (sessionId) sessionStorage.removeItem(`messages_${sessionId}`);
+    sessionStorage.removeItem("sessionId");
+    sessionStorage.removeItem("sessionConfig");
   }
 
   function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("displayName");
-    localStorage.removeItem("role");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("displayName");
+    sessionStorage.removeItem("role");
     clearStoredSession();
     setToken(null);
     setUsername(null);
@@ -96,7 +96,7 @@ export default function ParticipantApp() {
     // Only clear the token, not the PID (username/displayName/role) — the
     // provisioning effect will silently re-join with the same PID to get a
     // fresh token, since a participant's identity has no password to re-enter.
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     setToken(null);
     setSessionConfig(null);
     setReport(null);
@@ -105,17 +105,17 @@ export default function ParticipantApp() {
 
   function handleModeSelect(config) {
     clearStoredSession();
-    localStorage.setItem("sessionConfig", JSON.stringify(config));
+    sessionStorage.setItem("sessionConfig", JSON.stringify(config));
     setSessionConfig(config);
     setView("chat");
   }
 
   function handleSessionStarted(id) {
-    localStorage.setItem("sessionId", String(id));
+    sessionStorage.setItem("sessionId", String(id));
   }
 
   function handleSessionRestoreFailed() {
-    localStorage.removeItem("sessionId");
+    sessionStorage.removeItem("sessionId");
   }
 
   async function handleEndSession(messages, sessionId) {
@@ -247,7 +247,7 @@ export default function ParticipantApp() {
       navProps={navProps}
       onEndSession={handleEndSession}
       onAuthExpired={handleAuthExpired}
-      storedSessionId={localStorage.getItem("sessionId")}
+      storedSessionId={sessionStorage.getItem("sessionId")}
       onSessionStarted={handleSessionStarted}
       onSessionRestoreFailed={handleSessionRestoreFailed}
     />
