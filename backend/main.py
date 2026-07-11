@@ -1,7 +1,6 @@
 # Deployment test - backend CI/CD verification
 import json as json_lib
 import os
-import random
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -40,13 +39,6 @@ SCENARIO_LABELS = {
     "loan_delay": "Loan Delay",
     "refund_request": "Refund Request",
 }
-
-# Scenarios the backend will randomly assign when a participant starts a
-# session without requesting a specific scenario (the participant flow never
-# does). Loan Delay stays registered in VALID_SCENARIOS/prompts/workflows for
-# historical sessions, but is intentionally excluded from new assignment.
-PARTICIPANT_ASSIGNABLE_SCENARIOS = ["flight_cancellation", "baggage_delay", "refund_request"]
-ASSIGNED_PARTICIPANT_PERSONA = "angry"
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -344,18 +336,12 @@ class ChatResponse(BaseModel):
     feedback: FeedbackModel | None = None
     session_id: int | None = None
     user_message_id: int | None = None
-    scenario: str | None = None
-    persona: str | None = None
-    training: bool | None = None
 
 
 class StartRequest(BaseModel):
-    # Optional: the participant flow never sends these and lets the backend
-    # assign them, so balanced randomization or predefined experimental
-    # assignment can live in one place instead of the client.
-    scenario: str | None = None
-    persona: str | None = None
-    training: bool | None = None
+    scenario: str
+    persona: str
+    training: bool
 
 
 @app.post("/start", response_model=ChatResponse)
@@ -364,22 +350,18 @@ async def start(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    scenario = request.scenario or random.choice(PARTICIPANT_ASSIGNABLE_SCENARIOS)
-    persona = request.persona or ASSIGNED_PARTICIPANT_PERSONA
-    training = request.training if request.training is not None else random.choice([True, False])
-
-    if scenario not in VALID_SCENARIOS:
+    if request.scenario not in VALID_SCENARIOS:
         raise HTTPException(status_code=400, detail=f"scenario must be one of {VALID_SCENARIOS}")
-    if persona not in VALID_PERSONAS:
+    if request.persona not in VALID_PERSONAS:
         raise HTTPException(status_code=400, detail=f"persona must be one of {VALID_PERSONAS}")
 
-    result = start_conversation(scenario, persona, training)
+    result = start_conversation(request.scenario, request.persona, request.training)
 
     session_record = models.SessionRecord(
         user_id=current_user.id,
-        scenario=scenario,
-        persona=persona,
-        training=training,
+        scenario=request.scenario,
+        persona=request.persona,
+        training=request.training,
     )
     db.add(session_record)
     db.commit()
@@ -393,7 +375,7 @@ async def start(
     ))
     db.commit()
 
-    return ChatResponse(**result, session_id=session_record.id, scenario=scenario, persona=persona, training=training)
+    return ChatResponse(**result, session_id=session_record.id)
 
 
 @app.post("/chat", response_model=ChatResponse)

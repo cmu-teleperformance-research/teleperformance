@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import API_BASE_URL from "./config";
 import WelcomePage from "./components/WelcomePage";
+import ModeSelector from "./components/ModeSelector";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
 import ProfilePage from "./components/ProfilePage";
@@ -102,12 +103,11 @@ export default function ParticipantApp() {
     setSessionExpiredMessage("Reconnecting...");
   }
 
-  // The backend assigns scenario/persona/mode (see /start) — this just
-  // records what it decided so refreshes and /report can use the same
-  // values without re-asking the backend or letting the frontend choose.
-  function handleSessionAssigned(config) {
+  function handleModeSelect(config) {
+    clearStoredSession();
     sessionStorage.setItem("sessionConfig", JSON.stringify(config));
     setSessionConfig(config);
+    setView("chat");
   }
 
   function handleSessionStarted(id) {
@@ -180,10 +180,14 @@ export default function ParticipantApp() {
   if (view === "landing") {
     return (
       <WelcomePage
-        onStart={() => setView("chat")}
+        onStart={() => setView("mode-select")}
         navProps={navProps}
       />
     );
+  }
+
+  if (view === "mode-select") {
+    return <ModeSelector onSelect={handleModeSelect} navProps={navProps} />;
   }
 
   if (view === "profile") {
@@ -237,16 +241,12 @@ export default function ParticipantApp() {
 
   return (
     <ChatWindow
-      // sessionConfig is null until the backend assigns scenario/persona/mode
-      // (see onSessionAssigned) — there's only one entry point into chat now,
-      // so a stable key is enough; no need to key off scenario/persona/mode.
-      key="active-session"
+      key={`${sessionConfig.scenario}-${sessionConfig.persona}-${sessionConfig.training}`}
       sessionConfig={sessionConfig}
       token={token}
       navProps={navProps}
       onEndSession={handleEndSession}
       onAuthExpired={handleAuthExpired}
-      onSessionAssigned={handleSessionAssigned}
       storedSessionId={sessionStorage.getItem("sessionId")}
       onSessionStarted={handleSessionStarted}
       onSessionRestoreFailed={handleSessionRestoreFailed}

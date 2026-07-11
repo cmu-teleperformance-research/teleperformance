@@ -13,17 +13,10 @@ const API_URL = `${API_BASE_URL}/chat`;
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
   baggage_delay: "Lost Baggage",
-  refund_request: "Refund Request",
 };
 
-export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed, onSessionAssigned }) {
-  // scenario/persona/training start from sessionConfig if the caller already
-  // knows them (e.g. resuming a stored session), but for a fresh participant
-  // session none of these are known yet — the backend assigns them as part
-  // of the /start response below, not the caller.
-  const [scenario, setScenario] = useState(sessionConfig?.scenario ?? null);
-  const [persona, setPersona] = useState(sessionConfig?.persona ?? null);
-  const [training, setTraining] = useState(sessionConfig?.training ?? null);
+export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed }) {
+  const { scenario, persona, training, scenarioLabel } = sessionConfig;
 
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
@@ -104,22 +97,11 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     const controller = new AbortController();
 
     async function startFresh() {
-      // scenario/persona/training are only non-null here if the caller
-      // already assigned them (e.g. a future researcher-driven flow) — the
-      // participant flow sends none of these and lets the backend assign.
       const response = await axios.post(
         `${API_BASE_URL}/start`,
         { scenario, persona, training },
         { headers: authHeaders, signal: controller.signal }
       );
-      setScenario(response.data.scenario);
-      setPersona(response.data.persona);
-      setTraining(response.data.training);
-      onSessionAssigned?.({
-        scenario: response.data.scenario,
-        persona: response.data.persona,
-        training: response.data.training,
-      });
       setSessionId(response.data.session_id);
       onSessionStarted(response.data.session_id);
       setMessages([{ role: "assistant", content: response.data.customer_response }]);
@@ -139,9 +121,6 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             `${API_BASE_URL}/sessions/${storedSessionId}`,
             { headers: authHeaders, signal: controller.signal }
           );
-          setScenario(response.data.scenario);
-          setPersona(response.data.persona);
-          setTraining(response.data.training);
           setSessionId(Number(storedSessionId));
           setMessages(response.data.messages);
           return;
@@ -170,9 +149,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
     init();
     return () => controller.abort();
-    // Runs once on mount — a fresh ChatWindow instance is one session.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [scenario, persona, training]);
 
   async function sendMessage() {
     const trimmed = input.trim();
@@ -386,9 +363,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   }
 
   const modeLabel = training ? "Training" : "Evaluation";
-  const headerLabel = scenario
-    ? `${modeLabel} — ${SCENARIO_LABELS[scenario] || scenario}`
-    : "Starting session...";
+  const headerLabel = `${modeLabel} — ${scenarioLabel || SCENARIO_LABELS[scenario]}`;
 
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
