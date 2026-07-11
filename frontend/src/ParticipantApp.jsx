@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import API_BASE_URL from "./config";
 import WelcomePage from "./components/WelcomePage";
-import ModeSelector from "./components/ModeSelector";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
 import ProfilePage from "./components/ProfilePage";
@@ -103,11 +102,12 @@ export default function ParticipantApp() {
     setSessionExpiredMessage("Reconnecting...");
   }
 
-  function handleModeSelect(config) {
-    clearStoredSession();
+  // The backend assigns scenario/persona/mode (see /start) — this just
+  // records what it decided so refreshes and /report can use the same
+  // values without re-asking the backend or letting the frontend choose.
+  function handleSessionAssigned(config) {
     sessionStorage.setItem("sessionConfig", JSON.stringify(config));
     setSessionConfig(config);
-    setView("chat");
   }
 
   function handleSessionStarted(id) {
@@ -180,14 +180,10 @@ export default function ParticipantApp() {
   if (view === "landing") {
     return (
       <WelcomePage
-        onStart={() => setView("mode-select")}
+        onStart={() => setView("chat")}
         navProps={navProps}
       />
     );
-  }
-
-  if (view === "mode-select") {
-    return <ModeSelector onSelect={handleModeSelect} navProps={navProps} />;
   }
 
   if (view === "profile") {
@@ -241,12 +237,20 @@ export default function ParticipantApp() {
 
   return (
     <ChatWindow
-      key={`${sessionConfig.scenario}-${sessionConfig.persona}-${sessionConfig.training}`}
+      // sessionConfig is null until the backend assigns scenario/persona/mode
+      // (see onSessionAssigned). Deliberately NOT keying off scenario/persona/
+      // training: a key that changes from "null-null-null" to real values
+      // after /start resolves would force React to unmount+remount this
+      // component, aborting the in-flight /start request via its
+      // AbortController cleanup. There's only one entry point into chat now,
+      // so a stable key is sufficient.
+      key="active-session"
       sessionConfig={sessionConfig}
       token={token}
       navProps={navProps}
       onEndSession={handleEndSession}
       onAuthExpired={handleAuthExpired}
+      onSessionAssigned={handleSessionAssigned}
       storedSessionId={sessionStorage.getItem("sessionId")}
       onSessionStarted={handleSessionStarted}
       onSessionRestoreFailed={handleSessionRestoreFailed}

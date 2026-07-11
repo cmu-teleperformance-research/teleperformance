@@ -18,6 +18,11 @@ export default function WorkflowPortal({
   const [workflowLoading, setWorkflowLoading] = useState(true);
 
   useEffect(() => {
+    // scenario is null until the backend assigns it (see ChatWindow's
+    // /start handling) — skip the fetch until there's a real value instead
+    // of requesting /workflow/null. workflowLoading stays true (its initial
+    // value) in the meantime, so the loading spinner below covers this gap.
+    if (!scenario) return;
     setWorkflowLoading(true);
     setWorkflow(null);
     fetch(`${API_BASE_URL}/workflow/${scenario}`)
