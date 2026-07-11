@@ -27,11 +27,6 @@ const DOMAINS = [
     available: true,
     scenarios: [
       {
-        id: "loan_delay",
-        label: "Loan Delay",
-        description: "Assist a customer whose loan approval or disbursement has been delayed. Handle frustration and provide clear next steps.",
-      },
-      {
         id: "refund_request",
         label: "Refund Request",
         description: "Help a customer requesting a refund for a failed or incorrect financial transaction. Address urgency and set expectations.",
@@ -134,11 +129,7 @@ export const AVERY_COLLINS_PERSONA = {
 
 // Scenario-specific persona description overrides — shown in the persona selector UI
 // when a particular scenario + persona combination has a distinct character
-const SCENARIO_PERSONA_OVERRIDES = {
-  loan_delay: {
-    demanding: "Calm but firm. Knows what they want and pushes hard for it.",
-  },
-};
+const SCENARIO_PERSONA_OVERRIDES = {};
 
 // ─── STEP COMPONENTS ─────────────────────────────────────────────────────────
 function StepHeader({ step, total, label }) {
