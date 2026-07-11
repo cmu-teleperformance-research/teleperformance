@@ -28,11 +28,12 @@ export default function ParticipantApp() {
   const [view, setView] = useState(() =>
     (sessionStorage.getItem("sessionId") && sessionStorage.getItem("sessionConfig")) ? "chat" : "landing"
   );
-  // Captured once at mount, not read live — distinguishes "resuming a
-  // session from a prior page load" from "just began a fresh one via
-  // InstructionsPage this page load" (handleBegin below writes a new
-  // sessionId to sessionStorage, but that must not retroactively make
-  // ChatWindow think this render is a resume).
+  // Captured once at mount, not read live — reflects only whether THIS page
+  // load started directly into an already-active session. It goes stale the
+  // moment a *later* session is begun via handleBegin within the same tab
+  // (that later session's id gets written to sessionStorage, but this value
+  // never updates) — so it must never be trusted on its own. See the
+  // pendingSession check where it's passed to ChatWindow below.
   const [storedSessionId] = useState(() => sessionStorage.getItem("sessionId"));
   // The session InstructionsPage just started this page load (if any) —
   // handed to ChatWindow directly so it never re-fetches what /start
@@ -277,7 +278,13 @@ export default function ParticipantApp() {
       navProps={navProps}
       onEndSession={handleEndSession}
       onAuthExpired={handleAuthExpired}
-      storedSessionId={storedSessionId}
+      // storedSessionId is frozen at whatever sessionStorage held when this
+      // tab's very first page load happened — it does NOT track later
+      // sessions started via handleBegin within the same tab. Whenever a
+      // session was just begun this render (pendingSession is set), that's
+      // always the fresh, correct data — ignore the frozen value entirely so
+      // ChatWindow can't mistake it for a stale session to resume.
+      storedSessionId={pendingSession ? null : storedSessionId}
       initialSessionId={pendingSession?.sessionId}
       initialCustomerResponse={pendingSession?.customerResponse}
       onSessionRestoreFailed={handleSessionRestoreFailed}
