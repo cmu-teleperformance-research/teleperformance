@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from typing import Optional, Dict, Any
 from pydantic import BaseModel
+import re
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from services.llm_service import call_llm, start_conversation, generate_report, stream_llm_response, run_feedback_pipeline
@@ -53,6 +55,44 @@ class RegisterRequest(BaseModel):
 
 class ParticipantJoinRequest(BaseModel):
     pid: str
+
+
+def _next_participant_pid(db: Session) -> str:
+    existing = db.query(models.User.username).filter(models.User.username.like("P%")).all()
+    max_n = 0
+    for (uname,) in existing:
+        m = re.fullmatch(r"P(\d+)", uname)
+        if m:
+            max_n = max(max_n, int(m.group(1)))
+    return f"P{max_n + 1:03d}"
+
+
+@app.post("/participant/new")
+def participant_new(db: Session = Depends(get_db)):
+    """Auto-provision a new participant with a server-generated PID.
+
+    Retries on username collision (e.g. concurrent requests racing for the
+    same next number) since `username` is uniquely constrained.
+    """
+    for _ in range(5):
+        pid = _next_participant_pid(db)
+        random_hash = hash_password(os.urandom(32).hex())
+        user = models.User(name=pid, username=pid, hashed_password=random_hash)
+        db.add(user)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            continue
+        db.refresh(user)
+        return {
+            "access_token": create_access_token(user.id, user.username),
+            "token_type": "bearer",
+            "pid": user.username,
+            "name": user.name,
+            "role": get_role(user.username),
+        }
+    raise HTTPException(status_code=500, detail="Could not allocate a participant ID, please retry")
 
 
 @app.post("/participant/join")
