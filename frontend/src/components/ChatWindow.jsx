@@ -493,9 +493,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           </div>
 
           {training && (
-            <div className="w-72 bg-white border-l overflow-y-auto">
-              <FeedbackPanel feedback={activeFeedback} feedbackLoading={feedbackLoading} />
-            </div>
+            <FeedbackPanel feedback={activeFeedback} feedbackLoading={feedbackLoading} />
           )}
         </div>
       </div>
