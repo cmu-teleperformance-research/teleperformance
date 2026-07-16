@@ -87,11 +87,11 @@ function TaskCompletionFeedbackCard({ taskFeedback }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <span className={`text-xs font-semibold text-gray-500 uppercase tracking-wide ${SEGMENT_TYPE_STYLES.task.tagClass}`}>
           Task completion feedback
         </span>
       </div>
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2.5">
+      <div className={`rounded-lg border p-3 space-y-2.5 border-gray-200 ${SEGMENT_TYPE_STYLES.task.panelClass}`}>
         <p className={`w-fit p-1 text-xs font-semibold uppercase tracking-wide ${SIGNAL_COLORS[rating]}`}>
           {rating}
         </p>
@@ -110,11 +110,11 @@ function CsrResponseFeedbackCard({ emotionFeedback }) {
   return (
     <div className="space-y-3 border-t border-gray-100 pt-4">
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <span className={`text-xs font-semibold text-gray-500 uppercase tracking-wide ${SEGMENT_TYPE_STYLES.emotion.tagClass}`}>
           Emotion feedback
         </span>
       </div>
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2.5">
+      <div className={`rounded-lg border p-3 space-y-2.5 border-gray-200 ${SEGMENT_TYPE_STYLES.emotion.panelClass}`}>
         <p className={`w-fit p-1 text-xs font-semibold uppercase tracking-wide ${SIGNAL_COLORS[rating]}`}>
           {rating}
         </p>
@@ -129,16 +129,19 @@ const SEGMENT_TYPE_STYLES = {
     label: "Emotion",
     tagClass: "text-cyan-800 bg-cyan-50 border-cyan-300",
     highlightClass: "bg-cyan-200/35 hover:bg-cyan-200",
+    panelClass: "bg-cyan-50 border-cyan-300",
   },
   task: {
     label: "Task",
     tagClass: "text-indigo-800 bg-indigo-50 border-indigo-300",
     highlightClass: "bg-indigo-200/35 hover:bg-indigo-200",
+    panelClass: "bg-indigo-50 border-indigo-300",
   },
   neutral: {
     label: "Neutral",
     tagClass: "text-blue-500 bg-blue-50 border-blue-200",
     highlightClass: "bg-blue-100/35 hover:bg-blue-100",
+    panelClass: "bg-blue-50 border-blue-200",
   },
 };
 
