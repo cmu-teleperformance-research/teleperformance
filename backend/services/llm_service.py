@@ -314,7 +314,8 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
         input_parts.append(f"\nRecent prior turns:\n{history_text}")
     evaluator_input = "\n".join(input_parts)
 
-    evaluator_system = load_evaluation_prompt("single_evaluator")
+    # evaluator_system = load_evaluation_prompt("single_evaluator")
+    evaluator_system = load_evaluation_prompt("demo_evaluator")
     t_api = time.perf_counter()
     try:
         resp = client.chat.completions.create(
@@ -368,19 +369,24 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
     print(json.dumps(output, indent=2))
     print("========================================================")
 
-    return {
-        "signals": {
-            "empathyFirst": output["empathy_score"]["label"],
-            "activeListening": output["active_listening_score"]["label"],
-            "turn_stage": output.get("turn_stage", ""),
-        },
-        "nextStep": output["learn_from_this_practice"]["focus"],
-        "analysis": {
-            "empathy_score": output["empathy_score"],
-            "active_listening_score": output["active_listening_score"],
-            "learn_from_this_practice": output["learn_from_this_practice"],
-        },
-    }
+
+    # --- Demo evaluator results ---
+    return output
+
+
+    # return {
+    #     "signals": {
+    #         "empathyFirst": output["empathy_score"]["label"],
+    #         "activeListening": output["active_listening_score"]["label"],
+    #         "turn_stage": output.get("turn_stage", ""),
+    #     },
+    #     "nextStep": output["learn_from_this_practice"]["focus"],
+    #     "analysis": {
+    #         "empathy_score": output["empathy_score"],
+    #         "active_listening_score": output["active_listening_score"],
+    #         "learn_from_this_practice": output["learn_from_this_practice"],
+    #     },
+    # }
 
 
 # --- Evaluation ---
@@ -451,16 +457,17 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
         customer_msg, prior_history = _extract_latest_customer_utterance(history)
         t_pipeline_start = time.perf_counter()
         feedback = _run_evaluation_pipeline(customer_msg, message, prior_history)
-        t_enforce_start = time.perf_counter()
-        _enforce_feedback_consistency(feedback, message)
-        t_enforce_end = time.perf_counter()
+        #  TODO: uncomment and edit enforcement for production
+        # t_enforce_start = time.perf_counter()
+        # _enforce_feedback_consistency(feedback, message)
+        # t_enforce_end = time.perf_counter()
 
         print("\n================ FINAL FEEDBACK ========================")
         print(json.dumps(feedback, indent=2))
         print("========================================================")
 
-        _log_latency("enforcement", {"time": f"{t_enforce_end - t_enforce_start:.2f}s"})
-        _log_latency("evaluation_pipeline_total", {"time": f"{t_enforce_end - t_pipeline_start:.2f}s"})
+        # _log_latency("enforcement", {"time": f"{t_enforce_end - t_enforce_start:.2f}s"})
+        # _log_latency("evaluation_pipeline_total", {"time": f"{t_enforce_end - t_pipeline_start:.2f}s"})
 
         if DEBUG_PROMPTS:
             print("=== FINAL FEEDBACK ===")

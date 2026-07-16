@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 
-const DEFAULT_WIDTH = 288;
+const DEFAULT_WIDTH = 388;
 const MIN_WIDTH = 220;
-const MAX_WIDTH = 560;
+const MAX_WIDTH = 900;
 
 const SIGNAL_COLORS = {
   "Strong": "bg-green-100 text-green-700",
   "Developing": "bg-yellow-100 text-yellow-700",
   "Needs Work": "bg-red-100 text-red-600",
+  "Adequate": "bg-amber-100 text-amber-700",
 };
 
 const STAGE_LABELS = {
@@ -76,7 +77,167 @@ export function TurnFeedbackCard({ feedback }) {
   );
 }
 
+
+
+function TaskCompletionFeedbackCard({ taskFeedback }) {
+  const [hoveredStep, setHoveredStep] = useState(0);
+  const rating = taskFeedback?.rating;
+  const feedback = taskFeedback?.feedback;
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Task completion feedback
+        </span>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2.5">
+        <p className={`w-fit p-1 text-xs font-semibold uppercase tracking-wide ${SIGNAL_COLORS[rating]}`}>
+          {rating}
+        </p>
+        <p className="text-xs text-gray-600 leading-relaxed">{feedback}</p>
+      </div>
+    </div>
+  );
+
+}
+
+function CsrResponseFeedbackCard({ emotionFeedback }) {
+  const rating = emotionFeedback?.rating;
+  const feedback = emotionFeedback?.feedback;
+
+  // Hardcoded for design preview
+  return (
+    <div className="space-y-3 border-t border-gray-100 pt-4">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Emotion feedback
+        </span>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2.5">
+        <p className={`w-fit p-1 text-xs font-semibold uppercase tracking-wide ${SIGNAL_COLORS[rating]}`}>
+          {rating}
+        </p>
+        <p className="text-xs text-gray-600 leading-relaxed">{feedback}</p>
+      </div>
+    </div>
+  );
+}
+
+const SEGMENT_TYPE_STYLES = {
+  emotion: {
+    label: "Emotion",
+    tagClass: "text-cyan-800 bg-cyan-50 border-cyan-300",
+    highlightClass: "bg-cyan-200/35 hover:bg-cyan-200",
+  },
+  task: {
+    label: "Task",
+    tagClass: "text-indigo-800 bg-indigo-50 border-indigo-300",
+    highlightClass: "bg-indigo-200/35 hover:bg-indigo-200",
+  },
+  neutral: {
+    label: "Neutral",
+    tagClass: "text-blue-500 bg-blue-50 border-blue-200",
+    highlightClass: "bg-blue-100/35 hover:bg-blue-100",
+  },
+};
+
+
+function ExampleResponseCard({ recommendedResponse }) {
+  const segments =
+    recommendedResponse?.segments?.length > 0
+      ? recommendedResponse.segments
+      : [];
+  const plainText = segments.map((s) => s.text).join(" ").trim();
+
+  const [copied, setCopied] = useState(false);
+  const [hoveredType, setHoveredType] = useState(null);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(plainText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // ignore clipboard errors in preview
+    }
+  }
+
+  const activeStyle = hoveredType ? SEGMENT_TYPE_STYLES[hoveredType] : null;
+
+  return (
+    <div className="space-y-3 border-t border-gray-100 pt-4">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-h-[1.25rem]">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Example response
+          </span>
+          {activeStyle && (
+            <span
+              className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded border ${activeStyle.tagClass}`}
+            >
+              {activeStyle.label}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className={`text-xs font-semibold px-2.5 py-1 rounded-md border transition-colors ${copied
+            ? "border-green-300 bg-green-50 text-green-700"
+            : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+            }`}
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+        <p className="text-sm text-gray-800 leading-relaxed">
+          {segments.map((segment, i) => {
+            const style = SEGMENT_TYPE_STYLES[segment.type] ?? SEGMENT_TYPE_STYLES.neutral;
+            return (
+              <span key={i}>
+                {i > 0 ? " " : ""}
+                <span
+                  onMouseEnter={() => setHoveredType(segment.type)}
+                  onMouseLeave={() => setHoveredType(null)}
+                  className={`rounded px-0.5 py-px transition-colors cursor-default ${style.highlightClass}`}
+                >
+                  {segment.text}
+                </span>
+              </span>
+            );
+          })}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function PanelContent({ feedback, feedbackLoading }) {
+
+  const taskFeedback = feedback?.task;
+  const emotionFeedback = feedback?.emotion;
+  const recommendedResponse = feedback?.recommended_response;
+
+  // if there is no feedback, return empty
+  if (!feedback) {
+    return (
+      <div className="h-full flex items-center justify-center text-gray-400 text-sm text-center p-6">
+        Feedback will appear here.
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-5 space-y-4">
+      <TaskCompletionFeedbackCard taskFeedback={taskFeedback} />
+      <CsrResponseFeedbackCard emotionFeedback={emotionFeedback} />
+      <ExampleResponseCard recommendedResponse={recommendedResponse} />
+    </div>
+  );
+
+
   if (feedbackLoading) {
     return (
       <div className="h-full flex items-center justify-center text-gray-400 text-sm text-center p-6">

@@ -112,7 +112,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           // ADD: Show cached messages instantly before backend responds
           const cached = localStorage.getItem(`messages_${storedSessionId}`);
           if (cached) {
-            try { setMessages(JSON.parse(cached)); } catch {}
+            try { setMessages(JSON.parse(cached)); } catch { }
           }
 
           const response = await axios.get(
@@ -255,6 +255,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
       // Run evaluation pipeline in background (hidden from participant, saved to DB)
       if (userMessageId) {
+        console.log("INFO: Running evaluation pipeline in background for user message ID:", userMessageId);
         axios.post(
           `${API_BASE_URL}/feedback`,
           {
