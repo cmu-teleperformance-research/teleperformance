@@ -128,7 +128,7 @@ function TaskCompletionFeedbackCard({ taskFeedback }) {
                   >
 
                   </span>
-                  <span className={isDone ? "text-gray-500" : "text-gray-700 font-medium"}>
+                  <span className={isDone ? "text-gray-500 line-through" : "text-gray-700 font-medium"}>
                     {item.step}
                   </span>
                 </li>
