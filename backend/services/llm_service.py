@@ -315,7 +315,7 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
     evaluator_input = "\n".join(input_parts)
 
     # evaluator_system = load_evaluation_prompt("single_evaluator")
-    evaluator_system = load_evaluation_prompt("demo_evaluator")
+    evaluator_system = load_evaluation_prompt("demo_evaluator_2")
     t_api = time.perf_counter()
     try:
         resp = client.chat.completions.create(

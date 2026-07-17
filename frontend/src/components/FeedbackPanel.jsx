@@ -83,6 +83,22 @@ function TaskCompletionFeedbackCard({ taskFeedback }) {
   const [hoveredStep, setHoveredStep] = useState(0);
   const rating = taskFeedback?.rating;
   const feedback = taskFeedback?.feedback;
+  const contribution_quote = taskFeedback?.contribution_quote;
+  const checklist = taskFeedback?.checklist;
+
+  //   "contribution_quote": "Could you please provide your booking reference so we can explore rebooking options?",
+  //     "rating": "Adequate",
+  //     "checklist": [
+  //         {
+  //             "step": "Ask for booking reference or name + flight",
+  //             "status": "done"
+  //         },
+  //         {
+  //             "step": "Explain cancellation reason and compensation",
+  //             "status": "next"
+  //         }
+  //     ]
+  // }
 
   return (
     <div className="space-y-3">
@@ -95,7 +111,31 @@ function TaskCompletionFeedbackCard({ taskFeedback }) {
         <p className={`w-fit p-1 text-xs font-semibold uppercase tracking-wide ${SIGNAL_COLORS[rating]}`}>
           {rating}
         </p>
-        <p className="text-xs text-gray-600 leading-relaxed">{feedback}</p>
+        <p className="text-xs text-gray-600 leading-relaxed">Follow the checklist to complete the task:</p>
+        <p className="text-xs text-gray-600 leading-relaxed">{contribution_quote}</p>
+        {checklist?.length > 0 && (
+          <ul className="space-y-1.5">
+            {checklist.map((item, index) => {
+              const isDone = item.status === "done";
+              return (
+                <li key={index} className="flex items-start gap-2 text-xs leading-relaxed">
+                  <span
+                    className={`mt-0.5 flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded border ${isDone
+                      ? "border-indigo-500 bg-indigo-500 text-white"
+                      : "border-indigo-300 bg-white"
+                      }`}
+                    aria-hidden="true"
+                  >
+
+                  </span>
+                  <span className={isDone ? "text-gray-500" : "text-gray-700 font-medium"}>
+                    {item.step}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );
