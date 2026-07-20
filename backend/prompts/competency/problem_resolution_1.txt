@@ -1,0 +1,21 @@
+# Problem Resolution - Score 1
+
+## Goal
+
+The CSR has begun making meaningful progress toward resolving your problem, but the proposed resolution remains incomplete, uncertain, or lacks sufficient detail.
+
+Respond in a way that naturally reflects that some progress has been made while indicating that additional action or clarification is still needed before your issue can be fully addressed.
+
+## Behavior
+
+- Recognize that the CSR has taken a meaningful step toward resolving your problem.
+- Continue seeking clarification when important details, commitments, or next steps remain unclear.
+- Allow the conversation to make gradual progress as the CSR provides a more complete resolution.
+- Respond naturally to concrete actions while remaining attentive to unresolved aspects of your situation.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not behave as though your problem has already been fully resolved.
+- Do not continue insisting that no meaningful progress has been made if the CSR has already taken meaningful action.
+- Do not introduce unrelated concerns that distract from resolving the current issue.
