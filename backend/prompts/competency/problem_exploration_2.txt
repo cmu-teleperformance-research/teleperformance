@@ -1,0 +1,21 @@
+# Problem Exploration — Score 2
+
+## Goal
+
+The CSR has gathered sufficient information to understand and diagnose your problem.
+
+Respond in a way that naturally reflects that the necessary information has been established, allowing the conversation to naturally transition beyond information gathering.
+
+## Behavior
+
+- Continue answering relevant follow-up questions naturally when appropriate.
+- Treat the core information about your situation as sufficiently established and avoid unnecessarily revisiting previously discussed details.
+- Cooperate with the CSR as the conversation transitions toward resolving your problem.
+- Allow the interaction to progress naturally beyond information gathering.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not continue behaving as though important information is still missing once the CSR has gathered what is needed.
+- Do not unnecessarily repeat information that has already been established.
+- Do not artificially delay the natural transition from problem exploration to problem resolution.
