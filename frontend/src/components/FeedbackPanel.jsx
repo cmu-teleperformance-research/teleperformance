@@ -10,34 +10,25 @@ const SCORE_COLORS = {
   0: "bg-red-100 text-red-600",
 };
 
-function SkillBadge({ label, value }) {
-  const colorClass = SCORE_COLORS[value] ?? "bg-gray-100 text-gray-500";
-  return (
-    <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-      <span className="text-sm font-medium text-gray-700">{label}</span>
-      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${colorClass}`}>
-        {value ?? "—"}
-      </span>
-    </div>
-  );
-}
-
 export function TurnFeedbackCard({ feedback }) {
   if (!feedback) return null;
 
+  const scoreColorClass = SCORE_COLORS[feedback.score] ?? "bg-gray-100 text-gray-500";
+
   return (
     <div className="space-y-4">
-      {feedback.state && (
+      {(feedback.state || feedback.score !== undefined) && (
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">State</span>
-          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-            {feedback.state}
+          {feedback.state && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+              {feedback.state}
+            </span>
+          )}
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${scoreColorClass}`}>
+            {feedback.score ?? "—"}
           </span>
         </div>
       )}
-      <div className="bg-gray-50 rounded-lg p-3 space-y-1">
-        <SkillBadge label="Score" value={feedback.score} />
-      </div>
       {(feedback.suggestion || feedback.example_response) && (
         <div className="space-y-3 border-t border-gray-100 pt-4">
           <div>
@@ -48,8 +39,8 @@ export function TurnFeedbackCard({ feedback }) {
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Example Response</p>
-            <p className="text-sm text-gray-700 bg-green-50 rounded-lg p-3 leading-relaxed">
-              {feedback.example_response ?? "—"}
+            <p className="text-sm text-gray-700 italic bg-green-50 rounded-lg p-3 leading-relaxed">
+              {feedback.example_response ? `"${feedback.example_response}"` : "—"}
             </p>
           </div>
         </div>
