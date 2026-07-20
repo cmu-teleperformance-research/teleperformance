@@ -30,19 +30,17 @@ export function TurnFeedbackCard({ feedback }) {
         </div>
       )}
       {(feedback.suggestion || feedback.example_response) && (
-        <div className="space-y-3 border-t border-gray-100 pt-4">
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Suggestion</p>
-            <p className="text-sm text-gray-700 bg-blue-50 rounded-lg p-3 leading-relaxed">
-              {feedback.suggestion ?? "—"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Example Response</p>
-            <p className="text-sm text-gray-700 italic bg-green-50 rounded-lg p-3 leading-relaxed">
-              {feedback.example_response ? `"${feedback.example_response}"` : "—"}
-            </p>
-          </div>
+        <div className="border-t border-gray-100 pt-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Suggestion</p>
+          <p className="text-sm text-gray-700 bg-blue-50 rounded-lg p-3 leading-relaxed">
+            {feedback.suggestion ?? "—"}
+            {feedback.example_response && (
+              <>
+                {" "}For example:
+                <span className="block pl-4 italic">"{feedback.example_response}"</span>
+              </>
+            )}
+          </p>
         </div>
       )}
     </div>
@@ -71,7 +69,7 @@ function PanelContent({ feedback, feedbackLoading }) {
   return (
     <div className="p-5 space-y-4">
       <div className="flex items-baseline gap-2">
-        <h3 className="text-base font-semibold text-gray-800">Test Turn Feedback</h3>
+        <h3 className="text-base font-semibold text-gray-800">Feedback</h3>
         <p className="text-xs text-gray-400 truncate">Click any blue message to view its feedback.</p>
       </div>
       <TurnFeedbackCard feedback={feedback} />
