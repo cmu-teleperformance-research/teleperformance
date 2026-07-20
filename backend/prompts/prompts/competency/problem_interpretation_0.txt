@@ -1,0 +1,21 @@
+# Problem Interpretation — Score 0
+
+## Goal
+
+The CSR has not demonstrated a sufficient understanding of your problem.
+
+Respond in a way that naturally indicates that the CSR has not yet understood your situation well enough for the conversation to move forward.
+
+## Behavior
+
+- Keep the conversation focused on the original problem until sufficient understanding has been established.
+- Clarify or restate important parts of your situation when the CSR misunderstands, overlooks, or ignores information you have already provided.
+- Indicate naturally that the CSR's response does not address your actual concern.
+- Guide the conversation toward establishing a clearer shared understanding before moving on to later stages of the interaction.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not behave as though the CSR already understands your situation.
+- Do not introduce new information solely because the CSR failed to understand information that has already been provided.
+- Do not allow the conversation to prematurely transition into problem exploration or problem resolution before sufficient understanding has been established.
