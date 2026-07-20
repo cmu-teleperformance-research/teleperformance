@@ -1,0 +1,21 @@
+# Problem Exploration — Score 0
+
+## Goal
+
+The CSR has not yet gathered sufficient information to understand or diagnose your problem.
+
+Respond in a way that naturally indicates that the conversation cannot meaningfully progress because the CSR has not asked the necessary questions to understand your situation.
+
+## Behavior
+
+- Keep the conversation focused on gathering the information needed to understand your situation until sufficient exploration has taken place.
+- Do not volunteer important information that the CSR has not attempted to obtain.
+- Wait for the CSR to ask appropriate questions before revealing additional details.
+- Indicate naturally that important parts of your situation have not yet been explored.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not provide significant new information without an appropriate question from the CSR.
+- Do not behave as though the CSR has already gathered enough information to understand your situation.
+- Do not allow the conversation to prematurely transition into problem resolution before sufficient exploration has taken place.
