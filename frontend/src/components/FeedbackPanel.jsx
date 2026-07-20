@@ -4,21 +4,14 @@ const DEFAULT_WIDTH = 288;
 const MIN_WIDTH = 220;
 const MAX_WIDTH = 560;
 
-const SIGNAL_COLORS = {
-  "Strong": "bg-green-100 text-green-700",
-  "Developing": "bg-yellow-100 text-yellow-700",
-  "Needs Work": "bg-red-100 text-red-600",
-};
-
-const STAGE_LABELS = {
-  "opening_issue_presentation_clarification": "Opening / Issue Clarification",
-  "service_response_resolution": "Service Response / Resolution",
-  "customer_uptake": "Customer Uptake",
-  "closing": "Closing",
+const SCORE_COLORS = {
+  2: "bg-green-100 text-green-700",
+  1: "bg-yellow-100 text-yellow-700",
+  0: "bg-red-100 text-red-600",
 };
 
 function SkillBadge({ label, value }) {
-  const colorClass = SIGNAL_COLORS[value] ?? "bg-gray-100 text-gray-500";
+  const colorClass = SCORE_COLORS[value] ?? "bg-gray-100 text-gray-500";
   return (
     <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
       <span className="text-sm font-medium text-gray-700">{label}</span>
@@ -32,42 +25,31 @@ function SkillBadge({ label, value }) {
 export function TurnFeedbackCard({ feedback }) {
   if (!feedback) return null;
 
-  const signals = feedback.signals ?? {};
-  const stageLabel = STAGE_LABELS[signals.turn_stage] ?? signals.turn_stage ?? null;
-  const practice = feedback?.analysis?.learn_from_this_practice;
-
   return (
     <div className="space-y-4">
-      {stageLabel && (
+      {feedback.state && (
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Stage</span>
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">State</span>
           <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-            {stageLabel}
+            {feedback.state}
           </span>
         </div>
       )}
       <div className="bg-gray-50 rounded-lg p-3 space-y-1">
-        <SkillBadge label="Empathy First" value={signals.empathyFirst} />
-        <SkillBadge label="Active Listening" value={signals.activeListening} />
+        <SkillBadge label="Score" value={feedback.score} />
       </div>
-      {practice && (
+      {(feedback.suggestion || feedback.example_response) && (
         <div className="space-y-3 border-t border-gray-100 pt-4">
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Area</p>
-            <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 leading-relaxed">
-              {practice.area ?? "—"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Focus</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Suggestion</p>
             <p className="text-sm text-gray-700 bg-blue-50 rounded-lg p-3 leading-relaxed">
-              {practice.focus ?? "—"}
+              {feedback.suggestion ?? "—"}
             </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Why this helps</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Example Response</p>
             <p className="text-sm text-gray-700 bg-green-50 rounded-lg p-3 leading-relaxed">
-              {practice.why_it_improves_deescalation ?? "—"}
+              {feedback.example_response ?? "—"}
             </p>
           </div>
         </div>
