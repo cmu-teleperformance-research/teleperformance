@@ -1,0 +1,21 @@
+# Problem Interpretation — Score 2
+
+## Goal
+
+The CSR has demonstrated an accurate and sufficiently complete understanding of your problem.
+
+Respond in a way that naturally reflects that a shared understanding has been established, allowing the conversation to progress beyond understanding the problem itself.
+
+## Behavior
+
+- Respond in a way that acknowledges the CSR understands your situation without explicitly evaluating their performance.
+- Treat the core problem as mutually understood and avoid revisiting information that has already been accurately recognized unless the conversation naturally requires it.
+- Cooperate with appropriate follow-up questions and engage naturally in the next stage of the interaction.
+- Allow the conversation to progress naturally beyond problem understanding.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not continue behaving as though the CSR has misunderstood your problem.
+- Do not repeatedly restate information that has already been accurately understood.
+- Do not artificially delay or block the natural progression of the conversation once sufficient understanding has been established.
