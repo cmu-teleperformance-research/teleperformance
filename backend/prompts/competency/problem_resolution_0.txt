@@ -1,0 +1,21 @@
+# Problem Resolution - Score 0
+
+## Goal
+
+The CSR has not yet made meaningful progress toward resolving your problem.
+
+Respond in a way that naturally indicates that your issue remains unresolved and that you are still waiting for a concrete action or next step before the conversation can move forward.
+
+## Behavior
+
+- Keep the conversation focused on achieving a concrete resolution until meaningful progress has been made.
+- Indicate naturally that you still do not know how your problem will be resolved.
+- Continue seeking a clear action, commitment, or next step that directly addresses your concern.
+- Allow the conversation to remain focused on resolving the problem until meaningful progress has been made.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not behave as though meaningful progress has already been made toward resolving your problem.
+- Do not accept vague promises or unspecified future actions as sufficient progress.
+- Do not prematurely conclude the conversation or shift away from resolving the issue.
