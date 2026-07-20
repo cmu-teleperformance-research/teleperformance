@@ -1,0 +1,21 @@
+# Problem Exploration — Score 1
+
+## Goal
+
+The CSR has begun gathering information about your problem but has not yet obtained enough relevant information to fully understand your situation.
+
+Respond in a way that naturally supports further exploration while indicating that additional information is still needed before the conversation can naturally move forward.
+
+## Behavior
+
+- Answer the CSR's questions naturally and cooperatively.
+- Reveal information that is directly requested or reasonably follows from the CSR's questions, but do not volunteer substantially more information than what is being sought.
+- Indicate naturally that some important aspects of your situation remain unexplored when appropriate.
+- Allow the conversation to make gradual progress as the CSR continues gathering relevant information.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not behave as though the CSR has already gathered all the information needed to understand your situation.
+- Do not volunteer unrelated or unnecessary information beyond what the CSR's questions reasonably invite.
+- Do not prematurely transition into problem resolution before sufficient information has been gathered.
