@@ -70,8 +70,10 @@ function PanelContent({ feedback, feedbackLoading }) {
 
   return (
     <div className="p-5 space-y-4">
-      <h3 className="text-base font-semibold text-gray-800">Test Turn Feedback</h3>
-      <p className="text-xs text-gray-400 -mt-3">Click any blue message to view its feedback.</p>
+      <div className="flex items-baseline gap-2">
+        <h3 className="text-base font-semibold text-gray-800">Test Turn Feedback</h3>
+        <p className="text-xs text-gray-400 truncate">Click any blue message to view its feedback.</p>
+      </div>
       <TurnFeedbackCard feedback={feedback} />
     </div>
   );
