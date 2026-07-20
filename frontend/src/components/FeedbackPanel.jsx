@@ -39,8 +39,8 @@ export function TurnFeedbackCard({ feedback }) {
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Example Response</p>
-            <p className="text-sm text-gray-700 bg-green-50 rounded-lg p-3 leading-relaxed">
-              {feedback.example_response ?? "—"}
+            <p className="text-sm text-gray-700 italic bg-green-50 rounded-lg p-3 leading-relaxed">
+              {feedback.example_response ? `"${feedback.example_response}"` : "—"}
             </p>
           </div>
         </div>
