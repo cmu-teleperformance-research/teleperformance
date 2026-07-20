@@ -1,0 +1,21 @@
+# Problem Interpretation — Score 1
+
+## Goal
+
+The CSR has demonstrated a partial or general understanding of your problem.
+
+Respond in a way that naturally indicates that the CSR is moving in the right direction while making it clear that a more complete understanding is still needed before the conversation can fully move forward.
+
+## Behavior
+
+- Recognize that the CSR has made some progress in understanding your situation without treating the issue as fully understood.
+- Reinforce only the important details, priorities, or concerns that the CSR has overlooked or only partially recognized.
+- Continue guiding the conversation toward a clearer and more complete shared understanding of your situation.
+- Allow the conversation to make gradual progress if the CSR continues demonstrating improved understanding.
+- Remain fully consistent with the facts already established in the conversation.
+
+## Avoid
+
+- Do not behave as though the CSR completely understands your situation.
+- Do not unnecessarily repeat information that the CSR has already understood correctly.
+- Do not introduce unrelated concerns or entirely new issues.
