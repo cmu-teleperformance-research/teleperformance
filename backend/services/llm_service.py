@@ -302,84 +302,118 @@ def _build_history_text(history: list[dict]) -> str:
     return "\n\n".join(turns)
 
 
-def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: list[dict]) -> dict:
-    history_text = _build_history_text(prior_history)
-    t_pipeline = time.perf_counter()
+def _run_scoring_call(customer_msg: str, csr_msg: str, history_text: str) -> dict:
+    from services.prompt_metadata import inject_metadata
 
-    input_parts = [
-        f'Latest customer utterance: "{customer_msg}"',
-        f'CSR\'s current utterance: "{csr_msg}"',
-    ]
-    if history_text:
-        input_parts.append(f"\nRecent prior turns:\n{history_text}")
-    evaluator_input = "\n".join(input_parts)
+    scoring_template = load_evaluation_prompt("scoring")
+    scoring_system = inject_metadata(scoring_template, {
+        "conversation_history": history_text,
+        "customer_message": customer_msg,
+        "csr_response": csr_msg,
+    })
 
-    evaluator_system = load_evaluation_prompt("single_evaluator")
     t_api = time.perf_counter()
     try:
         resp = client.chat.completions.create(
             model=MODEL_NAME,
-            messages=[{"role": "system", "content": evaluator_system}, {"role": "user", "content": evaluator_input}],
+            messages=[
+                {"role": "system", "content": scoring_system},
+                {"role": "user", "content": "Evaluate the CSR's current response as instructed."},
+            ],
             **FEEDBACK_SETTINGS,
             response_format={"type": "json_object"},
             timeout=LLM_TIMEOUT,
         )
     except Exception as e:
-        _log_pipeline_error("single_evaluator", e)
+        _log_pipeline_error("scoring", e)
         raise
     t_api_end = time.perf_counter()
 
     raw = resp.choices[0].message.content
-
-    print("\n================ RAW EVALUATOR RESPONSE ================")
-    print(raw)
-    print("========================================================")
-
     output = json.loads(raw)
-
-    print("\n================ PARSED EVALUATOR JSON =================")
-    print(json.dumps(output, indent=2))
-    print("Top-level keys:", list(output.keys()))
-    print("========================================================")
-
     usage = _extract_usage(resp)
 
-    _log_latency("evaluation_pipeline", {
-        "input_chars": len(evaluator_system) + len(evaluator_input),
+    _log_latency("scoring_call", {
+        "input_chars": len(scoring_system),
         "output_chars": len(raw),
         **usage,
         "api_time": f"{t_api_end - t_api:.2f}s",
-        "time": f"{time.perf_counter() - t_pipeline:.2f}s",
     })
 
     if DEBUG_PROMPTS:
-        print("=== SINGLE EVALUATOR OUTPUT ===")
+        print("=== SCORING OUTPUT ===")
         print(json.dumps(output, indent=2))
 
-    if "learn_from_this_practice" not in output:
-        print("\n================ MISSING KEY ===========================")
-        print("learn_from_this_practice is missing from evaluator output.")
-        print("Available keys:", list(output.keys()))
-        print("Full evaluator output:")
-        print(json.dumps(output, indent=2))
-        print("========================================================")
+    return output
 
-    print("\n================ OUTPUT BEFORE RETURN ==================")
-    print(json.dumps(output, indent=2))
-    print("========================================================")
+
+def _run_feedback_call(customer_msg: str, csr_msg: str, history_text: str, scoring_output: dict) -> dict:
+    from services.prompt_metadata import inject_metadata
+
+    feedback_template = load_evaluation_prompt("feedback")
+    feedback_system = inject_metadata(feedback_template, {
+        "conversation_history": history_text,
+        "customer_message": customer_msg,
+        "csr_response": csr_msg,
+        "scoring_output": json.dumps(scoring_output),
+    })
+
+    t_api = time.perf_counter()
+    try:
+        resp = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": feedback_system},
+                {"role": "user", "content": "Generate the coaching feedback as instructed."},
+            ],
+            **FEEDBACK_SETTINGS,
+            response_format={"type": "json_object"},
+            timeout=LLM_TIMEOUT,
+        )
+    except Exception as e:
+        _log_pipeline_error("feedback", e)
+        raise
+    t_api_end = time.perf_counter()
+
+    raw = resp.choices[0].message.content
+    output = json.loads(raw)
+    usage = _extract_usage(resp)
+
+    _log_latency("feedback_call", {
+        "input_chars": len(feedback_system),
+        "output_chars": len(raw),
+        **usage,
+        "api_time": f"{t_api_end - t_api:.2f}s",
+    })
+
+    if DEBUG_PROMPTS:
+        print("=== FEEDBACK OUTPUT ===")
+        print(json.dumps(output, indent=2))
+
+    return output
+
+
+def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: list[dict]) -> dict:
+    history_text = _build_history_text(prior_history)
+    t_pipeline = time.perf_counter()
+
+    scoring_output = _run_scoring_call(customer_msg, csr_msg, history_text)
+    feedback_output = _run_feedback_call(customer_msg, csr_msg, history_text, scoring_output)
+
+    _log_latency("evaluation_pipeline", {
+        "time": f"{time.perf_counter() - t_pipeline:.2f}s",
+    })
+
+    for key in ("state", "score", "suggestion", "example_response"):
+        if key not in feedback_output:
+            print(f"{key} is missing from feedback output.")
+            print("Available keys:", list(feedback_output.keys()))
 
     return {
-        "signals": {
-            "empathyFirst": output["empathy_score"]["label"],
-            "activeListening": output["active_listening_score"]["label"],
-            "turn_stage": output.get("turn_stage", ""),
-        },
-        "nextStep": output["learn_from_this_practice"]["focus"],
-        "analysis": {
-            "empathy_score": output["empathy_score"],
-            "active_listening_score": output["active_listening_score"],
-            "learn_from_this_practice": output["learn_from_this_practice"],
-        },
+        "state": feedback_output.get("state", ""),
+        "score": feedback_output.get("score", 0),
+        "suggestion": feedback_output.get("suggestion", ""),
+        "example_response": feedback_output.get("example_response", ""),
     }
 
 
