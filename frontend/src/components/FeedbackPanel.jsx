@@ -112,7 +112,7 @@ function TaskCompletionFeedbackCard({ taskFeedback }) {
           {rating}
         </p>
         <p className="text-xs text-gray-600 leading-relaxed">Follow the checklist to complete the task:</p>
-        <p className="text-xs text-gray-600 leading-relaxed">{contribution_quote}</p>
+        {/* <p className="text-xs text-gray-600 leading-relaxed">{contribution_quote}</p> */}
         {checklist?.length > 0 && (
           <ul className="space-y-1.5">
             {checklist.map((item, index) => {
@@ -128,7 +128,17 @@ function TaskCompletionFeedbackCard({ taskFeedback }) {
                   >
 
                   </span>
-                  <span className={isDone ? "text-gray-500 line-through" : "text-gray-700 font-medium"}>
+                  <span className={`flex items-start gap-1.5 ${isDone ? "text-gray-500 line-through" : "text-gray-700 font-medium"}`}>
+                    {item.type === "portal" ? (
+                      <svg className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                      </svg>
+                    ) : (
+                      <svg className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    )}
                     {item.step}
                   </span>
                 </li>
