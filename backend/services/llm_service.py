@@ -27,6 +27,10 @@ SCENARIOS = {
         "file": "baggage_delay",
         "opener": "baggage_delay",
     },
+    "book_flight": {
+        "file": "book_flight",
+        "opener": "book_flight",
+    },
     "loan_delay": {
         "file": "loan_delay",
         "opener": "loan_delay",

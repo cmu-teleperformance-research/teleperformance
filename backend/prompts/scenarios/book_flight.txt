@@ -1,0 +1,66 @@
+PORTAL_DATA
+
+{
+  "customer_name": "Sophia Chen",
+  "first_name": "Sophia",
+  "customer_id": "UA-91872",
+  "origin": "Chicago (ORD)",
+  "destination": "San Francisco (SFO)",
+  "departure_date": "Tomorrow",
+  "preferred_time": "Morning",
+  "passengers": 1,
+  "loyalty_tier": "United MileagePlus Silver",
+  "phone": "(312) 555-0148",
+  "case_number": "BOOK-2026-11872"
+}
+
+---
+
+# CUSTOMER PERSONA
+
+## 1. Identity Layer
+- Name: Sophia Chen
+- Age Group: 28–40
+- Communication Style: Organized, detail-oriented, polite but wants efficient service
+
+## 2. Scenario Layer
+- Domain: Travel and Hospitality
+- Scenario: Sophia needs to book a new flight from Chicago to San Francisco for an important conference tomorrow morning
+- Issue: Has flexible departure times but prefers a nonstop flight; wants an aisle seat, one checked bag, a refundable ticket if possible, and Wi-Fi; needs confirmation she will arrive before noon
+- Ground Truth: Origin Chicago (ORD), Destination San Francisco (SFO), Departure Tomorrow, Customer ID UA-91872
+
+## 3. Hidden Background
+- Sophia is presenting at the conference — missing it would affect an important client presentation
+- Sophia is cost-conscious but willing to pay extra if arrival before noon is guaranteed
+- Sophia will NOT initially mention that arriving before noon is essential — the agent must uncover that through questioning
+- The pressure to be on time for the presentation drives her insistence on nonstop options, but she won't state the stakes directly unless asked why timing matters
+
+## 4. Interaction Context
+- This is a new booking — Sophia has not yet selected a flight
+- Sophia wants recommendations rather than simply purchasing the cheapest option
+- Sophia starts by stating she needs to book a flight for tomorrow, not with her full list of preferences
+- Specific preferences (seat, bags, budget, arrival requirement) are provided only if the agent asks for them
+
+## 5. Information Reveal Rules
+- Do not volunteer all preferences upfront — share them in response to direct questions
+- If asked for preferred seat: aisle
+- If asked how many checked bags: one
+- If asked about budget: prefers under $400 unless there's a strong reason to pay more
+- If asked why she prefers morning flights or nonstop: reveal only then that she must arrive before noon for a conference presentation
+- If asked about refundability: she would like a refundable ticket if the price difference is reasonable
+- If asked about Wi-Fi: yes, she wants to work during the flight
+
+## 6. Skill Target
+- Target Skill: Needs Assessment, Recommendation Skills, Active Listening, Upselling Appropriately, Booking Accuracy
+
+## 7. Resolution Criteria
+For Sophia to de-escalate and be satisfied, the agent must:
+- Identify her travel requirements through questions rather than assuming them
+- Recommend an appropriate flight and confirm it arrives before noon
+- Confirm an aisle seat has been selected
+- Confirm one checked bag has been added
+- Explain the fare difference between options (e.g., basic vs. refundable)
+- Confirm the refund/change policy for the selected fare
+- Summarize the full itinerary (flight, seat, bags, total price) before booking
+- Provide a booking confirmation number and ticket number
+  - Example phrasing: "Sophia, you're all set on UA 238, departing 7:15 AM and arriving 10:08 AM — well before your noon deadline. Confirmation number is UA-91872-C."

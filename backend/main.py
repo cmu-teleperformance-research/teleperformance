@@ -27,12 +27,13 @@ app.add_middleware(
     expose_headers=["X-User-Message-Id"],
 )
 
-VALID_SCENARIOS = {"flight_cancellation", "baggage_delay", "loan_delay", "refund_request"}
+VALID_SCENARIOS = {"flight_cancellation", "baggage_delay", "book_flight", "loan_delay", "refund_request"}
 VALID_PERSONAS = {"angry", "confused", "demanding", "anxious"}
 
 SCENARIO_LABELS = {
     "flight_cancellation": "Flight Cancellation",
     "baggage_delay": "Lost Baggage",
+    "book_flight": "Book Flight",
     "loan_delay": "Loan Delay",
     "refund_request": "Refund Request",
 }

@@ -6,6 +6,7 @@ import FeedbackPanel from "./FeedbackPanel";
 import WorkflowPortal from "./workflow/WorkflowPortal";
 import NavBar from "./NavBar";
 import { HomeGuideContent } from "./WelcomePage";
+import { screenMap } from "./workflow/utils/screenMaps";
 import API_BASE_URL from "../config";
 
 const API_URL = `${API_BASE_URL}/chat`;
@@ -13,10 +14,12 @@ const API_URL = `${API_BASE_URL}/chat`;
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
   baggage_delay: "Lost Baggage",
+  book_flight: "Book Flight",
 };
 
 export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed }) {
   const { scenario, persona, training, scenarioLabel } = sessionConfig;
+  const totalPortalSteps = (screenMap[scenario] ?? screenMap.flight_cancellation).length;
 
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
@@ -37,6 +40,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     resolution: "",
     caseNote: "",
     caseOutcome: "",
+    selectedSeat: "",
+    extrasSelected: {},
   });
 
   const isDragging = useRef(false);
@@ -399,7 +404,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             </span>
             {portalStep > 0 && (
               <span className="text-xs text-gray-400">
-                · Step {portalStep + 1}/6
+                · Step {portalStep + 1}/{totalPortalSteps}
               </span>
             )}
           </div>
@@ -412,12 +417,12 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
               completed={portalCompleted}
               onAdvance={(stepId) => {
                 setPortalCompleted(prev => prev.includes(stepId) ? prev : [...prev, stepId]);
-                setPortalStep(s => Math.min(s + 1, 5));
+                setPortalStep(s => Math.min(s + 1, totalPortalSteps - 1));
               }}
               onReset={() => {
                 setPortalStep(0);
                 setPortalCompleted([]);
-                setWorkflowData({ searchQuery: "", applicationStatus: false, searchNotFound: false, delayReason: "", resolution: "", caseNote: "", caseOutcome: "" });
+                setWorkflowData({ searchQuery: "", applicationStatus: false, searchNotFound: false, delayReason: "", resolution: "", caseNote: "", caseOutcome: "", selectedSeat: "", extrasSelected: {} });
               }}
               onGoToStep={goToStep}
               workflowData={workflowData}

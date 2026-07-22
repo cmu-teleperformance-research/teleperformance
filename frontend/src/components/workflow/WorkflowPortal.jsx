@@ -39,7 +39,8 @@ export default function WorkflowPortal({
 
   const steps = workflow.steps ?? [];
   const currentStepData = steps[step];
-  const Screen = (screenMap[scenario] ?? screenMap.flight_cancellation)[Math.min(step, 5)];
+  const screens = screenMap[scenario] ?? screenMap.flight_cancellation;
+  const Screen = screens[Math.min(step, screens.length - 1)];
 
   function advance() {
     onAdvance(steps[step].id);

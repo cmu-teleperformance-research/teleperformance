@@ -1,0 +1,145 @@
+{
+  "scenario": "book_flight",
+  "customer": {
+    "name": "{{customer_name}}",
+    "customerId": "{{customer_id}}",
+    "tier": "{{loyalty_tier}}",
+    "phone": "{{phone}}",
+    "origin": "{{origin}}",
+    "destination": "{{destination}}",
+    "departureDate": "{{departure_date}}",
+    "preferredTime": "{{preferred_time}}",
+    "passengers": "{{passengers}}"
+  },
+  "existingTrips": [
+    { "id": "T1", "route": "SFO → ORD", "date": "3 weeks ago", "status": "Completed" },
+    { "id": "T2", "route": "ORD → LAX", "date": "2 months ago", "status": "Completed" }
+  ],
+  "travelPreferences": [
+    "Seat: Aisle preferred",
+    "Meal: None on file",
+    "Notifications: Email + SMS"
+  ],
+  "flights": [
+    { "id": "F1", "flightNumber": "UA 238", "route": "ORD → SFO", "departure": "7:15 AM", "arrival": "10:08 AM", "duration": "3h 53m", "stops": "Nonstop", "aircraft": "Boeing 737-900", "seatsRemaining": 14, "fareEconomy": 249, "fareBusiness": 689 },
+    { "id": "F2", "flightNumber": "UA 887", "route": "ORD → SFO", "departure": "6:05 AM", "arrival": "9:02 AM", "duration": "3h 57m", "stops": "Nonstop", "aircraft": "Boeing 737-800", "seatsRemaining": 2, "fareEconomy": 279, "fareBusiness": 719 },
+    { "id": "F3", "flightNumber": "UA 1552", "route": "ORD → SFO", "departure": "9:40 AM", "arrival": "12:35 PM", "duration": "3h 55m", "stops": "Nonstop", "aircraft": "Airbus A320", "seatsRemaining": 6, "fareEconomy": 219, "fareBusiness": 649 },
+    { "id": "F4", "flightNumber": "UA 4471", "route": "ORD → DEN → SFO", "departure": "5:30 AM", "arrival": "10:47 AM", "duration": "5h 17m", "stops": "1 stop (DEN)", "aircraft": "Embraer E175 / Boeing 737-800", "seatsRemaining": 9, "fareEconomy": 189, "fareBusiness": 559 },
+    { "id": "F5", "flightNumber": "UA 612", "route": "ORD → SFO", "departure": "1:20 PM", "arrival": "4:18 PM", "duration": "3h 58m", "stops": "Nonstop", "aircraft": "Boeing 737-900", "seatsRemaining": 21, "fareEconomy": 199, "fareBusiness": 599 }
+  ],
+  "seatMap": {
+    "columns": ["A", "B", "C", "D", "E", "F"],
+    "aisleColumns": ["C", "D"],
+    "rows": [
+      { "row": 7, "type": "economyPlus", "fee": 45, "occupied": [] },
+      { "row": 8, "type": "preferred", "fee": 25, "occupied": ["C"] },
+      { "row": 9, "type": "standard", "fee": 0, "occupied": ["B", "E"] },
+      { "row": 10, "type": "standard", "fee": 0, "occupied": ["D"] },
+      { "row": 11, "type": "exit", "fee": 25, "occupied": ["A"] },
+      { "row": 12, "type": "standard", "fee": 0, "occupied": [] }
+    ]
+  },
+  "extras": [
+    { "id": "checked_bag", "label": "Checked Bag (up to 50 lb)", "price": 35 },
+    { "id": "carry_on", "label": "Carry-On Bag (included, no charge)", "price": 0 },
+    { "id": "priority_boarding", "label": "Priority Boarding", "price": 15 },
+    { "id": "wifi", "label": "Wi-Fi (full flight)", "price": 8 },
+    { "id": "insurance", "label": "Travel Insurance", "price": 22 },
+    { "id": "special_assistance", "label": "Special Assistance", "price": 0 }
+  ],
+  "pricing": { "taxes": 34 },
+  "policy": "FARE RULES – Economy & Refundable Fares\n\nStandard Economy\n  • Non-refundable; name change fee applies\n  • Same-day changes: $75 + fare difference\n\nRefundable Economy (+$60 vs. standard)\n  • Fully refundable up to 1 hour before departure\n  • Free same-day changes, no fare difference on same cabin\n\nSeat Fees\n  • Standard seat: No charge\n  • Preferred / Exit Row: +$25\n  • Economy Plus: +$45\n\nBaggage\n  • First checked bag: $35\n  • Carry-on: included at no charge",
+  "booking": {
+    "confirmationNumber": "UA-91872-C",
+    "ticketNumber": "016-2345891072"
+  },
+  "steps": [
+    {
+      "id": "lookup",
+      "label": "Passenger Lookup",
+      "icon": "🔍",
+      "prompt": { "type": "customer", "text": "Ask the passenger for their name or customer ID before pulling up their profile." }
+    },
+    {
+      "id": "flights",
+      "label": "Available Flights",
+      "icon": "✈️",
+      "prompt": { "type": "customer", "text": "Ask what the passenger needs (dates, timing, nonstop preference) before recommending a flight." }
+    },
+    {
+      "id": "seats",
+      "label": "Seat Selection",
+      "icon": "💺",
+      "prompt": { "type": "action", "text": "Select a seat matching the passenger's stated preference (e.g., aisle)." }
+    },
+    {
+      "id": "extras",
+      "label": "Extras & Baggage",
+      "icon": "🧳",
+      "prompt": { "type": "action", "text": "Add any extras the passenger asked for — checked bags, Wi-Fi, priority boarding, etc." }
+    },
+    {
+      "id": "fare",
+      "label": "Fare Summary",
+      "icon": "💵",
+      "prompt": { "type": "customer", "text": "Return to the passenger and walk through the total price and refund/change policy before booking." }
+    },
+    {
+      "id": "apply",
+      "label": "Complete Booking",
+      "icon": "✅",
+      "prompt": { "type": "action", "text": "Confirm all details are correct, then complete the booking." }
+    },
+    {
+      "id": "communicate",
+      "label": "Communicate to Passenger",
+      "icon": "💬",
+      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the booking confirmation below." }
+    }
+  ],
+  "screens": {
+    "lookup": {
+      "searchPlaceholder": "Enter customer ID or name...",
+      "searchButtonLabel": "Search",
+      "searchKeys": ["{{customer_id}}", "{{customer_name}}"],
+      "wrongButtons": ["File Baggage Claim", "Process Refund", "Cancel Existing Trip"],
+      "advanceLabel": "View Available Flights →",
+      "foundWrongButtons": ["Modify Existing Trip"]
+    },
+    "flights": {
+      "advanceLabel": "Select Seat →",
+      "wrongButtons": ["Waitlist Passenger", "Hold Fare Without Booking"]
+    },
+    "seats": {
+      "advanceLabel": "Continue to Extras →",
+      "wrongButtons": ["Auto-Assign Random Seat", "Skip Seat Selection"]
+    },
+    "extras": {
+      "advanceLabel": "Review Fare Summary →",
+      "wrongButtons": ["Add Unaccompanied Minor Service"]
+    },
+    "fare": {
+      "advanceLabel": "Proceed to Booking →",
+      "wrongButtons": ["Apply Unrelated Promo Code"]
+    },
+    "apply": {
+      "wrongButtons": ["Book Without Passenger Confirmation", "Skip Payment Verification"]
+    },
+    "communicate": {
+      "customerName": "{{first_name}}",
+      "coaching": {
+        "items": [
+          "Confirm the flight number, departure time, and arrival time",
+          "Confirm arrival is before the noon deadline",
+          "Confirm the aisle seat selection",
+          "Confirm one checked bag was added",
+          "State the total price and confirm the refund/change policy",
+          "Provide the confirmation number and ticket number"
+        ]
+      },
+      "caseNumber": "{{case_number}}",
+      "caseStatus": "Closed",
+      "resolution": "Flight booked and confirmed — confirmation and ticket numbers issued."
+    }
+  }
+}

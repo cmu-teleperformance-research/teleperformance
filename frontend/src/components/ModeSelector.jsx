@@ -18,6 +18,11 @@ const DOMAINS = [
         label: "Lost Baggage",
         description: "Assist a passenger whose checked bag has been missing for two days. Trace the bag and arrange interim expenses.",
       },
+      {
+        id: "book_flight",
+        label: "Book Flight",
+        description: "Help a customer search available flights, compare options, choose seats, add baggage, and complete a new booking while answering questions about pricing and travel policies.",
+      },
     ],
   },
   {

@@ -3,6 +3,7 @@ import NavBar from "./NavBar";
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
   baggage_delay: "Lost Baggage",
+  book_flight: "Book Flight",
 };
 
 const SIGNAL_COLORS = {
