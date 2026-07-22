@@ -2,7 +2,7 @@ import NavBar from "./NavBar";
 
 const SKILLS = [
   {
-    title: "Empathy First",
+    title: "Empathy",
     items: [
       "Acknowledge customer emotions",
       "Demonstrate understanding before problem-solving",
@@ -12,26 +12,33 @@ const SKILLS = [
   {
     title: "Active Listening",
     items: [
+      "Show that you understand the issue",
       "Address the customer's specific concerns",
       "Reference information they provided",
-      "Show that you understand the issue",
     ],
   },
   {
-    title: "Conversation Stage Awareness",
+    title: "Task Completion",
     items: [
-      "Respond appropriately based on the stage of the conversation",
-      "Gather information when necessary",
-      "Provide solutions at appropriate times",
-      "Close conversations effectively",
+      "Provide concrete information about how you will solve the problem",
+      "Insure your solution fits the customer’s needs",
+      "Insure  your solution fits company policy",
     ],
   },
+  // {
+  //   title: "Conversation Stage Awareness",
+  //   items: [
+  //     "Respond appropriately based on the stage of the conversation",
+  //     "Gather information when necessary",
+  //     "Provide solutions at appropriate times",
+  //     "Close conversations effectively",
+  //   ],
+  // },
   {
     title: "Continuous Improvement",
     items: [
       "Review feedback after customer turns",
       "Practice applying coaching suggestions",
-      "Improve de-escalation performance over time",
     ],
   },
 ];
@@ -49,13 +56,12 @@ export function HomeGuideContent() {
     <div className="space-y-10">
       <div className="space-y-3">
         <h1 className="text-3xl font-bold text-gray-900">
-          CSR De-escalation Training Simulator
+          CSR Training Simulator
         </h1>
         <p className="text-base text-gray-600 leading-relaxed">
-          In this simulation, you will interact with virtual customers and practice
-          customer service de-escalation skills. During the conversation you will
-          receive feedback designed to help you improve your communication and
-          de-escalation abilities.
+          In this simulation, you will interact with virtual customers and practice various
+          customer service skills. During the conversation you will
+          receive feedback designed to help you improve your task completion and communication skills.
         </p>
       </div>
 
@@ -97,8 +103,7 @@ export function HomeGuideContent() {
 
       <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-100 pt-6">
         Feedback is intended for learning and skill development purposes. The simulator
-        is designed to help users practice customer service communication and
-        de-escalation techniques.
+        is designed to help users practice customer service task and communication skills with a variety of 'difficult' customers.
       </p>
     </div>
   );
