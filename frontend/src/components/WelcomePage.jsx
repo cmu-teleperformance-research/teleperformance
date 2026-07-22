@@ -1,5 +1,6 @@
 import NavBar from "./NavBar";
 
+
 const SKILLS = [
   {
     title: "Empathy",
@@ -34,14 +35,16 @@ const SKILLS = [
   //     "Close conversations effectively",
   //   ],
   // },
-  {
-    title: "Continuous Improvement",
-    items: [
-      "Review feedback after customer turns",
-      "Practice applying coaching suggestions",
-    ],
-  },
+  // {
+  //   title: "Continuous Improvement",
+  //   items: [
+  //     "Review feedback after customer turns",
+  //     "Practice applying coaching suggestions",
+  //   ],
+  // },
 ];
+
+
 
 const HOW_IT_WORKS = [
   "Log in or create an account",
@@ -68,22 +71,40 @@ export function HomeGuideContent() {
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-800">Skills Evaluated</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {SKILLS.map((skill) => (
-            <div
-              key={skill.title}
-              className="bg-white border border-gray-200 rounded-lg p-5 space-y-3"
-            >
-              <h3 className="text-sm font-semibold text-blue-700">{skill.title}</h3>
-              <ul className="space-y-1.5">
-                {skill.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
-                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="bg-white border border-gray-200 rounded-lg p-5 space-y-3">
+            <h3 className="text-sm font-semibold text-blue-700">Emotion</h3>
+            <ul className="space-y-1.5">
+              <li className="flex items-start gap-2 text-sm text-gray-600">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                Acknowledge customer emotions and show that you understand the issue
+              </li>
+              <li className="flex items-start gap-2 text-sm text-gray-600">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                Demonstrate understanding before problem-solving
+              </li>
+              <li className="flex items-start gap-2 text-sm text-gray-600">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                Avoid dismissive language
+              </li>
+            </ul>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-5 space-y-3">
+            <h3 className="text-sm font-semibold text-blue-700">Task Completion</h3>
+            <ul className="space-y-1.5">
+              <li className="flex items-start gap-2 text-sm text-gray-600">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                Provide concrete information about how you will solve the problem
+              </li>
+              <li className="flex items-start gap-2 text-sm text-gray-600">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                Insure your solution fits the customer's needs
+              </li>
+              <li className="flex items-start gap-2 text-sm text-gray-600">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                Insure your solution fits company policy
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 

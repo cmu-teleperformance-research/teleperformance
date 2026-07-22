@@ -45,8 +45,90 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+  const feedbackRequestId = useRef(0);
+  const lastFeedbackTargetRef = useRef(null);
 
   const authHeaders = { Authorization: `Bearer ${token}` };
+
+  function getPortalState(overrides = {}) {
+    return {
+      step: portalStep,
+      completed: portalCompleted,
+      data: workflowData,
+      ...overrides,
+    };
+  }
+
+  async function requestFeedback({ csrIdx, message, history, userMessageId, portalState }) {
+    const reqId = ++feedbackRequestId.current;
+    lastFeedbackTargetRef.current = { csrIdx, message, history, userMessageId };
+    setFeedbackLoading(true);
+    try {
+      const fbRes = await axios.post(
+        `${API_BASE_URL}/feedback`,
+        {
+          scenario,
+          persona,
+          message,
+          history,
+          session_id: sessionId,
+          user_message_id: Number(userMessageId),
+          portal_state: portalState ?? getPortalState(),
+        },
+        { headers: authHeaders }
+      );
+      if (reqId !== feedbackRequestId.current) return null;
+      const fb = fbRes.data.feedback;
+      if (fb) {
+        setMessages(prev =>
+          prev.map((m, i) =>
+            i === csrIdx ? { ...m, feedback: fb, userMessageId: Number(userMessageId) } : m
+          )
+        );
+        setSelectedIdx(csrIdx);
+      }
+      return fb;
+    } catch (fbErr) {
+      if (reqId !== feedbackRequestId.current) return null;
+      console.error("❌ FEEDBACK ERROR:", fbErr);
+      if (fbErr.response?.status === 401) {
+        onAuthExpired();
+        return null;
+      }
+      throw fbErr;
+    } finally {
+      if (reqId === feedbackRequestId.current) {
+        setFeedbackLoading(false);
+      }
+    }
+  }
+
+  function refetchFeedbackForPortal(portalState) {
+    if (!training) return;
+    const target = lastFeedbackTargetRef.current;
+    if (!target?.userMessageId || !sessionId) return;
+    requestFeedback({ ...target, portalState }).catch(() => {});
+  }
+
+  function handleSetWorkflowData(updater) {
+    setWorkflowData(prev => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      const significantKeys = ["applicationStatus", "delayReason", "resolution", "caseOutcome"];
+      const changed = significantKeys.some(
+        (key) => prev[key] !== next[key] && next[key] !== "" && next[key] !== false
+      );
+      if (changed) {
+        queueMicrotask(() => {
+          refetchFeedbackForPortal({
+            step: portalStep,
+            completed: portalCompleted,
+            data: next,
+          });
+        });
+      }
+      return next;
+    });
+  }
 
   useEffect(() => {
     function onMouseMove(e) {
@@ -264,6 +346,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             history: updatedMessages,
             session_id: sessionId,
             user_message_id: Number(userMessageId),
+            portal_state: getPortalState(),
           },
           { headers: authHeaders }
         ).catch(err => {
@@ -308,33 +391,17 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       inputRef.current?.focus();
 
       // Fetch feedback from the separate evaluation pipeline
-      setFeedbackLoading(true);
       try {
-        const fbRes = await axios.post(
-          `${API_BASE_URL}/feedback`,
-          {
-            scenario,
-            persona,
-            message: trimmed,
-            history: updatedMessages,
-            session_id: sessionId,
-            user_message_id,
-          },
-          { headers: authHeaders }
-        );
-        const fb = fbRes.data.feedback;
-        if (fb) {
-          setMessages(prev =>
-            prev.map((m, i) => i === csrIdx ? { ...m, feedback: fb } : m)
-          );
-          console.log("🎯 Setting selectedIdx to:", csrIdx);
-          setSelectedIdx(csrIdx);
-        }
+        await requestFeedback({
+          csrIdx,
+          message: trimmed,
+          history: updatedMessages,
+          userMessageId: user_message_id,
+          portalState: getPortalState(),
+        });
+        console.log("🎯 Setting selectedIdx to:", csrIdx);
       } catch (fbErr) {
-        console.error("❌ FEEDBACK ERROR:", fbErr);
-        if (fbErr.response?.status === 401) { onAuthExpired(); return; }
-      } finally {
-        setFeedbackLoading(false);
+        // errors already logged / auth handled in requestFeedback
       }
 
     } catch (err) {
@@ -412,8 +479,17 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
               step={portalStep}
               completed={portalCompleted}
               onAdvance={(stepId) => {
-                setPortalCompleted(prev => prev.includes(stepId) ? prev : [...prev, stepId]);
-                setPortalStep(s => Math.min(s + 1, 5));
+                const nextCompleted = portalCompleted.includes(stepId)
+                  ? portalCompleted
+                  : [...portalCompleted, stepId];
+                const nextStep = Math.min(portalStep + 1, 5);
+                setPortalCompleted(nextCompleted);
+                setPortalStep(nextStep);
+                refetchFeedbackForPortal({
+                  step: nextStep,
+                  completed: nextCompleted,
+                  data: workflowData,
+                });
               }}
               onReset={() => {
                 setPortalStep(0);
@@ -422,7 +498,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
               }}
               onGoToStep={goToStep}
               workflowData={workflowData}
-              setWorkflowData={setWorkflowData}
+              setWorkflowData={handleSetWorkflowData}
             />
           </div>
         </div>

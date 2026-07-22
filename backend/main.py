@@ -396,6 +396,7 @@ class FeedbackRequest(BaseModel):
     history: list[dict]
     session_id: int
     user_message_id: int
+    portal_state: dict | None = None
 
 
 @app.post("/feedback")
@@ -411,7 +412,12 @@ async def feedback(
     if session is None:
         raise HTTPException(status_code=400, detail="Invalid or missing session_id")
 
-    fb = run_feedback_pipeline(request.message, request.history)
+    fb = run_feedback_pipeline(
+        request.message,
+        request.history,
+        portal_state=request.portal_state,
+        scenario=request.scenario,
+    )
 
     msg_record = db.query(models.MessageRecord).filter(
         models.MessageRecord.id == request.user_message_id,

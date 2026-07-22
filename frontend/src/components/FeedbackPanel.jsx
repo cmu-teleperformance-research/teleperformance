@@ -268,30 +268,11 @@ function ExampleResponseCard({ recommendedResponse }) {
 }
 
 function PanelContent({ feedback, feedbackLoading }) {
-
   const taskFeedback = feedback?.task;
   const emotionFeedback = feedback?.emotion;
   const recommendedResponse = feedback?.recommended_response;
 
-  // if there is no feedback, return empty
-  if (!feedback) {
-    return (
-      <div className="h-full flex items-center justify-center text-gray-400 text-sm text-center p-6">
-        Feedback will appear here.
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-5 space-y-4">
-      <TaskCompletionFeedbackCard taskFeedback={taskFeedback} />
-      <CsrResponseFeedbackCard emotionFeedback={emotionFeedback} />
-      <ExampleResponseCard recommendedResponse={recommendedResponse} />
-    </div>
-  );
-
-
-  if (feedbackLoading) {
+  if (feedbackLoading && !feedback) {
     return (
       <div className="h-full flex items-center justify-center text-gray-400 text-sm text-center p-6">
         Evaluating response...
@@ -302,18 +283,24 @@ function PanelContent({ feedback, feedbackLoading }) {
   if (!feedback) {
     return (
       <div className="h-full flex items-center justify-center text-gray-400 text-sm text-center p-6">
-        Feedback will appear here after the customer responds.
+        Feedback will appear here.
       </div>
     );
   }
 
-  console.log("FEEDBACK PANEL DATA:", feedback);
-
   return (
-    <div className="p-5 space-y-4">
-      <h3 className="text-base font-semibold text-gray-800">Test Turn Feedback</h3>
-      <p className="text-xs text-gray-400 -mt-3">Click any blue message to view its feedback.</p>
-      <TurnFeedbackCard feedback={feedback} />
+    <div className="relative">
+      {feedbackLoading && (
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-blue-500 animate-pulse z-10" />
+      )}
+      <div
+        className={`p-5 space-y-4 transition-opacity ${feedbackLoading ? "opacity-50 pointer-events-none" : ""
+          }`}
+      >
+        <TaskCompletionFeedbackCard taskFeedback={taskFeedback} />
+        <CsrResponseFeedbackCard emotionFeedback={emotionFeedback} />
+        <ExampleResponseCard recommendedResponse={recommendedResponse} />
+      </div>
     </div>
   );
 }

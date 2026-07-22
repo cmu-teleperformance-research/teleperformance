@@ -302,7 +302,123 @@ def _build_history_text(history: list[dict]) -> str:
     return "\n\n".join(turns)
 
 
-def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: list[dict]) -> dict:
+def _format_portal_state_for_evaluator(portal_state: dict | None, scenario: str | None) -> str:
+    """Build evaluator context from live portal progress + workflow screen contents."""
+    if not portal_state:
+        return ""
+
+    step_idx = portal_state.get("step", 0)
+    completed = portal_state.get("completed") or []
+    data = portal_state.get("data") or {}
+
+    lines = [
+        "INTERNAL PORTAL STATE (authoritative for portal checklist items and for grounding the recommended response in what the CSR currently sees):",
+        f"- Current step index: {step_idx}",
+        f"- Completed step ids: {', '.join(completed) if completed else '(none)'}",
+    ]
+
+    if data:
+        lines.append("- Portal field values:")
+        for key, value in data.items():
+            if value in ("", None, False):
+                continue
+            lines.append(f"  - {key}: {value}")
+
+    if scenario:
+        try:
+            workflow_path = os.path.join(
+                os.path.dirname(__file__), "..", "workflows", f"{scenario}.json"
+            )
+            with open(workflow_path) as f:
+                workflow = json.load(f)
+            # Prefer hydrated workflow when portal metadata is available
+            try:
+                from services.prompt_metadata import extract_portal_data, inject_metadata
+                workflow = inject_metadata(workflow, extract_portal_data(scenario))
+            except Exception:
+                pass
+
+            steps = workflow.get("steps") or []
+            if 0 <= step_idx < len(steps):
+                current = steps[step_idx]
+                prompt = current.get("prompt") or {}
+                lines.append(f"- Current portal screen: {current.get('label')} (id={current.get('id')})")
+                if prompt.get("text"):
+                    lines.append(f"- Portal coaching prompt ({prompt.get('type', 'action')}): {prompt['text']}")
+
+            screens = workflow.get("screens") or {}
+            current_id = steps[step_idx]["id"] if 0 <= step_idx < len(steps) else None
+            screen = screens.get(current_id) if current_id else None
+
+            if current_id == "rebook" and workflow.get("rebooking"):
+                lines.append("- Rebooking options visible in portal:")
+                for opt in workflow["rebooking"]:
+                    selected = " (SELECTED)" if data.get("delayReason") == opt.get("id") else ""
+                    lines.append(
+                        f"  - {opt.get('flight')}: {opt.get('route')}, dep {opt.get('dep')}, "
+                        f"arr {opt.get('arr')}, seats {opt.get('seats')}{selected}"
+                    )
+
+            if current_id == "trace" and workflow.get("trace"):
+                trace = workflow["trace"]
+                lines.append("- WorldTracer details visible in portal:")
+                for key, value in trace.items():
+                    lines.append(f"  - {key}: {value}")
+
+            if current_id == "apply" and screen:
+                if screen.get("confirmData"):
+                    lines.append("- Apply screen confirmation details visible in portal:")
+                    for row in screen["confirmData"]:
+                        if isinstance(row, (list, tuple)) and len(row) >= 2:
+                            lines.append(f"  - {row[0]}: {row[1]}")
+                for key in ("priorityFlag", "traceStatus", "interimExpenses", "medicationReimbursement", "submissionDeadline"):
+                    if screen.get(key):
+                        lines.append(f"  - {key}: {screen[key]}")
+
+            if current_id == "communicate" and screen:
+                coaching = (screen.get("coaching") or {}).get("items") or []
+                if coaching:
+                    lines.append("- Communicate screen talking points visible in portal (use these to ground recommended_response):")
+                    for item in coaching:
+                        lines.append(f"  - {item}")
+                if screen.get("resolution"):
+                    lines.append(f"- Case resolution summary: {screen['resolution']}")
+
+            if current_id == "flight" and workflow.get("customer"):
+                cust = workflow["customer"]
+                lines.append("- Flight details visible in portal:")
+                for key in ("flight", "route", "depTime", "status", "reason", "booking", "name", "tier"):
+                    if cust.get(key):
+                        lines.append(f"  - {key}: {cust[key]}")
+
+            if current_id == "claim" and workflow.get("customer"):
+                cust = workflow["customer"]
+                lines.append("- Baggage claim details visible in portal:")
+                for key in ("name", "bagTag", "pirRef", "flight", "route", "booking"):
+                    if cust.get(key):
+                        lines.append(f"  - {key}: {cust[key]}")
+
+            if current_id in ("policy",) and screen.get("correctLabel"):
+                selected = data.get("resolution")
+                lines.append(f"- Policy option to select: {screen['correctLabel']}")
+                if selected:
+                    lines.append(f"- Selected resolution value: {selected}")
+                if screen.get("correctMessage"):
+                    lines.append(f"- Policy confirmation: {screen['correctMessage']}")
+
+        except Exception as e:
+            print(f"WARNING: could not enrich portal state from workflow: {e}")
+
+    return "\n".join(lines)
+
+
+def _run_evaluation_pipeline(
+    customer_msg: str,
+    csr_msg: str,
+    prior_history: list[dict],
+    portal_state: dict | None = None,
+    scenario: str | None = None,
+) -> dict:
     history_text = _build_history_text(prior_history)
     t_pipeline = time.perf_counter()
 
@@ -312,6 +428,9 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
     ]
     if history_text:
         input_parts.append(f"\nRecent prior turns:\n{history_text}")
+    portal_text = _format_portal_state_for_evaluator(portal_state, scenario)
+    if portal_text:
+        input_parts.append(f"\n{portal_text}")
     evaluator_input = "\n".join(input_parts)
 
     # evaluator_system = load_evaluation_prompt("single_evaluator")
@@ -490,7 +609,12 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
 
 # --- Feedback Pipeline (called by /feedback endpoint) ---
 
-def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
+def run_feedback_pipeline(
+    message: str,
+    history: list[dict],
+    portal_state: dict | None = None,
+    scenario: str | None = None,
+) -> dict:
     """Run the evaluation pipeline for a CSR message and return the feedback dict."""
     _default_analysis = {
         "empathy_score": {"score": 0},
@@ -504,7 +628,9 @@ def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
     try:
         customer_msg, prior_history = _extract_latest_customer_utterance(history)
         t_pipeline_start = time.perf_counter()
-        feedback = _run_evaluation_pipeline(customer_msg, message, prior_history)
+        feedback = _run_evaluation_pipeline(
+            customer_msg, message, prior_history, portal_state=portal_state, scenario=scenario
+        )
         t_enforce_start = time.perf_counter()
         _enforce_feedback_consistency(feedback, message)
         t_enforce_end = time.perf_counter()
