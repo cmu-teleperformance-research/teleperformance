@@ -1,0 +1,148 @@
+{
+  "scenario": "exchange_item",
+  "customer": {
+    "name": "{{customer_name}}",
+    "customerId": "{{customer_id}}",
+    "membership": "{{membership}}",
+    "phone": "{{phone}}"
+  },
+  "previousOrders": [
+    { "id": "ORD-20871104", "date": "April 22, 2026", "item": "Running Shorts (M)", "status": "Delivered" },
+    { "id": "ORD-20904417", "date": "June 3, 2026", "item": "Moisture-Wick Tee (S)", "status": "Delivered" }
+  ],
+  "previousExchanges": [
+    { "id": "EXC-2025-88213", "date": "November 2025", "item": "Trail Runner — Size Exchange", "status": "Completed" }
+  ],
+  "previousSupportCases": [
+    { "id": "CASE-77410", "date": "April 24, 2026", "topic": "Shipping address update", "status": "Resolved" }
+  ],
+  "order": {
+    "orderNumber": "{{order_number}}",
+    "purchaseDate": "{{purchase_date}}",
+    "item": "{{item}}",
+    "size": "{{current_size}}",
+    "color": "{{color}}",
+    "paymentMethod": "{{payment_method}}",
+    "shippingAddress": "88 Sunset Ave, San Francisco, CA",
+    "returnWindowStatus": "Purchased July 10 · Delivered July 13"
+  },
+  "eligibility": {
+    "returnWindow": "Eligible — 24 days remaining",
+    "itemConditionRequired": "Unworn, Original Packaging, Tags Attached",
+    "itemConditionConfirmed": "Confirmed — unworn, tags attached, original box",
+    "exchangeEligible": "Yes",
+    "returnLabel": "Free Prepaid Label Available"
+  },
+  "inventory": [
+    { "id": "S1", "size": "Women's 6.5", "status": "Out of Stock", "selectable": false, "shipEstimate": null },
+    { "id": "S2", "size": "Women's 7", "status": "Current Purchase", "selectable": false, "shipEstimate": null },
+    { "id": "S3", "size": "Women's 7.5", "status": "Limited Stock (3)", "selectable": true, "shipEstimate": "Ships within 2 business days" },
+    { "id": "S4", "size": "Women's 8", "status": "In Stock", "selectable": true, "shipEstimate": "Ships within 1 business day" },
+    { "id": "S5", "size": "Women's 8.5", "status": "In Stock", "selectable": true, "shipEstimate": "Ships within 1 business day" },
+    { "id": "S6", "size": "Women's 9", "status": "Low Stock (2)", "selectable": true, "shipEstimate": "Ships within 2 business days" }
+  ],
+  "exchangeOptions": [
+    { "id": "standard", "label": "Standard Exchange", "price": "Free", "timeline": "3–5 business days" },
+    { "id": "express", "label": "Express Exchange (Premium Members)", "price": "Free Overnight Shipping", "timeline": "Arrives next business day" },
+    { "id": "color", "label": "Different Color", "price": "Available", "timeline": "Subject to inventory" },
+    { "id": "credit", "label": "Store Credit", "price": "Available Immediately", "timeline": "N/A" }
+  ],
+  "policy": "EXCHANGE POLICY — Premium Member\n\nReturn Window: 30 days from delivery\nCondition Required: Unworn, tags attached, original packaging\n\nExchange Shipping Options\n  ┌───────────────────────────────────────────────────────┐\n  │  Standard Exchange:   FREE (3–5 business days)        │\n  │  Express Exchange:    FREE Overnight (Premium only)   │\n  │  Different Color:     Same shipping rules apply       │\n  │  Store Credit:        Immediate, no shipping needed    │\n  └───────────────────────────────────────────────────────┘\n\nGuidance\n  • Recommend Express Exchange for Premium Members with a time-sensitive need\n  • A free prepaid return label is issued for the original item regardless of option chosen\n  • New item ships once the exchange is confirmed — does not wait for the original to be returned",
+  "confirmationEmail": "olivia.martinez@example.com",
+  "exchangeRecord": {
+    "exchangeConfirmationNumber": "EXC-2026-20938",
+    "newOrderNumber": "ORD-20938451-EX",
+    "returnLabel": "Prepaid UPS Label — emailed",
+    "estimatedDeliveryDate": "Next business day"
+  },
+  "steps": [
+    {
+      "id": "lookup",
+      "label": "Customer Lookup",
+      "icon": "🔍",
+      "prompt": { "type": "customer", "text": "Ask the customer for their customer ID or order number to verify identity before discussing the order." }
+    },
+    {
+      "id": "order",
+      "label": "Order Details",
+      "icon": "🧾",
+      "prompt": { "type": "action", "text": "Review the order — item, size, color, and return window status — before checking eligibility." }
+    },
+    {
+      "id": "eligibility",
+      "label": "Item Eligibility",
+      "icon": "📏",
+      "prompt": { "type": "action", "text": "Confirm the item is eligible for exchange based on the return window and item condition." }
+    },
+    {
+      "id": "inventory",
+      "label": "Inventory Availability",
+      "icon": "📦",
+      "prompt": { "type": "customer", "text": "Ask the customer what size they need, then check availability and select the matching size." }
+    },
+    {
+      "id": "options",
+      "label": "Exchange Options",
+      "icon": "📋",
+      "prompt": { "type": "action", "text": "Review exchange shipping options and select the best one given the customer's situation." }
+    },
+    {
+      "id": "complete",
+      "label": "Complete Exchange",
+      "icon": "✅",
+      "prompt": { "type": "action", "text": "Confirm all details are correct, then complete the exchange." }
+    },
+    {
+      "id": "communicate",
+      "label": "Communicate to Customer",
+      "icon": "💬",
+      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the exchange confirmation below." }
+    }
+  ],
+  "screens": {
+    "lookup": {
+      "searchPlaceholder": "Enter customer ID or order number...",
+      "searchButtonLabel": "Search",
+      "searchKeys": ["{{customer_id}}", "{{order_number}}"],
+      "wrongButtons": ["Issue Refund", "Cancel Order", "File Damage Claim"],
+      "advanceLabel": "View Order Details →",
+      "foundWrongButtons": ["Delete Account"]
+    },
+    "order": {
+      "wrongButtons": ["Cancel Order", "Modify Payment Method", "Apply Discount Code"]
+    },
+    "eligibility": {
+      "advanceLabel": "Check Inventory Availability →",
+      "wrongButtons": ["Deny Exchange — Past Window", "Require Additional Proof of Purchase"]
+    },
+    "inventory": {
+      "advanceLabel": "Review Exchange Options →",
+      "wrongButtons": ["Backorder Unavailable Size", "Suggest Different Retailer"]
+    },
+    "options": {
+      "correctValue": "express",
+      "correctLabel": "✓ Express Exchange (Premium Member — Free Overnight)",
+      "wrongButtons": ["Standard Exchange Only", "Store Credit Only", "Different Color Only"],
+      "correctMessage": "Correct. As a Premium Member with a time-sensitive need, Express Exchange gets her the correct size overnight at no charge."
+    },
+    "complete": {
+      "wrongButtons": ["Complete Exchange Without Confirming Size"]
+    },
+    "communicate": {
+      "customerName": "{{first_name}}",
+      "coaching": {
+        "items": [
+          "Confirm the order and item are correctly identified",
+          "Confirm the item is eligible for exchange (return window, condition)",
+          "Confirm the correct replacement size (Women's 8)",
+          "Explain the Express Exchange timeline (overnight, free for Premium Members)",
+          "Explain the free prepaid return label for the original pair",
+          "Provide the exchange confirmation number and new order number"
+        ]
+      },
+      "caseNumber": "{{case_number}}",
+      "caseStatus": "Closed",
+      "resolution": "Express exchange processed — Women's 8 shipping overnight, prepaid return label sent."
+    }
+  }
+}

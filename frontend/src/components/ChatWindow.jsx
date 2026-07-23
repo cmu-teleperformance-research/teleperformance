@@ -16,6 +16,7 @@ const SCENARIO_LABELS = {
   baggage_delay: "Lost Baggage",
   book_flight: "Book Flight",
   package_never_arrived: "Package Never Arrived",
+  exchange_item: "Exchange Item",
 };
 
 export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed }) {

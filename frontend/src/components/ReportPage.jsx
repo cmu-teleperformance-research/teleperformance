@@ -5,6 +5,7 @@ const SCENARIO_LABELS = {
   baggage_delay: "Lost Baggage",
   book_flight: "Book Flight",
   package_never_arrived: "Package Never Arrived",
+  exchange_item: "Exchange Item",
 };
 
 const SIGNAL_COLORS = {

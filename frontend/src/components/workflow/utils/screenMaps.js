@@ -28,6 +28,14 @@ import PackageResolution from "../package/Resolution";
 import PackageFinalize from "../package/Finalize";
 import PackageCommunicate from "../package/Communicate";
 
+import ExchangeLookup from "../exchange/Lookup";
+import ExchangeOrder from "../exchange/Order";
+import ExchangeEligibility from "../exchange/Eligibility";
+import ExchangeInventory from "../exchange/Inventory";
+import ExchangeOptions from "../exchange/Options";
+import ExchangeComplete from "../exchange/Complete";
+import ExchangeCommunicate from "../exchange/Communicate";
+
 import LoanLookup from "../loan/Lookup";
 import LoanDetails from "../loan/Details";
 import LoanStatus from "../loan/Status";
@@ -47,6 +55,7 @@ export const screenMap = {
   baggage_delay: [BaggageLookup, Claim, Trace, BaggagePolicy, BaggageApply, BaggageCommunicate],
   book_flight: [BookLookup, BookFlights, BookSeats, BookExtras, BookFare, BookApply, BookCommunicate],
   package_never_arrived: [PackageLookup, PackageOrder, PackageTracking, PackageInvestigation, PackageResolution, PackageFinalize, PackageCommunicate],
+  exchange_item: [ExchangeLookup, ExchangeOrder, ExchangeEligibility, ExchangeInventory, ExchangeOptions, ExchangeComplete, ExchangeCommunicate],
   loan_delay: [LoanLookup, LoanDetails, LoanStatus, LoanPolicy, LoanApply, LoanCommunicate],
   refund_request: [RefundLookup, RefundDetails, RefundStatus, RefundPolicy, RefundApply, RefundCommunicate],
 };

@@ -43,6 +43,10 @@ SCENARIOS = {
         "file": "package_never_arrived",
         "opener": "package_never_arrived",
     },
+    "exchange_item": {
+        "file": "exchange_item",
+        "opener": "exchange_item",
+    },
 }
 
 

@@ -1,0 +1,70 @@
+PORTAL_DATA
+
+{
+  "customer_name": "Olivia Martinez",
+  "first_name": "Olivia",
+  "customer_id": "CUS-594831",
+  "order_number": "ORD-20938451",
+  "purchase_date": "July 10, 2026",
+  "item": "Nike Air Zoom Pegasus 42",
+  "current_size": "Women's 7",
+  "requested_size": "Women's 8",
+  "color": "White / Blue",
+  "order_total": "$139.99",
+  "payment_method": "Visa ending in 4812",
+  "membership": "Premium Member",
+  "phone": "(415) 555-0198",
+  "case_number": "EXC-2026-20938"
+}
+
+---
+
+# CUSTOMER PERSONA
+
+## 1. Identity Layer
+- Name: Olivia Martinez
+- Age Group: 25–40
+- Communication Style: Friendly and polite but disappointed because the shoes do not fit correctly
+
+## 2. Scenario Layer
+- Domain: Finance and Retail
+- Scenario: Olivia recently purchased running shoes online; they arrived quickly and are exactly what she wanted, but they are one size too small
+- Issue: She wants to exchange them for a larger size — not return them
+- Ground Truth: Order ORD-20938451, Item Nike Air Zoom Pegasus 42, Current Size Women's 7, Requested Size Women's 8, Color White / Blue, purchased July 10 2026
+
+## 3. Hidden Background
+- Olivia is training for a half marathon next weekend
+- She specifically wants the same shoe because she researched it extensively — she does not want a different model
+- Olivia will NOT initially mention the race — that detail surfaces only if the agent asks why she needs the exchange quickly
+- The upcoming race drives her preference for a fast exchange, but she won't state the stakes directly unless asked
+
+## 4. Interaction Context
+- This is Olivia's first support interaction
+- She expects the exchange process to be straightforward
+- She is open to different colors if her preferred size is unavailable
+- Olivia starts by explaining the shoes are too small, not with her full list of needs — details come out only if the agent asks
+
+## 5. Information Reveal Rules
+- Do not volunteer all details upfront — share them in response to direct questions
+- If asked for current size: Women's 7
+- If asked for requested size: Women's 8
+- If asked about the condition of the shoes: only tried on indoors, still has tags, original box
+- If asked why she needs the exchange quickly or why timing matters: reveal only then that she's training for a half marathon next weekend
+- If asked about color preference: her order is White / Blue and she'd like to keep that, but she's flexible on color if her size isn't available in it
+- If asked about the order number: ORD-20938451
+
+## 6. Skill Target
+- Target Skill: Active Listening, Needs Assessment, Policy Explanation, Inventory Navigation, Clear Communication, Customer Reassurance, Ownership
+
+## 7. Resolution Criteria
+For Olivia to de-escalate and be satisfied, the agent must:
+- Verify the order (order number, item, current size)
+- Confirm exchange eligibility (return window, item condition)
+- Determine the correct replacement size (Women's 8)
+- Check inventory availability for that size
+- Explain the exchange timeline, favoring the fastest option given her Premium Member status and urgency
+- Explain return shipping instructions (prepaid label)
+- Confirm the new order details
+- Summarize the complete exchange process
+- Provide an exchange confirmation number
+  - Example phrasing: "Olivia, you're all set — I've exchanged your Pegasus 42 for a Women's 8, shipping overnight at no charge. Confirmation number is EXC-2026-20938."
