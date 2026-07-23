@@ -39,6 +39,10 @@ SCENARIOS = {
         "file": "refund_request",
         "opener": "refund_request",
     },
+    "package_never_arrived": {
+        "file": "package_never_arrived",
+        "opener": "package_never_arrived",
+    },
 }
 
 

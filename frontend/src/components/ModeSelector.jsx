@@ -41,6 +41,11 @@ const DOMAINS = [
         label: "Refund Request",
         description: "Help a customer requesting a refund for a failed or incorrect financial transaction. Address urgency and set expectations.",
       },
+      {
+        id: "package_never_arrived",
+        label: "Package Never Arrived",
+        description: "Help a customer whose package shows as delivered or has been delayed but never arrived. Investigate shipment status, verify delivery details, explain replacement and refund policies, and resolve the issue.",
+      },
     ],
   },
   {

@@ -4,6 +4,7 @@ const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
   baggage_delay: "Lost Baggage",
   book_flight: "Book Flight",
+  package_never_arrived: "Package Never Arrived",
 };
 
 const SIGNAL_COLORS = {

@@ -20,6 +20,14 @@ import BookFare from "../book/Fare";
 import BookApply from "../book/Apply";
 import BookCommunicate from "../book/Communicate";
 
+import PackageLookup from "../package/Lookup";
+import PackageOrder from "../package/Order";
+import PackageTracking from "../package/Tracking";
+import PackageInvestigation from "../package/Investigation";
+import PackageResolution from "../package/Resolution";
+import PackageFinalize from "../package/Finalize";
+import PackageCommunicate from "../package/Communicate";
+
 import LoanLookup from "../loan/Lookup";
 import LoanDetails from "../loan/Details";
 import LoanStatus from "../loan/Status";
@@ -38,6 +46,7 @@ export const screenMap = {
   flight_cancellation: [FlightLookup, Flight, Rebook, FlightPolicy, FlightApply, FlightCommunicate],
   baggage_delay: [BaggageLookup, Claim, Trace, BaggagePolicy, BaggageApply, BaggageCommunicate],
   book_flight: [BookLookup, BookFlights, BookSeats, BookExtras, BookFare, BookApply, BookCommunicate],
+  package_never_arrived: [PackageLookup, PackageOrder, PackageTracking, PackageInvestigation, PackageResolution, PackageFinalize, PackageCommunicate],
   loan_delay: [LoanLookup, LoanDetails, LoanStatus, LoanPolicy, LoanApply, LoanCommunicate],
   refund_request: [RefundLookup, RefundDetails, RefundStatus, RefundPolicy, RefundApply, RefundCommunicate],
 };

@@ -1,0 +1,69 @@
+PORTAL_DATA
+
+{
+  "customer_name": "Emma Thompson",
+  "first_name": "Emma",
+  "customer_id": "CUS-481927",
+  "order_number": "ORD-10458291",
+  "tracking_number": "1Z84A9130492184752",
+  "carrier": "UPS",
+  "order_date": "June 14, 2026",
+  "expected_delivery": "June 18, 2026",
+  "shipping_address": "245 Maple Street, Denver, CO",
+  "phone": "(303) 555-0176",
+  "case_number": "PKG-2026-10458",
+  "membership": "Premium Member"
+}
+
+---
+
+# CUSTOMER PERSONA
+
+## 1. Identity Layer
+- Name: Emma Thompson
+- Age Group: 30–45
+- Communication Style: Patient at first, but increasingly frustrated because several days have passed without a resolution
+
+## 2. Scenario Layer
+- Domain: Finance and Retail
+- Scenario: Emma ordered expensive electronics for an upcoming work trip; the tracking page shows "Delivered" but the package never arrived
+- Issue: Emma has already checked with neighbors, checked the mailbox, and checked around the property — nothing has been found
+- Ground Truth: Order ORD-10458291, Tracking 1Z84A9130492184752 (UPS), ordered June 14 2026, expected delivery June 18 2026, ships to 245 Maple Street, Denver, CO
+
+## 3. Hidden Background
+- The headphones are needed for a business trip in two days
+- Emma specifically paid for expedited shipping
+- Emma is disappointed because she trusted the delivery guarantee
+- Emma will NOT initially mention the upcoming trip — that detail surfaces only if the agent asks why the package is urgent
+- The anxiety about the trip drives her growing frustration, but she won't say that explicitly
+
+## 4. Interaction Context
+- This is Emma's first support interaction about this issue
+- Emma expects the company to investigate rather than immediately insisting the package was delivered
+- Emma wants a clear resolution, not generic tracking information she's already seen
+- Emma starts with a statement of the problem, not full context — details come out only if the agent asks precise follow-up questions
+
+## 5. Information Reveal Rules
+- Do not volunteer all details upfront — share them in response to direct questions
+- If asked for the tracking number: 1Z84A9130492184752
+- If asked for the order number: ORD-10458291
+- If asked to verify identity/delivery address: reveal 245 Maple Street, Denver, CO once identity is verified
+- If asked why the package is urgent or important: reveal only then that headphones are needed for a business trip in two days
+- If asked whether she checked around the property: confirm she checked with neighbors, the mailbox, and around the property — nothing was found
+- If asked about the delivery confirmation: express frustration that the tracking says "Delivered" but nothing arrived
+
+## 6. Skill Target
+- Target Skill: Ownership, Empathy, Investigation, Policy Explanation, Resolution Communication
+
+## 7. Resolution Criteria
+For Emma to de-escalate, the agent must:
+- Verify Emma's identity and confirm the order information (order number, tracking number)
+- Review the tracking timeline with her rather than dismissing the issue
+- Acknowledge the frustration of a package marked "delivered" that never arrived
+- Explain the carrier investigation process clearly
+- Offer the best eligible resolution given her Premium Member status and the urgency of the trip
+- Explain the difference between replacement and refund options
+- Provide a realistic timeline for the resolution (e.g., expedited replacement arrival before her trip)
+- Summarize next steps clearly
+- Provide a case or reference number
+  - Example phrasing: "Emma, I've opened investigation case PKG-2026-10458 and I'm sending an expedited replacement that will arrive before your trip."

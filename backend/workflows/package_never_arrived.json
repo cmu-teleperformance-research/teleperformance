@@ -1,0 +1,159 @@
+{
+  "scenario": "package_never_arrived",
+  "customer": {
+    "name": "{{customer_name}}",
+    "customerId": "{{customer_id}}",
+    "membership": "{{membership}}",
+    "phone": "{{phone}}"
+  },
+  "previousOrders": [
+    { "id": "ORD-10221847", "date": "March 2, 2026", "item": "Bluetooth Speaker", "status": "Delivered" },
+    { "id": "ORD-10339502", "date": "May 9, 2026", "item": "Office Chair", "status": "Delivered" }
+  ],
+  "previousSupportCases": [
+    { "id": "CASE-88213", "date": "March 4, 2026", "topic": "Sizing question — Office Chair", "status": "Resolved" }
+  ],
+  "order": {
+    "orderNumber": "{{order_number}}",
+    "purchaseDate": "{{order_date}}",
+    "total": "$421.15",
+    "paymentMethod": "Visa •••• 4471",
+    "shippingAddress": "{{shipping_address}}"
+  },
+  "items": [
+    { "name": "Wireless Noise Cancelling Headphones", "price": 279 },
+    { "name": "Laptop Sleeve", "price": 39 },
+    { "name": "USB-C Dock", "price": 89 }
+  ],
+  "tracking": {
+    "trackingNumber": "{{tracking_number}}",
+    "carrier": "{{carrier}}",
+    "expectedDelivery": "{{expected_delivery}}",
+    "timeline": [
+      { "date": "June 15", "event": "Order Processed" },
+      { "date": "June 16", "event": "Departed Warehouse" },
+      { "date": "June 17", "event": "Regional Distribution Center" },
+      { "date": "June 18", "event": "Out For Delivery" },
+      { "date": "June 18", "event": "Delivered", "detail": "Front Door · 2:17 PM" }
+    ],
+    "gpsScan": "Confirmed near 245 Maple Street, Denver, CO (accuracy ±40 ft)",
+    "deliveryPhoto": "Photo on file — package on a doormat, address partially obscured",
+    "driverNotes": "\"Left at front door, no response.\"",
+    "signatureRequired": "No"
+  },
+  "investigation": {
+    "lastGpsLocation": "245 Maple St (approx.) — 40 ft from confirmed address pin",
+    "driverNotes": "\"Left at front door, no response.\"",
+    "deliveryConfidence": "Low — GPS pin does not match exact address geofence",
+    "neighborDeliveryCheck": "Not yet performed by carrier",
+    "packageLockerCheck": "N/A — no package locker at this address",
+    "escalationStatus": "Not yet escalated"
+  },
+  "resolutionOptions": {
+    "replacementEligible": true,
+    "refundEligible": true,
+    "reshipOption": "Expedited (2-day) reship available — Premium Member benefit",
+    "storeCredit": "Available as alternative — 110% of order value",
+    "investigationTimeline": "Carrier investigation: 3–5 business days; does not delay replacement or refund",
+    "premiumBenefits": "Premium Members receive expedited reship at no charge and priority investigation handling"
+  },
+  "policy": "LOST/UNDELIVERED PACKAGE POLICY — Premium Member\n\nWhen tracking shows \"Delivered\" but the customer disputes receipt:\n  • Carrier investigation must be opened before final resolution\n  • Investigation does NOT need to complete before offering replacement or refund\n\nPremium Member Resolution Options\n  ┌───────────────────────────────────────────────────────┐\n  │  Expedited Replacement Reship:   FREE (2-day)         │\n  │  Standard Replacement Reship:    FREE (5-7 day)       │\n  │  Full Refund:                    Available            │\n  │  Store Credit:                   110% of order value  │\n  └───────────────────────────────────────────────────────┘\n\nGuidance\n  • If the customer has time-sensitive need (e.g., travel), recommend Expedited Replacement Reship\n  • Refund is appropriate if the customer no longer wants the item\n  • Carrier investigation proceeds in parallel regardless of resolution chosen",
+  "confirmationEmail": "emma.thompson@example.com",
+  "resolutionRecord": {
+    "replacementOrderNumber": "ORD-10458291-RS",
+    "refundConfirmation": "N/A — Replacement Issued",
+    "investigationCaseNumber": "INV-2026-77341"
+  },
+  "steps": [
+    {
+      "id": "lookup",
+      "label": "Customer Lookup",
+      "icon": "🔍",
+      "prompt": { "type": "customer", "text": "Ask the customer for their customer ID or order number to verify identity before discussing account details." }
+    },
+    {
+      "id": "order",
+      "label": "Order Details",
+      "icon": "🧾",
+      "prompt": { "type": "action", "text": "Review the order — items purchased, total, and shipping address — before checking tracking." }
+    },
+    {
+      "id": "tracking",
+      "label": "Shipment Tracking",
+      "icon": "📦",
+      "prompt": { "type": "action", "text": "Review the delivery timeline and scan details. Note that 'Delivered' does not match the customer's report." }
+    },
+    {
+      "id": "investigation",
+      "label": "Carrier Investigation",
+      "icon": "🕵️",
+      "prompt": { "type": "action", "text": "Review GPS/driver evidence, then submit a lost package investigation with the carrier." }
+    },
+    {
+      "id": "resolution",
+      "label": "Replacement / Refund Options",
+      "icon": "📋",
+      "prompt": { "type": "action", "text": "Review eligible resolution options and select the best one given the customer's situation." }
+    },
+    {
+      "id": "finalize",
+      "label": "Finalize Resolution",
+      "icon": "✅",
+      "prompt": { "type": "action", "text": "Confirm the chosen resolution and issue the applicable confirmation numbers." }
+    },
+    {
+      "id": "communicate",
+      "label": "Communicate to Customer",
+      "icon": "💬",
+      "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the resolution and next steps below." }
+    }
+  ],
+  "screens": {
+    "lookup": {
+      "searchPlaceholder": "Enter customer ID or order number...",
+      "searchButtonLabel": "Search",
+      "searchKeys": ["{{customer_id}}", "{{order_number}}"],
+      "wrongButtons": ["Issue Refund", "Cancel Order", "File Damage Claim"],
+      "advanceLabel": "View Order Details →",
+      "foundWrongButtons": ["Delete Account"]
+    },
+    "order": {
+      "wrongButtons": ["Cancel Order", "Modify Payment Method", "Apply Discount Code"]
+    },
+    "tracking": {
+      "wrongButtons": ["Close Case — Delivered", "Mark as Customer Error"],
+      "advanceLabel": "Open Carrier Investigation →"
+    },
+    "investigation": {
+      "correctValue": "submitted",
+      "correctLabel": "Submit Lost Package Investigation →",
+      "wrongButtons": ["Deny Claim — GPS Confirms Delivery", "Ignore and Close Ticket"],
+      "correctMessage": "Investigation submitted to carrier. Reference logged — this runs in parallel and does not block resolution."
+    },
+    "resolution": {
+      "correctValue": "expedited_reship",
+      "correctLabel": "✓ Expedited Replacement Reship (Premium Benefit)",
+      "wrongButtons": ["Refund Only — No Replacement", "Standard (Non-Expedited) Reship", "Store Credit Only", "Deny Resolution — Await Investigation"],
+      "correctMessage": "Correct. Premium Members are eligible for a free expedited (2-day) replacement reship — the fastest path given the customer's timeline."
+    },
+    "finalize": {
+      "wrongButtons": ["Close Case Without Resolution"]
+    },
+    "communicate": {
+      "customerName": "{{first_name}}",
+      "coaching": {
+        "items": [
+          "Acknowledge the frustration of a 'Delivered' package that never arrived",
+          "Explain that a carrier investigation has been opened",
+          "Confirm the expedited replacement reship and its 2-day delivery window",
+          "Mention the refund/store credit alternatives were considered",
+          "Confirm the replacement will arrive before the customer's trip",
+          "Provide the case number and confirm the email confirmation was sent"
+        ]
+      },
+      "caseNumber": "{{case_number}}",
+      "caseStatus": "Open — Investigation In Progress",
+      "resolution": "Expedited replacement reship issued. Carrier investigation opened. Confirmation email sent."
+    }
+  }
+}
