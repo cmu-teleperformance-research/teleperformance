@@ -27,7 +27,13 @@ export default function WorkflowPortal({
       .finally(() => setWorkflowLoading(false));
   }, [scenario]);
 
-  const updateData = (key, val) => setWorkflowData(prev => ({ ...prev, [key]: val }));
+  const updateData = (keyOrPatch, val) => {
+    if (typeof keyOrPatch === "object" && keyOrPatch !== null) {
+      setWorkflowData(prev => ({ ...prev, ...keyOrPatch }));
+      return;
+    }
+    setWorkflowData(prev => ({ ...prev, [keyOrPatch]: val }));
+  };
 
   if (workflowLoading || !workflow) {
     return (

@@ -107,16 +107,18 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     if (!training) return;
     const target = lastFeedbackTargetRef.current;
     if (!target?.userMessageId || !sessionId) return;
-    requestFeedback({ ...target, portalState }).catch(() => {});
+    requestFeedback({ ...target, portalState }).catch(() => { });
   }
 
   function handleSetWorkflowData(updater) {
     setWorkflowData(prev => {
       const next = typeof updater === "function" ? updater(prev) : updater;
       const significantKeys = ["applicationStatus", "delayReason", "resolution", "caseOutcome"];
-      const changed = significantKeys.some(
-        (key) => prev[key] !== next[key] && next[key] !== "" && next[key] !== false
-      );
+      const changed = significantKeys.some((key) => {
+        if (prev[key] === next[key]) return false;
+        // Refetch when a significant field becomes a meaningful value (e.g. search match).
+        return next[key] !== "" && next[key] !== false && next[key] != null;
+      });
       if (changed) {
         queueMicrotask(() => {
           refetchFeedbackForPortal({
@@ -249,6 +251,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       // ── Streaming path (evaluation mode) ──────────────────────────────────
       const csrIdx = updatedMessages.length - 1;
       let userMessageId = null;
+      let customerResponse = "";
       try {
         const res = await fetch(`${API_BASE_URL}/chat-stream`, {
           method: "POST",
@@ -287,6 +290,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             const chunk = decoder.decode(value, { stream: true });
             if (!chunk) continue;
 
+            customerResponse += chunk;
             if (!started) {
               started = true;
               flushSync(() => {
@@ -337,13 +341,16 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
       // Run evaluation pipeline in background (hidden from participant, saved to DB)
       if (userMessageId) {
+        const historyWithCustomer = customerResponse
+          ? [...updatedMessages, { role: "assistant", content: customerResponse }]
+          : updatedMessages;
         console.log("INFO: Running evaluation pipeline in background for user message ID:", userMessageId);
         axios.post(
           `${API_BASE_URL}/feedback`,
           {
             scenario, persona,
             message: trimmed,
-            history: updatedMessages,
+            history: historyWithCustomer,
             session_id: sessionId,
             user_message_id: Number(userMessageId),
             portal_state: getPortalState(),
@@ -384,18 +391,31 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
       const { customer_response, user_message_id } = response.data;
       const csrIdx = updatedMessages.length - 1;
+      const historyWithCustomer = [
+        ...updatedMessages,
+        { role: "assistant", content: customer_response },
+      ];
 
       // Show customer response immediately and unblock the send button
       setMessages(prev => [...prev, { role: "assistant", content: customer_response }]);
       setLoading(false);
       inputRef.current?.focus();
 
+      console.log("Getting feedback for user message ID:", user_message_id);
+      console.log("Getting feedback:", {
+        csrIdx,
+        message: trimmed,
+        history: historyWithCustomer,
+        userMessageId: user_message_id,
+        portalState: getPortalState(),
+      });
+
       // Fetch feedback from the separate evaluation pipeline
       try {
         await requestFeedback({
           csrIdx,
           message: trimmed,
-          history: updatedMessages,
+          history: historyWithCustomer,
           userMessageId: user_message_id,
           portalState: getPortalState(),
         });

@@ -271,11 +271,29 @@ def start_conversation(scenario: str, persona: str, training: bool) -> dict:
 
 # --- Evaluation Pipeline ---
 
-def _extract_latest_customer_utterance(history: list[dict]) -> tuple[str, list[dict]]:
+def _customer_turns_around_csr(history: list[dict]) -> tuple[str, str]:
+    """Return (customer_before, customer_after) relative to the last CSR (user) turn."""
+    last_user_idx = None
     for i in range(len(history) - 1, -1, -1):
-        if history[i]["role"] == "assistant":
-            return history[i]["content"], history[:i]
-    return "", []
+        if history[i].get("role") == "user":
+            last_user_idx = i
+            break
+    if last_user_idx is None:
+        return "", ""
+
+    customer_before = ""
+    for i in range(last_user_idx - 1, -1, -1):
+        if history[i].get("role") == "assistant":
+            customer_before = history[i].get("content", "")
+            break
+
+    customer_after = ""
+    for i in range(last_user_idx + 1, len(history)):
+        if history[i].get("role") == "assistant":
+            customer_after = history[i].get("content", "")
+            break
+
+    return customer_before, customer_after
 
 
 def _build_history_text(history: list[dict]) -> str:
@@ -317,6 +335,20 @@ def _format_portal_state_for_evaluator(portal_state: dict | None, scenario: str 
         f"- Completed step ids: {', '.join(completed) if completed else '(none)'}",
     ]
 
+    # Explicit progress signals so the evaluator does not miss search / screen review.
+    if data.get("applicationStatus"):
+        lines.append(
+            "- Passenger/record search: COMPLETED (match found in portal). "
+            "Mark portal search/lookup checklist items as done."
+        )
+    elif data.get("searchNotFound"):
+        lines.append(
+            "- Passenger/record search: ATTEMPTED, no match found. "
+            "Search was performed but the record was not found."
+        )
+    if data.get("searchQuery"):
+        lines.append(f"- Last portal search query: {data.get('searchQuery')}")
+
     if data:
         lines.append("- Portal field values:")
         for key, value in data.items():
@@ -349,6 +381,23 @@ def _format_portal_state_for_evaluator(portal_state: dict | None, scenario: str 
             screens = workflow.get("screens") or {}
             current_id = steps[step_idx]["id"] if 0 <= step_idx < len(steps) else None
             screen = screens.get(current_id) if current_id else None
+
+            # Viewing a detail screen means that review step is underway / done in the portal.
+            if current_id == "flight":
+                lines.append(
+                    "- Flight details screen is open: treat portal 'review flight details' "
+                    "as done. Lookup/search is done if applicationStatus is true or 'lookup' is completed."
+                )
+            elif current_id == "claim":
+                lines.append(
+                    "- Baggage claim screen is open: treat portal 'review bag/claim details' "
+                    "as done. Lookup/search is done if applicationStatus is true or 'lookup' is completed."
+                )
+            elif current_id in ("details", "status"):
+                lines.append(
+                    f"- Detail screen '{current_id}' is open: treat the corresponding portal "
+                    "review step as done."
+                )
 
             if current_id == "rebook" and workflow.get("rebooking"):
                 lines.append("- Rebooking options visible in portal:")
@@ -402,7 +451,7 @@ def _format_portal_state_for_evaluator(portal_state: dict | None, scenario: str 
                 selected = data.get("resolution")
                 lines.append(f"- Policy option to select: {screen['correctLabel']}")
                 if selected:
-                    lines.append(f"- Selected resolution value: {selected}")
+                    lines.append(f"- Policy option currently selected: {selected}")
                 if screen.get("correctMessage"):
                     lines.append(f"- Policy confirmation: {screen['correctMessage']}")
 
@@ -413,24 +462,30 @@ def _format_portal_state_for_evaluator(portal_state: dict | None, scenario: str 
 
 
 def _run_evaluation_pipeline(
-    customer_msg: str,
     csr_msg: str,
-    prior_history: list[dict],
+    history: list[dict],
     portal_state: dict | None = None,
     scenario: str | None = None,
 ) -> dict:
-    history_text = _build_history_text(prior_history)
+    history_text = _build_history_text(history)
+    customer_before, customer_after = _customer_turns_around_csr(history)
     t_pipeline = time.perf_counter()
 
     input_parts = [
-        f'Latest customer utterance: "{customer_msg}"',
-        f'CSR\'s current utterance: "{csr_msg}"',
+        "Conversation history:",
+        history_text or "(none)",
+        "",
+        f'Customer\'s message before the CSR\'s current message:\n"{customer_before}"',
+        "",
+        f'CSR\'s current message (the turn you rate):\n"{csr_msg}"',
+        "",
+        'Customer\'s reply to the CSR\'s current message '
+        "(context for the recommended response ONLY — never use for rating):",
+        f'"{customer_after}"',
     ]
-    if history_text:
-        input_parts.append(f"\nRecent prior turns:\n{history_text}")
     portal_text = _format_portal_state_for_evaluator(portal_state, scenario)
     if portal_text:
-        input_parts.append(f"\n{portal_text}")
+        input_parts.extend(["", portal_text])
     evaluator_input = "\n".join(input_parts)
 
     # evaluator_system = load_evaluation_prompt("single_evaluator")
@@ -573,9 +628,8 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
     }
 
     try:
-        customer_msg, prior_history = _extract_latest_customer_utterance(history)
         t_pipeline_start = time.perf_counter()
-        feedback = _run_evaluation_pipeline(customer_msg, message, prior_history)
+        feedback = _run_evaluation_pipeline(message, history)
         #  TODO: uncomment and edit enforcement for production
         # t_enforce_start = time.perf_counter()
         # _enforce_feedback_consistency(feedback, message)
@@ -626,10 +680,9 @@ def run_feedback_pipeline(
         },
     }
     try:
-        customer_msg, prior_history = _extract_latest_customer_utterance(history)
         t_pipeline_start = time.perf_counter()
         feedback = _run_evaluation_pipeline(
-            customer_msg, message, prior_history, portal_state=portal_state, scenario=scenario
+            message, history, portal_state=portal_state, scenario=scenario
         )
         t_enforce_start = time.perf_counter()
         _enforce_feedback_consistency(feedback, message)

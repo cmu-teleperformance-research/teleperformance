@@ -31,8 +31,10 @@ export default function RefundLookup({ workflow, persona, onAdvance, workflowDat
     setSearched(true);
     setSearchedQuery(query);
     const match = searchKeys.some(k => k.trim().toUpperCase() === query.trim().toUpperCase());
-    updateData("applicationStatus", match);
-    updateData("searchNotFound", !match);
+    updateData({
+      applicationStatus: match,
+      searchNotFound: !match,
+    });
   };
 
   return (
@@ -45,9 +47,11 @@ export default function RefundLookup({ workflow, persona, onAdvance, workflowDat
           value={query}
           onChange={e => {
             setSearched(false);
-            updateData("searchQuery", e.target.value);
-            updateData("searchNotFound", false);
-            updateData("applicationStatus", false);
+            updateData({
+              searchQuery: e.target.value,
+              searchNotFound: false,
+              applicationStatus: false,
+            });
           }}
           onKeyDown={e => e.key === "Enter" && handleSearch()}
         />

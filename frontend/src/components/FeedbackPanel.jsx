@@ -294,7 +294,7 @@ function PanelContent({ feedback, feedbackLoading }) {
         <div className="absolute inset-x-0 top-0 h-0.5 bg-blue-500 animate-pulse z-10" />
       )}
       <div
-        className={`p-5 space-y-4 transition-opacity ${feedbackLoading ? "opacity-50 pointer-events-none" : ""
+        className={`p-5 space-y-4 transition-[opacity,filter] duration-200 ${feedbackLoading ? "opacity-50 blur-sm pointer-events-none select-none" : ""
           }`}
       >
         <TaskCompletionFeedbackCard taskFeedback={taskFeedback} />
