@@ -44,18 +44,16 @@ const HOW_IT_WORKS = [
   "Continue until the conversation ends",
 ];
 
-export function HomeGuideContent() {
+export function HomeGuideContent({ title, description, what_to_expect }) {
   return (
     <div className="space-y-10">
       <div className="space-y-3">
         <h1 className="text-3xl font-bold text-gray-900">
-          CSR De-escalation Training Simulator
+          {title || "CSR De-escalation Training Simulator"}
         </h1>
         <p className="text-base text-gray-600 leading-relaxed">
-          In this simulation, you will interact with virtual customers and practice
-          customer service de-escalation skills. During the conversation you will
-          receive feedback designed to help you improve your communication and
-          de-escalation abilities.
+          {what_to_expect ||
+            "In this simulation, you will interact with virtual customers and practice customer service de-escalation skills. During the conversation you will receive feedback designed to help you improve your communication and de-escalation abilities."}
         </p>
       </div>
 
@@ -104,7 +102,7 @@ export function HomeGuideContent() {
   );
 }
 
-export default function WelcomePage({ onStart, navProps }) {
+export default function WelcomePage({ onStart, navProps, title, description, what_to_expect }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
@@ -114,7 +112,7 @@ export default function WelcomePage({ onStart, navProps }) {
 
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto py-12 px-6">
-          <HomeGuideContent />
+          <HomeGuideContent title={title} description={description} what_to_expect={what_to_expect} />
 
           <div className="flex justify-center pb-4 mt-10">
             <button

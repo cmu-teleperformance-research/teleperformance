@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from "axios";
 import API_BASE_URL from "./config";
 import EntryPage from "./components/EntryPage";
@@ -10,29 +10,72 @@ import ReportPage from "./components/ReportPage";
 import ProfilePage from "./components/ProfilePage";
 import ResearchDashboard from "./components/ResearchDashboard";
 import NavBar from "./components/NavBar";
+import { CONDITIONS } from "./conditions";
 
-export default function App() {
+function readStoredSession(conditionId) {
+  try {
+    const id = localStorage.getItem("sessionId");
+    const raw = localStorage.getItem("sessionConfig");
+    if (!(id && raw)) return null;
+    const parsed = JSON.parse(raw);
+    // Drop sessions started under a different experimental condition
+    if (conditionId && parsed.condition !== conditionId) {
+      localStorage.removeItem(`messages_${id}`);
+      localStorage.removeItem("sessionId");
+      localStorage.removeItem("sessionConfig");
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export default function App({ conditionId = null }) {
+  const condition = conditionId ? CONDITIONS[conditionId] : null;
+
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [username, setUsername] = useState(() => localStorage.getItem("username"));
   const [displayName, setDisplayName] = useState(() => localStorage.getItem("displayName"));
   const [role, setRole] = useState(() => localStorage.getItem("role") || "participant");
-  const [sessionConfig, setSessionConfig] = useState(() => {
-    try {
-      const id = localStorage.getItem("sessionId");
-      const raw = localStorage.getItem("sessionConfig");
-      return (id && raw) ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
+  const [sessionConfig, setSessionConfig] = useState(() => readStoredSession(conditionId));
+  const [view, setView] = useState(() => {
+    const stored = readStoredSession(conditionId);
+    return stored ? "chat" : "landing";
   });
-  const [view, setView] = useState(() =>
-    (localStorage.getItem("sessionId") && localStorage.getItem("sessionConfig")) ? "chat" : "landing"
-  );
   const [preLoginView, setPreLoginView] = useState("welcome");
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(null);
   const [sessionExpiredMessage, setSessionExpiredMessage] = useState(null);
+
+  // Persist experimental condition from the URL so it survives login / refresh
+  useEffect(() => {
+    if (conditionId) {
+      localStorage.setItem("condition", conditionId);
+    }
+  }, [conditionId]);
+
+  // Switching condition URLs should not resume a session from another condition
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("sessionConfig");
+      if (!raw || !conditionId) return;
+      const parsed = JSON.parse(raw);
+      if (parsed.condition && parsed.condition !== conditionId) {
+        const sessionId = localStorage.getItem("sessionId");
+        if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
+        localStorage.removeItem("sessionId");
+        localStorage.removeItem("sessionConfig");
+        setSessionConfig(null);
+        setReport(null);
+        setReportError(null);
+        setView("landing");
+      }
+    } catch {
+      // ignore corrupt storage
+    }
+  }, [conditionId]);
 
   function handleLogin(accessToken, user, name, userRole = "participant") {
     console.log("[DEBUG handleLogin] raw userRole arg:", userRole, "(undefined means caller dropped it)");
@@ -45,7 +88,9 @@ export default function App() {
     setUsername(user);
     setDisplayName(name);
     setRole(userRole);
-    setView("mode-select");
+    // Condition routes land on the condition-specific WelcomePage first;
+    // the default / route still goes straight to mode select after login.
+    setView(conditionId ? "landing" : "mode-select");
   }
 
   function clearStoredSession() {
@@ -88,8 +133,11 @@ export default function App() {
 
   function handleModeSelect(config) {
     clearStoredSession();
-    localStorage.setItem("sessionConfig", JSON.stringify(config));
-    setSessionConfig(config);
+    const configWithCondition = conditionId
+      ? { ...config, condition: conditionId }
+      : config;
+    localStorage.setItem("sessionConfig", JSON.stringify(configWithCondition));
+    setSessionConfig(configWithCondition);
     setView("chat");
   }
 
@@ -115,6 +163,7 @@ export default function App() {
           training: sessionConfig.training,
           history: messages,
           session_id: sessionId,
+          ...(conditionId ? { condition: conditionId } : {}),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -140,7 +189,14 @@ export default function App() {
 
   if (!token) {
     if (preLoginView === "welcome") {
-      return <WelcomePage onStart={() => setPreLoginView("entry")} />;
+      return (
+        <WelcomePage
+          onStart={() => setPreLoginView("entry")}
+          title={condition?.title}
+          description={condition?.description}
+          what_to_expect={condition?.what_to_expect}
+        />
+      );
     }
     if (preLoginView === "login") {
       return (
@@ -183,6 +239,9 @@ export default function App() {
       <WelcomePage
         onStart={() => setView("mode-select")}
         navProps={navProps}
+        title={condition?.title}
+        description={condition?.description}
+        what_to_expect={condition?.what_to_expect}
       />
     );
   }
@@ -248,10 +307,14 @@ export default function App() {
     );
   }
 
+  const chatConfig = conditionId
+    ? { ...sessionConfig, condition: conditionId }
+    : sessionConfig;
+
   return (
     <ChatWindow
-      key={`${sessionConfig.scenario}-${sessionConfig.persona}-${sessionConfig.training}`}
-      sessionConfig={sessionConfig}
+      key={`${chatConfig.condition}-${chatConfig.scenario}-${chatConfig.persona}-${chatConfig.training}`}
+      sessionConfig={chatConfig}
       token={token}
       navProps={navProps}
       onEndSession={handleEndSession}

@@ -182,11 +182,10 @@ function StepDomain({ onSelect }) {
             key={d.id}
             onClick={() => d.available && onSelect(d)}
             disabled={!d.available}
-            className={`border rounded-xl p-5 text-left transition space-y-2 ${
-              d.available
-                ? "bg-white border-gray-200 hover:shadow-md hover:border-blue-400 cursor-pointer"
-                : "bg-gray-50 border-gray-200 opacity-50 cursor-not-allowed"
-            }`}
+            className={`border rounded-xl p-5 text-left transition space-y-2 ${d.available
+              ? "bg-white border-gray-200 hover:shadow-md hover:border-blue-400 cursor-pointer"
+              : "bg-gray-50 border-gray-200 opacity-50 cursor-not-allowed"
+              }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-2xl">{d.icon}</span>
@@ -264,18 +263,18 @@ function StepMode({ scenario, persona, onSelect, onBack }) {
     {
       id: "training",
       label: "Training Mode",
-      badge: "Explicit Feedback",
-      badgeColor: "bg-green-100 text-green-800",
+      // badge: "Explicit Feedback",
+      // badgeColor: "bg-green-100 text-green-800",
       description:
-        "Receive explicit coaching feedback after each customer interaction to support skill development and reflection.",
+        "TODO: CHANGE THIS DESCRIPTION. This is the training mode.",
     },
     {
       id: "evaluation",
       label: "Evaluation Mode",
-      badge: "Implicit Feedback",
-      badgeColor: "bg-yellow-100 text-yellow-800",
+      // badge: "Implicit Feedback",
+      // badgeColor: "bg-yellow-100 text-yellow-800",
       description:
-        "Practice the scenario without turn-by-turn coaching. Feedback is provided after the conversation to support reflection on your overall performance.",
+        "TODO: CHANGE THIS DESCRIPTION. This is the evaluation mode.",
     },
   ];
 
@@ -295,9 +294,9 @@ function StepMode({ scenario, persona, onSelect, onBack }) {
           >
             <div className="flex items-center justify-between">
               <span className="text-lg font-semibold text-gray-800">{m.label}</span>
-              <span className={`text-xs font-medium px-2 py-1 rounded-full ${m.badgeColor}`}>
+              {/* <span className={`text-xs font-medium px-2 py-1 rounded-full ${m.badgeColor}`}>
                 {m.badge}
-              </span>
+              </span> */}
             </div>
             <p className="text-sm text-gray-500">{m.description}</p>
           </button>
@@ -368,20 +367,20 @@ export default function ModeSelector({ onSelect, navProps }) {
         <NavBar {...navProps} />
       </header>
       <div className="flex-1 flex flex-col items-center justify-center p-8">
-      <div className="w-full max-w-4xl">
-        {step === 1 && <StepDomain onSelect={handleDomainSelect} />}
-        {step === 2 && selectedDomain && (
-          <StepScenario domain={selectedDomain} onSelect={handleScenarioSelect} onBack={handleBack} />
-        )}
-        {step === 4 && selectedScenario && selectedPersona && (
-          <StepMode
-            scenario={selectedScenario}
-            persona={selectedPersona}
-            onSelect={handleModeSelect}
-            onBack={handleBack}
-          />
-        )}
-      </div>
+        <div className="w-full max-w-4xl">
+          {step === 1 && <StepDomain onSelect={handleDomainSelect} />}
+          {step === 2 && selectedDomain && (
+            <StepScenario domain={selectedDomain} onSelect={handleScenarioSelect} onBack={handleBack} />
+          )}
+          {step === 4 && selectedScenario && selectedPersona && (
+            <StepMode
+              scenario={selectedScenario}
+              persona={selectedPersona}
+              onSelect={handleModeSelect}
+              onBack={handleBack}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

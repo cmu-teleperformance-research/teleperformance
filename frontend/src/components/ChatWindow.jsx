@@ -8,6 +8,7 @@ import NavBar from "./NavBar";
 import { HomeGuideContent } from "./WelcomePage";
 import { screenMap } from "./workflow/utils/screenMaps";
 import API_BASE_URL from "../config";
+import { CONDITIONS } from "../conditions";
 
 const API_URL = `${API_BASE_URL}/chat`;
 
@@ -20,7 +21,8 @@ const SCENARIO_LABELS = {
 };
 
 export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed }) {
-  const { scenario, persona, training, scenarioLabel } = sessionConfig;
+  const { scenario, persona, training, scenarioLabel, condition } = sessionConfig;
+  const showFeedbackPanel = training && (CONDITIONS[condition]?.showFeedbackPanel ?? true);
   const totalPortalSteps = (screenMap[scenario] ?? screenMap.flight_cancellation).length;
 
   const [messages, setMessages] = useState([]);
@@ -499,7 +501,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             </div>
           </div>
 
-          {training && (
+          {showFeedbackPanel && (
             <FeedbackPanel feedback={activeFeedback} feedbackLoading={feedbackLoading} />
           )}
         </div>
