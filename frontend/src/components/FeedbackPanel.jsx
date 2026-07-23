@@ -64,7 +64,7 @@ function PanelContent({ feedback, feedbackLoading }) {
     );
   }
 
-  console.log("FEEDBACK PANEL DATA:", feedback);
+  // console.log("FEEDBACK PANEL DATA:", feedback);
 
   return (
     <div className="p-5 space-y-4">

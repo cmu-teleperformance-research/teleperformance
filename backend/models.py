@@ -21,6 +21,7 @@ class SessionRecord(Base):
     scenario   = Column(String, nullable=False)
     persona    = Column(String, nullable=False)
     training   = Column(Boolean, nullable=False)
+    condition  = Column(String, nullable=True)  # e.g. "cond1" … "cond4"
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 

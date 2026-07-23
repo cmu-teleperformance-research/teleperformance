@@ -31,6 +31,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   const [loading, setLoading] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  // Panel reads this directly — avoids depending only on messages[selectedIdx]
+  const [panelFeedback, setPanelFeedback] = useState(null);
   const [portalStep, setPortalStep] = useState(0);
   const [portalCompleted, setPortalCompleted] = useState([]);
   const [error, setError] = useState(null);
@@ -83,7 +85,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   }, []);
 
   const activeFeedback =
-    selectedIdx !== null ? messages[selectedIdx]?.feedback ?? null : null;
+    panelFeedback ??
+    (selectedIdx !== null ? messages[selectedIdx]?.feedback ?? null : null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -106,7 +109,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     async function startFresh() {
       const response = await axios.post(
         `${API_BASE_URL}/start`,
-        { scenario, persona, training },
+        { scenario, persona, training, ...(condition ? { condition } : {}) },
         { headers: authHeaders, signal: controller.signal }
       );
       setSessionId(response.data.session_id);
@@ -121,7 +124,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           // ADD: Show cached messages instantly before backend responds
           const cached = localStorage.getItem(`messages_${storedSessionId}`);
           if (cached) {
-            try { setMessages(JSON.parse(cached)); } catch {}
+            try { setMessages(JSON.parse(cached)); } catch { }
           }
 
           const response = await axios.get(
@@ -156,7 +159,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
     init();
     return () => controller.abort();
-  }, [scenario, persona, training]);
+  }, [scenario, persona, training, condition]);
 
   async function sendMessage() {
     const trimmed = input.trim();
@@ -190,6 +193,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             message: trimmed,
             history: updatedMessages,
             session_id: sessionId,
+            ...(condition ? { condition } : {}),
           }),
         });
 
@@ -263,7 +267,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       }
 
       // Run evaluation pipeline in background (hidden from participant, saved to DB)
-      if (userMessageId) {
+      if (userMessageId && showFeedbackPanel) {
         axios.post(
           `${API_BASE_URL}/feedback`,
           {
@@ -272,6 +276,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             history: updatedMessages,
             session_id: sessionId,
             user_message_id: Number(userMessageId),
+            ...(condition ? { condition } : {}),
           },
           { headers: authHeaders }
         ).catch(err => {
@@ -289,61 +294,85 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         training,
         message: trimmed,
         history: updatedMessages,
-        session_id: sessionId
+        session_id: sessionId,
+        condition,
       });
 
+      // Declare fb in this outer scope so /chat below can read it.
+      let fb = null;
+      // Index of the CSR turn we just appended (not .length — that is past the end)
+      const csrIdx = updatedMessages.length - 1;
+
+      if (showFeedbackPanel) {
+        setFeedbackLoading(true);
+        try {
+          const fbRes = await axios.post(
+            `${API_BASE_URL}/feedback`,
+            {
+              scenario,
+              persona,
+              message: trimmed,
+              history: updatedMessages,
+              session_id: sessionId,
+              ...(condition ? { condition } : {}),
+            },
+            { headers: authHeaders }
+          );
+          fb = fbRes.data.feedback;
+
+          console.log("Feedback returned:", fb);
+          if (fb) {
+            // Drive the side panel immediately from this value
+            setPanelFeedback(fb);
+            setMessages(prev =>
+              prev.map((m, i) => i === csrIdx ? { ...m, feedback: fb } : m)
+            );
+            console.log("🎯 Setting selectedIdx to:", csrIdx);
+            setSelectedIdx(csrIdx);
+          }
+        } catch (fbErr) {
+          console.error("❌ FEEDBACK ERROR:", fbErr);
+          if (fbErr.response?.status === 401) { onAuthExpired(); return; }
+        } finally {
+          setFeedbackLoading(false);
+        }
+      }
+
+      // if the fb is not null then send the feedback to the backend
       const response = await axios.post(
         API_URL,
         {
           scenario,
           persona,
           training,
+          feedback: fb,
           message: trimmed,
           history: updatedMessages,
-          session_id: sessionId
+          session_id: sessionId,
+          ...(condition ? { condition } : {}),
         },
         { headers: authHeaders }
       );
 
       console.log("📥 FULL RESPONSE:", response.data);
 
-      const { customer_response, user_message_id } = response.data;
-      const csrIdx = updatedMessages.length - 1;
+      const { customer_response } = response.data;
 
-      // Show customer response immediately and unblock the send button
-      setMessages(prev => [...prev, { role: "assistant", content: customer_response }]);
+      // Append customer reply; re-apply feedback in case a prior update was lost
+      setMessages(prev => {
+        const next = prev.map((m, i) =>
+          i === csrIdx && fb ? { ...m, feedback: fb } : m
+        );
+        return [...next, { role: "assistant", content: customer_response }];
+      });
+      if (fb) {
+        setPanelFeedback(fb);
+        setSelectedIdx(csrIdx);
+      }
       setLoading(false);
       inputRef.current?.focus();
 
-      // Fetch feedback from the separate evaluation pipeline
-      setFeedbackLoading(true);
-      try {
-        const fbRes = await axios.post(
-          `${API_BASE_URL}/feedback`,
-          {
-            scenario,
-            persona,
-            message: trimmed,
-            history: updatedMessages,
-            session_id: sessionId,
-            user_message_id,
-          },
-          { headers: authHeaders }
-        );
-        const fb = fbRes.data.feedback;
-        if (fb) {
-          setMessages(prev =>
-            prev.map((m, i) => i === csrIdx ? { ...m, feedback: fb } : m)
-          );
-          console.log("🎯 Setting selectedIdx to:", csrIdx);
-          setSelectedIdx(csrIdx);
-        }
-      } catch (fbErr) {
-        console.error("❌ FEEDBACK ERROR:", fbErr);
-        if (fbErr.response?.status === 401) { onAuthExpired(); return; }
-      } finally {
-        setFeedbackLoading(false);
-      }
+
 
     } catch (err) {
       console.error("❌ ERROR:", err);
@@ -464,7 +493,10 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                   content={msg.content}
                   hasFeedback={!!msg.feedback}
                   isSelected={selectedIdx === i}
-                  onClick={msg.feedback ? () => setSelectedIdx(i) : undefined}
+                  onClick={msg.feedback ? () => {
+                    setSelectedIdx(i);
+                    setPanelFeedback(msg.feedback);
+                  } : undefined}
                 />
               ))}
 

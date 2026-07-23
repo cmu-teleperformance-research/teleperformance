@@ -1,6 +1,6 @@
 import json as json_lib
 import os
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from typing import Optional, Dict, Any
@@ -15,6 +15,22 @@ from auth import hash_password, verify_password, create_access_token, get_curren
 import models
 
 models.Base.metadata.create_all(bind=engine)
+
+
+def _ensure_condition_column():
+    """Add sessions.condition if missing (create_all does not alter existing tables)."""
+    with engine.begin() as conn:
+        if engine.url.get_backend_name() == "sqlite":
+            cols = {row[1] for row in conn.execute(text("PRAGMA table_info(sessions)"))}
+            if "condition" not in cols:
+                conn.execute(text("ALTER TABLE sessions ADD COLUMN condition VARCHAR"))
+        else:
+            conn.execute(text(
+                "ALTER TABLE sessions ADD COLUMN IF NOT EXISTS condition VARCHAR"
+            ))
+
+
+_ensure_condition_column()
 
 app = FastAPI(title="CSR Training Simulator API")
 
@@ -129,9 +145,18 @@ def change_password(
 
 @app.get("/sessions")
 def list_sessions(
+    request: Request,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
+    print("[DEBUG /sessions] incoming request:", {
+        "method": request.method,
+        "url": str(request.url),
+        "query_params": dict(request.query_params),
+        "headers": dict(request.headers),
+        "user_id": current_user.id,
+        "username": current_user.username,
+    })
     sessions = (
         db.query(models.SessionRecord)
         .filter(models.SessionRecord.user_id == current_user.id)
@@ -147,6 +172,7 @@ def list_sessions(
             "scenario_label": SCENARIO_LABELS.get(s.scenario, s.scenario),
             "persona": s.persona,
             "training": s.training,
+            "condition": s.condition,
             "created_at": s.created_at.isoformat(),
             "has_report": report is not None,
         })
@@ -180,6 +206,7 @@ def get_session(
         "scenario_label": SCENARIO_LABELS.get(session.scenario, session.scenario),
         "persona": session.persona,
         "training": session.training,
+        "condition": session.condition,
         "created_at": session.created_at.isoformat(),
         "messages": [
             {
@@ -218,6 +245,7 @@ def research_list_sessions(
             "scenario_label": SCENARIO_LABELS.get(s.scenario, s.scenario),
             "persona": s.persona,
             "training": s.training,
+            "condition": s.condition,
             "created_at": s.created_at.isoformat(),
             "has_report": report is not None,
         })
@@ -257,6 +285,7 @@ def research_get_session(
         "scenario_label": SCENARIO_LABELS.get(session.scenario, session.scenario),
         "persona": session.persona,
         "training": session.training,
+        "condition": session.condition,
         "created_at": session.created_at.isoformat(),
         "messages": [
             {
@@ -279,6 +308,8 @@ class ChatRequest(BaseModel):
     message: str
     history: list[dict]
     session_id: int | None = None
+    condition: str | None = None
+    feedback: dict | None = None
 
 
 class SignalsModel(BaseModel):
@@ -304,6 +335,7 @@ class StartRequest(BaseModel):
     scenario: str
     persona: str
     training: bool
+    condition: str | None = None
 
 
 @app.post("/start", response_model=ChatResponse)
@@ -324,6 +356,7 @@ async def start(
         scenario=request.scenario,
         persona=request.persona,
         training=request.training,
+        condition=request.condition,
     )
     db.add(session_record)
     db.commit()
@@ -368,12 +401,18 @@ async def chat(
         training=False,  # Eval pipeline runs separately via /feedback
         message=request.message,
         history=request.history,
+        condition=request.condition,
+        feedback=request.feedback,
     )
+    # print("[DEBUG /chat] result:", result)
+    # print("[DEBUG /chat] condition:", request.condition)
+    # print("[DEBUG /chat] :", request.feedback)
 
     user_msg = models.MessageRecord(
         session_id=request.session_id,
         role="user",
         content=request.message,
+        feedback_json=json_lib.dumps(request.feedback) if request.feedback else None,
     )
     db.add(user_msg)
     db.flush()  # Populate user_msg.id before commit
@@ -398,7 +437,8 @@ class FeedbackRequest(BaseModel):
     message: str
     history: list[dict]
     session_id: int
-    user_message_id: int
+    user_message_id: int | None = None
+    condition: str | None = None
 
 
 @app.post("/feedback")
@@ -416,13 +456,16 @@ async def feedback(
 
     fb = run_feedback_pipeline(request.message, request.history)
 
-    msg_record = db.query(models.MessageRecord).filter(
-        models.MessageRecord.id == request.user_message_id,
-        models.MessageRecord.session_id == request.session_id,
-    ).first()
-    if msg_record:
-        msg_record.feedback_json = json_lib.dumps(fb)
-        db.commit()
+
+    # TODO: figure our how to get the user_message_id from the request
+    # if request.user_message_id is not None:
+    #     msg_record = db.query(models.MessageRecord).filter(
+    #         models.MessageRecord.id == request.user_message_id,
+    #         models.MessageRecord.session_id == request.session_id,
+    #     ).first()
+    #     if msg_record:
+    #         msg_record.feedback_json = json_lib.dumps(fb)
+    #         db.commit()
 
     return {"feedback": fb}
 
@@ -499,6 +542,7 @@ class ReportRequest(BaseModel):
     training: bool
     history: list[dict]
     session_id: int | None = None
+    condition: str | None = None
 
 
 @app.post("/report")

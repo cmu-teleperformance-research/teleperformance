@@ -113,6 +113,15 @@ def load_evaluation_prompt(name: str) -> str:
     return load_prompt(f"evaluation/{name}.txt")
 
 
+def load_competency_prompt(name: str) -> str:
+    # check if the file exists
+    if not os.path.exists(os.path.join(PROMPTS_DIR, f"competency/{name}.txt")):
+        # TODO: Replace for debugging if the file is not found print the file path and open problem_exploration_0.txt instead
+        print(f"DEBUG: competency prompt file not found: {os.path.join(PROMPTS_DIR, f'competency/{name}.txt')}")
+        name = "problem_exploration_0"
+    return load_prompt(f"competency/{name}.txt")
+
+
 def load_opener(scenario: str) -> str:
     if scenario not in SCENARIOS:
         raise ValueError(f"Unknown scenario: '{scenario}'. Valid options: {list(SCENARIOS)}")
@@ -121,12 +130,25 @@ def load_opener(scenario: str) -> str:
 
 # --- Prompt Assembly ---
 
-def build_system_prompt(scenario: str, persona: str, training: bool, stream: bool = False) -> str:
+def build_system_prompt(scenario: str, persona: str, training: bool, stream: bool = False, condition: str | None = None, feedback: dict | None = None) -> str:
     system_rules = load_shared("system_rules")
     behavior_rules = load_shared("behavior_rules")
     output_format_text = load_shared("output_format")
     scenario_text = load_scenario_prompt(scenario)
     emotion_text = load_emotion_prompt(persona)
+    competency_prompt = ""
+
+    if condition and condition not in ["cond1", "baseline"]:
+        # get adaptive prompt 
+        # check if feedback is not None
+        if feedback is not None:
+            state = feedback.get("state", "")
+            # lowercase and concatinate the space with the state
+            state = state.lower().replace(" ", "_")
+            score = feedback.get("score", 0)
+            print(f"DEBUG: competency prompt is {state}_{score}.txt")
+            competency_prompt = load_competency_prompt(f"{state}_{score}.txt")
+        
 
     if stream:
         mode = "stream"
@@ -141,6 +163,7 @@ def build_system_prompt(scenario: str, persona: str, training: bool, stream: boo
         output_format_text,
         response_rules,
         scenario_text,
+        competency_prompt,
         emotion_text,
     ])
 
@@ -431,13 +454,15 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
 
 # --- Evaluation ---
 
-def call_llm(scenario: str, persona: str, training: bool, message: str, history: list[dict]) -> dict:
+def call_llm(scenario: str, persona: str, training: bool, message: str, history: list[dict], condition: str | None = None, feedback: dict | None = None) -> dict:
     t_start = time.perf_counter()
+
+    # TODO: Add condition to the system prompt
 
     if DEBUG_PROMPTS:
         print("🚀 VERSION: SINGLE_EVALUATOR_V1")
 
-    system_prompt = build_system_prompt(scenario, persona, training)
+    system_prompt = build_system_prompt(scenario, persona, training, condition=condition, feedback=feedback)
     system_prompt = append_coaching_signal(system_prompt, history)
 
     messages = build_messages(history, system_prompt, message)
