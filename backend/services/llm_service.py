@@ -138,7 +138,7 @@ def build_system_prompt(scenario: str, persona: str, training: bool, stream: boo
     emotion_text = load_emotion_prompt(persona)
     competency_prompt = ""
 
-    if condition and condition not in ["cond1", "baseline"]:
+    if condition and condition not in ["cond1", "baseline", "cond2"]:
         # get adaptive prompt 
         # check if feedback is not None
         if feedback is not None:
@@ -457,7 +457,6 @@ def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: lis
 def call_llm(scenario: str, persona: str, training: bool, message: str, history: list[dict], condition: str | None = None, feedback: dict | None = None) -> dict:
     t_start = time.perf_counter()
 
-    # TODO: Add condition to the system prompt
 
     if DEBUG_PROMPTS:
         print("🚀 VERSION: SINGLE_EVALUATOR_V1")
