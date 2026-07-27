@@ -14,12 +14,12 @@ An AI-powered training platform for customer service representatives. Trainees p
 
 | Layer | Technology |
 |---|---|
-| Backend | Python 3.11, FastAPI, SQLAlchemy |
-| Database | SQLite (local), PostgreSQL (production) |
+| Backend | Python 3.11, FastAPI |
+| Database | Google Cloud Firestore |
 | LLM | OpenAI or Groq (configurable) |
 | Frontend | React 18, Vite, Tailwind CSS, Axios |
 | Auth | JWT (7-day tokens), bcrypt |
-| Deployment | Vercel (monorepo) |
+| Deployment | Vercel (monorepo); Cloud Run recommended for GCP |
 
 ## Local development
 
@@ -38,8 +38,16 @@ OPENAI_API_KEY=sk-...        # if using openai
 GROQ_API_KEY=gsk_...         # if using groq
 MODEL_NAME=gpt-4o            # model name for the chosen provider
 SECRET_KEY=your-secret-key
-DATABASE_URL=sqlite:///./csr_simulator.db   # or a postgres:// URL
+GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+# Optional: GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+# Optional emulator: FIRESTORE_EMULATOR_HOST=localhost:8080
 DEBUG_PROMPTS=false          # set true to print the full assembled system prompt
+```
+
+Authenticate for local Firestore access:
+```bash
+gcloud auth application-default login
+gcloud config set project your-gcp-project-id
 ```
 
 ```bash
@@ -62,6 +70,20 @@ VITE_API_URL=http://localhost:8000
 npm run dev
 ```
 
+## Deployment (Google Cloud Run)
+
+One Cloud Run service serves the React UI and FastAPI API (single public URL).
+
+```bash
+# From teleperformance/
+./deploy.sh
+```
+
+Requires `gcloud` logged in, billing enabled on the project, and `backend/.env` filled in
+(`OPENAI_API_KEY` / `GROQ_API_KEY`, `SECRET_KEY`, `GOOGLE_CLOUD_PROJECT`, `FIRESTORE_DATABASE`).
+
+Optional: `REGION=us-central1 SERVICE_NAME=csr-simulator ./deploy.sh`
+
 ## Deployment (Vercel)
 
 The repo uses `vercel.json` to configure a monorepo deployment:
@@ -69,7 +91,7 @@ The repo uses `vercel.json` to configure a monorepo deployment:
 - Backend served from `/_/backend` (FastAPI via Mangum)
 
 Set the following environment variables in the Vercel dashboard for the backend service:
-`LLM_PROVIDER`, `OPENAI_API_KEY` / `GROQ_API_KEY`, `MODEL_NAME`, `SECRET_KEY`, `DATABASE_URL`
+`LLM_PROVIDER`, `OPENAI_API_KEY` / `GROQ_API_KEY`, `MODEL_NAME`, `SECRET_KEY`, `GOOGLE_CLOUD_PROJECT` (plus GCP credentials / workload identity for Firestore)
 
 ## Scenarios and personas
 
@@ -114,9 +136,9 @@ GET  /health
 ```
 ├── backend/
 │   ├── main.py                  API routes and request validation
-│   ├── models.py                SQLAlchemy models (User, Session, Message, Report)
+│   ├── models.py                Firestore document helpers (User, Session, Message)
 │   ├── auth.py                  JWT + bcrypt auth
-│   ├── database.py              SQLite/PostgreSQL engine setup
+│   ├── database.py              Firestore client setup
 │   ├── config.py                LLM provider selection (OpenAI / Groq)
 │   ├── services/
 │   │   ├── llm_service.py       Prompt assembly, LLM calls, coaching evaluation

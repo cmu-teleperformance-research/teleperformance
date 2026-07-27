@@ -265,16 +265,16 @@ function StepMode({ scenario, persona, onSelect, onBack }) {
       label: "Training Mode",
       // badge: "Explicit Feedback",
       // badgeColor: "bg-green-100 text-green-800",
-      description:
-        "TODO: CHANGE THIS DESCRIPTION. This is the training mode.",
+      description: ""
+      // "TODO: CHANGE THIS DESCRIPTION. This is the training mode.",
     },
     {
       id: "evaluation",
       label: "Evaluation Mode",
       // badge: "Implicit Feedback",
       // badgeColor: "bg-yellow-100 text-yellow-800",
-      description:
-        "TODO: CHANGE THIS DESCRIPTION. This is the evaluation mode.",
+      description: ""
+      // "TODO: CHANGE THIS DESCRIPTION. This is the evaluation mode.",
     },
   ];
 

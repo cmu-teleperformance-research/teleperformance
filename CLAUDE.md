@@ -143,15 +143,12 @@ Both providers use the OpenAI-compatible chat completions interface. Training mo
 
 ## Database
 
-**Models** (`backend/models.py`):
-- `User` — id, name, username, hashed_password
-- `SessionRecord` — user_id, scenario, persona, training (bool)
-- `MessageRecord` — session_id, role (user|assistant), content, feedback_json (JSON string, on user turns only)
-- `ReportRecord` — session_id, scenario, persona, training, report_json
-
-**Connection** (`backend/database.py`):
-- SQLite locally: `sqlite:///./csr_simulator.db`
-- PostgreSQL in production: set `DATABASE_URL` env var
+**Firestore** (`backend/database.py` + `backend/models.py`):
+- Collections: `users`, `usernames` (uniqueness), `sessions`, `sessions/{id}/messages`
+- Session reports stored as a `report` field on the session document
+- IDs are Firestore string document IDs (not integers)
+- Config: `GOOGLE_CLOUD_PROJECT`; local auth via ADC (`gcloud auth application-default login`) or `GOOGLE_APPLICATION_CREDENTIALS`
+- Optional emulator: `FIRESTORE_EMULATOR_HOST=localhost:8080`
 
 ---
 

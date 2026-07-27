@@ -2,37 +2,24 @@ import json as json_lib
 import os
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from typing import Optional, Dict, Any
 from pydantic import BaseModel
-from sqlalchemy import text
-from sqlalchemy.orm import Session
+from google.cloud import firestore
 
 from services.llm_service import call_llm, start_conversation, generate_report, stream_llm_response, run_feedback_pipeline
 from services.prompt_metadata import extract_portal_data, inject_metadata
-from database import engine, get_db, SessionLocal
+from database import get_db, get_client
 from auth import hash_password, verify_password, create_access_token, get_current_user, get_role, require_researcher
 import models
 
-models.Base.metadata.create_all(bind=engine)
-
-
-def _ensure_condition_column():
-    """Add sessions.condition if missing (create_all does not alter existing tables)."""
-    with engine.begin() as conn:
-        if engine.url.get_backend_name() == "sqlite":
-            cols = {row[1] for row in conn.execute(text("PRAGMA table_info(sessions)"))}
-            if "condition" not in cols:
-                conn.execute(text("ALTER TABLE sessions ADD COLUMN condition VARCHAR"))
-        else:
-            conn.execute(text(
-                "ALTER TABLE sessions ADD COLUMN IF NOT EXISTS condition VARCHAR"
-            ))
-
-
-_ensure_condition_column()
-
 app = FastAPI(title="CSR Training Simulator API")
+
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+_ASSETS_DIR = os.path.join(STATIC_DIR, "assets")
+_INDEX_HTML = os.path.join(STATIC_DIR, "index.html")
+_HAS_FRONTEND = os.path.isfile(_INDEX_HTML)
 
 app.add_middleware(
     CORSMiddleware,
@@ -74,18 +61,20 @@ class ParticipantJoinRequest(BaseModel):
 
 
 @app.post("/participant/join")
-def participant_join(request: ParticipantJoinRequest, db: Session = Depends(get_db)):
+def participant_join(request: ParticipantJoinRequest, db: firestore.Client = Depends(get_db)):
     pid = request.pid.strip()
     if not pid:
         raise HTTPException(status_code=400, detail="Participant ID cannot be empty")
-    user = db.query(models.User).filter(models.User.username == pid).first()
+    user = models.get_user_by_username(db, pid)
     if not user:
         # Hash a random secret so this account can never be accessed via password login
         random_hash = hash_password(os.urandom(32).hex())
-        user = models.User(name=pid, username=pid, hashed_password=random_hash)
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+        try:
+            user = models.create_user(db, name=pid, username=pid, hashed_password=random_hash)
+        except ValueError:
+            user = models.get_user_by_username(db, pid)
+            if not user:
+                raise HTTPException(status_code=500, detail="Failed to create participant")
     return {
         "access_token": create_access_token(user.id, user.username),
         "token_type": "bearer",
@@ -95,30 +84,48 @@ def participant_join(request: ParticipantJoinRequest, db: Session = Depends(get_
 
 
 @app.post("/register")
-def register(request: RegisterRequest, db: Session = Depends(get_db)):
-    if db.query(models.User).filter(models.User.username == request.username).first():
+def register(request: RegisterRequest, db: firestore.Client = Depends(get_db)):
+    try:
+        user = models.create_user(
+            db,
+            name=request.name,
+            username=request.username,
+            hashed_password=hash_password(request.password),
+        )
+    except ValueError:
         raise HTTPException(status_code=400, detail="Username already taken")
-    user = models.User(name=request.name, username=request.username, hashed_password=hash_password(request.password))
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name, "role": get_role(user.username)}
+    return {
+        "access_token": create_access_token(user.id, user.username),
+        "token_type": "bearer",
+        "name": user.name,
+        "role": get_role(user.username),
+    }
 
 
 @app.post("/login")
-def login(request: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.username == request.username).first()
+def login(request: LoginRequest, db: firestore.Client = Depends(get_db)):
+    user = models.get_user_by_username(db, request.username)
     if not user or not verify_password(request.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
     role = get_role(user.username)
     from auth import RESEARCHER_USERNAMES
     print(f"[DEBUG login] username={user.username!r}  role={role!r}  in_allowlist={user.username in RESEARCHER_USERNAMES}")
-    return {"access_token": create_access_token(user.id, user.username), "token_type": "bearer", "name": user.name, "role": role}
+    return {
+        "access_token": create_access_token(user.id, user.username),
+        "token_type": "bearer",
+        "name": user.name,
+        "role": role,
+    }
 
 
 @app.get("/me")
 def me(current_user: models.User = Depends(get_current_user)):
-    return {"id": current_user.id, "name": current_user.name, "username": current_user.username, "role": get_role(current_user.username)}
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "username": current_user.username,
+        "role": get_role(current_user.username),
+    }
 
 
 class ChangePasswordRequest(BaseModel):
@@ -129,15 +136,14 @@ class ChangePasswordRequest(BaseModel):
 @app.post("/change-password")
 def change_password(
     request: ChangePasswordRequest,
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
     if not verify_password(request.current_password, current_user.hashed_password):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
     if len(request.new_password) < 6:
         raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
-    current_user.hashed_password = hash_password(request.new_password)
-    db.commit()
+    models.update_user_password(db, current_user.id, hash_password(request.new_password))
     return {"detail": "Password updated successfully"}
 
 
@@ -146,7 +152,7 @@ def change_password(
 @app.get("/sessions")
 def list_sessions(
     request: Request,
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
     print("[DEBUG /sessions] incoming request:", {
@@ -157,16 +163,9 @@ def list_sessions(
         "user_id": current_user.id,
         "username": current_user.username,
     })
-    sessions = (
-        db.query(models.SessionRecord)
-        .filter(models.SessionRecord.user_id == current_user.id)
-        .order_by(models.SessionRecord.created_at.desc())
-        .all()
-    )
-    result = []
-    for s in sessions:
-        report = db.query(models.ReportRecord).filter(models.ReportRecord.session_id == s.id).first()
-        result.append({
+    sessions = models.list_sessions_for_user(db, current_user.id)
+    return [
+        {
             "id": s.id,
             "scenario": s.scenario,
             "scenario_label": SCENARIO_LABELS.get(s.scenario, s.scenario),
@@ -174,31 +173,23 @@ def list_sessions(
             "training": s.training,
             "condition": s.condition,
             "created_at": s.created_at.isoformat(),
-            "has_report": report is not None,
-        })
-    return result
+            "has_report": s.report is not None,
+        }
+        for s in sessions
+    ]
 
 
 @app.get("/sessions/{session_id}")
 def get_session(
-    session_id: int,
-    db: Session = Depends(get_db),
+    session_id: str,
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    session = db.query(models.SessionRecord).filter(
-        models.SessionRecord.id == session_id,
-        models.SessionRecord.user_id == current_user.id,
-    ).first()
-    if not session:
+    session = models.get_session(db, session_id)
+    if not session or session.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    messages = (
-        db.query(models.MessageRecord)
-        .filter(models.MessageRecord.session_id == session_id)
-        .order_by(models.MessageRecord.id)
-        .all()
-    )
-    report_record = db.query(models.ReportRecord).filter(models.ReportRecord.session_id == session_id).first()
+    messages = models.list_messages(db, session_id)
 
     return {
         "id": session.id,
@@ -216,7 +207,7 @@ def get_session(
             }
             for m in messages
         ],
-        "report": json_lib.loads(report_record.report_json) if report_record and report_record.report_json else None,
+        "report": session.report,
     }
 
 
@@ -224,63 +215,45 @@ def get_session(
 
 @app.get("/research/sessions")
 def research_list_sessions(
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(require_researcher),
 ):
-    sessions = (
-        db.query(models.SessionRecord, models.User)
-        .join(models.User, models.SessionRecord.user_id == models.User.id)
-        .order_by(models.SessionRecord.created_at.desc())
-        .all()
-    )
-    result = []
-    for s, u in sessions:
-        report = db.query(models.ReportRecord).filter(models.ReportRecord.session_id == s.id).first()
-        result.append({
+    sessions = models.list_all_sessions(db)
+    return [
+        {
             "id": s.id,
-            "user_id": u.id,
-            "username": u.username,
-            "display_name": u.name,
+            "user_id": s.user_id,
+            "username": s.username,
+            "display_name": s.display_name,
             "scenario": s.scenario,
             "scenario_label": SCENARIO_LABELS.get(s.scenario, s.scenario),
             "persona": s.persona,
             "training": s.training,
             "condition": s.condition,
             "created_at": s.created_at.isoformat(),
-            "has_report": report is not None,
-        })
-    return result
+            "has_report": s.report is not None,
+        }
+        for s in sessions
+    ]
 
 
 @app.get("/research/sessions/{session_id}")
 def research_get_session(
-    session_id: int,
-    db: Session = Depends(get_db),
+    session_id: str,
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(require_researcher),
 ):
-    row = (
-        db.query(models.SessionRecord, models.User)
-        .join(models.User, models.SessionRecord.user_id == models.User.id)
-        .filter(models.SessionRecord.id == session_id)
-        .first()
-    )
-    if not row:
+    session = models.get_session(db, session_id)
+    if not session:
         raise HTTPException(status_code=404, detail="Session not found")
-    session, user = row
 
-    messages = (
-        db.query(models.MessageRecord)
-        .filter(models.MessageRecord.session_id == session_id)
-        .order_by(models.MessageRecord.id)
-        .all()
-    )
-    report_record = db.query(models.ReportRecord).filter(models.ReportRecord.session_id == session_id).first()
+    messages = models.list_messages(db, session_id)
 
     return {
         "id": session.id,
-        "user_id": user.id,
-        "username": user.username,
-        "display_name": user.name,
+        "user_id": session.user_id,
+        "username": session.username,
+        "display_name": session.display_name,
         "scenario": session.scenario,
         "scenario_label": SCENARIO_LABELS.get(session.scenario, session.scenario),
         "persona": session.persona,
@@ -295,7 +268,7 @@ def research_get_session(
             }
             for m in messages
         ],
-        "report": json_lib.loads(report_record.report_json) if report_record and report_record.report_json else None,
+        "report": session.report,
     }
 
 
@@ -307,7 +280,7 @@ class ChatRequest(BaseModel):
     training: bool
     message: str
     history: list[dict]
-    session_id: int | None = None
+    session_id: str | None = None
     condition: str | None = None
     feedback: dict | None = None
 
@@ -327,8 +300,8 @@ class FeedbackModel(BaseModel):
 class ChatResponse(BaseModel):
     customer_response: str
     feedback: FeedbackModel | None = None
-    session_id: int | None = None
-    user_message_id: int | None = None
+    session_id: str | None = None
+    user_message_id: str | None = None
 
 
 class StartRequest(BaseModel):
@@ -341,7 +314,7 @@ class StartRequest(BaseModel):
 @app.post("/start", response_model=ChatResponse)
 async def start(
     request: StartRequest,
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
     if request.scenario not in VALID_SCENARIOS:
@@ -351,24 +324,23 @@ async def start(
 
     result = start_conversation(request.scenario, request.persona, request.training)
 
-    session_record = models.SessionRecord(
+    session_record = models.create_session(
+        db,
         user_id=current_user.id,
+        username=current_user.username,
+        display_name=current_user.name,
         scenario=request.scenario,
         persona=request.persona,
         training=request.training,
         condition=request.condition,
     )
-    db.add(session_record)
-    db.commit()
-    db.refresh(session_record)
 
-    # Store the opening assistant message
-    db.add(models.MessageRecord(
+    models.add_message(
+        db,
         session_id=session_record.id,
         role="assistant",
         content=result["customer_response"],
-    ))
-    db.commit()
+    )
 
     return ChatResponse(**result, session_id=session_record.id)
 
@@ -376,7 +348,7 @@ async def start(
 @app.post("/chat", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
     if request.scenario not in VALID_SCENARIOS:
@@ -386,11 +358,8 @@ async def chat(
     if not request.message.strip():
         raise HTTPException(status_code=400, detail="message cannot be empty")
 
-    session = db.query(models.SessionRecord).filter(
-        models.SessionRecord.id == request.session_id,
-        models.SessionRecord.user_id == current_user.id,
-    ).first()
-    if session is None:
+    session = models.get_session(db, request.session_id) if request.session_id else None
+    if session is None or session.user_id != current_user.id:
         raise HTTPException(status_code=400, detail="Invalid or missing session_id")
     if session.scenario != request.scenario or session.persona != request.persona:
         raise HTTPException(status_code=400, detail="Session scenario/persona mismatch. Start a new session.")
@@ -404,25 +373,20 @@ async def chat(
         condition=request.condition,
         feedback=request.feedback,
     )
-    # print("[DEBUG /chat] result:", result)
-    # print("[DEBUG /chat] condition:", request.condition)
-    # print("[DEBUG /chat] :", request.feedback)
 
-    user_msg = models.MessageRecord(
+    user_msg = models.add_message(
+        db,
         session_id=request.session_id,
         role="user",
         content=request.message,
-        feedback_json=json_lib.dumps(request.feedback) if request.feedback else None,
+        feedback=request.feedback,
     )
-    db.add(user_msg)
-    db.flush()  # Populate user_msg.id before commit
-
-    db.add(models.MessageRecord(
+    models.add_message(
+        db,
         session_id=request.session_id,
         role="assistant",
         content=result["customer_response"],
-    ))
-    db.commit()
+    )
 
     return ChatResponse(
         customer_response=result["customer_response"],
@@ -436,65 +400,70 @@ class FeedbackRequest(BaseModel):
     persona: str
     message: str
     history: list[dict]
-    session_id: int
-    user_message_id: int | None = None
+    session_id: str
+    user_message_id: str | None = None
     condition: str | None = None
 
 
 @app.post("/feedback")
 async def feedback(
     request: FeedbackRequest,
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    session = db.query(models.SessionRecord).filter(
-        models.SessionRecord.id == request.session_id,
-        models.SessionRecord.user_id == current_user.id,
-    ).first()
-    if session is None:
+    session = models.get_session(db, request.session_id)
+    if session is None or session.user_id != current_user.id:
         raise HTTPException(status_code=400, detail="Invalid or missing session_id")
 
     fb = run_feedback_pipeline(request.message, request.history)
 
+    # Persist coaching feedback onto the CSR (user) message when it already exists.
+    # Training mode often calls /feedback before /chat, so there may be no message yet —
+    # in that case /chat stores feedback on create.
+    message_id = request.user_message_id
+    if message_id is None:
+        latest = models.get_latest_user_message(db, request.session_id)
+        if latest is not None:
+            message_id = latest.id
 
-    # TODO: figure our how to get the user_message_id from the request
-    # if request.user_message_id is not None:
-    #     msg_record = db.query(models.MessageRecord).filter(
-    #         models.MessageRecord.id == request.user_message_id,
-    #         models.MessageRecord.session_id == request.session_id,
-    #     ).first()
-    #     if msg_record:
-    #         msg_record.feedback_json = json_lib.dumps(fb)
-    #         db.commit()
+    saved = False
+    if message_id is not None:
+        saved = models.update_message_feedback(
+            db,
+            session_id=request.session_id,
+            message_id=message_id,
+            feedback=fb,
+        )
+        if not saved:
+            print(f"[feedback] message {message_id} not found in session {request.session_id}")
+    else:
+        print(f"[feedback] no user message yet for session {request.session_id}; /chat will save feedback")
 
-    return {"feedback": fb}
+    return {"feedback": fb, "saved": saved, "user_message_id": message_id}
 
 
-def _stream_with_db_save(base_gen, session_id):
+def _stream_with_db_save(base_gen, session_id: str | None):
     """Wraps a text generator: yields all chunks, then saves the full response to DB."""
     full_text = ""
     for chunk in base_gen:
         full_text += chunk
         yield chunk
     if session_id is not None:
-        bg_db = SessionLocal()
         try:
-            bg_db.add(models.MessageRecord(
+            models.add_message(
+                get_client(),
                 session_id=session_id,
                 role="assistant",
                 content=full_text,
-            ))
-            bg_db.commit()
+            )
         except Exception as e:
             print(f"ERROR saving streamed assistant message: {e}")
-        finally:
-            bg_db.close()
 
 
 @app.post("/chat-stream")
 async def chat_stream(
     request: ChatRequest,
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
     if request.scenario not in VALID_SCENARIOS:
@@ -506,15 +475,13 @@ async def chat_stream(
 
     user_message_id = None
     if request.session_id is not None:
-        user_msg = models.MessageRecord(
+        user_msg = models.add_message(
+            db,
             session_id=request.session_id,
             role="user",
             content=request.message,
         )
-        db.add(user_msg)
-        db.flush()
         user_message_id = user_msg.id
-        db.commit()
 
     headers = {}
     if user_message_id is not None:
@@ -535,37 +502,26 @@ async def chat_stream(
     )
 
 
-
 class ReportRequest(BaseModel):
     scenario: str
     persona: str
     training: bool
     history: list[dict]
-    session_id: int | None = None
+    session_id: str | None = None
     condition: str | None = None
 
 
 @app.post("/report")
 async def report(
     request: ReportRequest,
-    db: Session = Depends(get_db),
+    db: firestore.Client = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
     if request.scenario not in VALID_SCENARIOS:
         raise HTTPException(status_code=400, detail=f"scenario must be one of {VALID_SCENARIOS}")
 
     result = generate_report(history=request.history)
-
-    report_record = models.ReportRecord(
-        session_id=request.session_id,
-        scenario=request.scenario,
-        persona=request.persona,
-        training=request.training,
-        report_json=json_lib.dumps(result),
-    )
-    db.add(report_record)
-    db.commit()
-
+    models.save_session_report(db, request.session_id, result)
     return result
 
 
@@ -589,16 +545,33 @@ def get_workflow(scenario: str):
 
 @app.api_route("/", methods=["GET", "HEAD"])
 def root():
+    if _HAS_FRONTEND:
+        return FileResponse(_INDEX_HTML)
     return {"status": "ok"}
 
 
 @app.get("/health")
-def health(db: Session = Depends(get_db)):
-    db.execute(text("SELECT 1"))
+def health(db: firestore.Client = Depends(get_db)):
+    models.ping(db)
     return {"status": "ok"}
 
+
+# Serve Vite build (same Cloud Run URL for UI + API). Registered last so API routes win.
+if _HAS_FRONTEND and os.path.isdir(_ASSETS_DIR):
+    app.mount("/assets", StaticFiles(directory=_ASSETS_DIR), name="assets")
+
+
+@app.get("/{full_path:path}")
+def spa_fallback(full_path: str):
+    """SPA fallback for React Router paths (e.g. /cond1)."""
+    if not _HAS_FRONTEND:
+        raise HTTPException(status_code=404, detail="Not found")
+    candidate = os.path.join(STATIC_DIR, full_path)
+    if full_path and os.path.isfile(candidate):
+        return FileResponse(candidate)
+    return FileResponse(_INDEX_HTML)
 
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8000")))

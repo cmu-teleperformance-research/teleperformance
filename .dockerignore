@@ -1,0 +1,13 @@
+.git
+**/venv
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/.env
+**/*.db
+**/dist
+**/.DS_Store
+frontend/dist
+backend/venv
+backend/csr_simulator.db
+**/agent-transcripts

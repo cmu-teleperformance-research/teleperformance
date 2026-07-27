@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
+from google.cloud import firestore
 from database import get_db
 import models
 
@@ -37,13 +37,20 @@ def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8")[:72], hashed.encode("utf-8"))
 
 
-def create_access_token(user_id: int, username: str) -> str:
+def create_access_token(user_id: str, username: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     role = get_role(username)
-    return jwt.encode({"sub": str(user_id), "username": username, "role": role, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(
+        {"sub": str(user_id), "username": username, "role": role, "exp": expire},
+        SECRET_KEY,
+        algorithm=ALGORITHM,
+    )
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: firestore.Client = Depends(get_db),
+) -> models.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid or expired token",
@@ -51,11 +58,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = int(payload.get("sub"))
-    except (JWTError, TypeError, ValueError):
+        user_id = payload.get("sub")
+        if not user_id:
+            raise credentials_exception
+    except JWTError:
         raise credentials_exception
 
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    user = models.get_user_by_id(db, str(user_id))
     if user is None:
         raise credentials_exception
     return user

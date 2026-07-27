@@ -131,7 +131,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             `${API_BASE_URL}/sessions/${storedSessionId}`,
             { headers: authHeaders, signal: controller.signal }
           );
-          setSessionId(Number(storedSessionId));
+          setSessionId(storedSessionId);
           setMessages(response.data.messages);
           return;
         }
@@ -275,7 +275,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             message: trimmed,
             history: updatedMessages,
             session_id: sessionId,
-            user_message_id: Number(userMessageId),
+            user_message_id: userMessageId,
             ...(condition ? { condition } : {}),
           },
           { headers: authHeaders }

@@ -1,41 +1,42 @@
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from google.cloud import firestore
 from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./csr_simulator.db")
-
-_is_sqlite = DATABASE_URL.startswith("sqlite")
-_db_type = "SQLite" if _is_sqlite else "PostgreSQL"
-print(f"[database] Using {_db_type}: {DATABASE_URL}")
-
-_pool_kwargs = (
-    {}
-    if _is_sqlite
-    else {
-        "pool_size": 5,
-        "max_overflow": 10,
-        "pool_recycle": 1800,
-    }
+# Project ID: set GOOGLE_CLOUD_PROJECT (or GCLOUD_PROJECT / FIRESTORE_PROJECT).
+# Database ID: set FIRESTORE_DATABASE if not using "(default)" — e.g. tp-feedback-study.
+# Local auth: `gcloud auth application-default login`
+# Or set GOOGLE_APPLICATION_CREDENTIALS to a service-account JSON path.
+# Emulator: FIRESTORE_EMULATOR_HOST=localhost:8080
+_PROJECT = (
+    os.getenv("GOOGLE_CLOUD_PROJECT")
+    or os.getenv("GCLOUD_PROJECT")
+    or os.getenv("FIRESTORE_PROJECT")
 )
+_DATABASE = os.getenv("FIRESTORE_DATABASE", "(default)")
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False} if _is_sqlite else {},
-    pool_pre_ping=True,
-    **_pool_kwargs,
+_emulator = os.getenv("FIRESTORE_EMULATOR_HOST")
+_db_label = (
+    f"emulator@{_emulator}"
+    if _emulator
+    else f"project={_PROJECT or '(ADC default)'} database={_DATABASE}"
 )
+print(f"[database] Using Firestore ({_db_label})")
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+_client: firestore.Client | None = None
 
-Base = declarative_base()
+
+def get_client() -> firestore.Client:
+    global _client
+    if _client is None:
+        kwargs: dict = {"database": _DATABASE}
+        if _PROJECT:
+            kwargs["project"] = _PROJECT
+        _client = firestore.Client(**kwargs)
+    return _client
 
 
 def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    """FastAPI dependency — yields the shared Firestore client."""
+    yield get_client()
