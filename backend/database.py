@@ -17,8 +17,16 @@ _PROJECT = (
 _DATABASE = os.getenv("FIRESTORE_DATABASE", "(default)")
 
 _emulator = os.getenv("FIRESTORE_EMULATOR_HOST")
+# Firestore emulator only supports the "(default)" database.
+if _emulator and _DATABASE != "(default)":
+    print(
+        f"[database] Emulator active — using database=(default) "
+        f"(ignoring FIRESTORE_DATABASE={_DATABASE})"
+    )
+    _DATABASE = "(default)"
+
 _db_label = (
-    f"emulator@{_emulator}"
+    f"emulator@{_emulator} database={_DATABASE}"
     if _emulator
     else f"project={_PROJECT or '(ADC default)'} database={_DATABASE}"
 )

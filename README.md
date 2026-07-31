@@ -39,20 +39,34 @@ GROQ_API_KEY=gsk_...         # if using groq
 MODEL_NAME=gpt-4o            # model name for the chosen provider
 SECRET_KEY=your-secret-key
 GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+FIRESTORE_DATABASE=tp-feedback-study
+# Local: FIRESTORE_EMULATOR_HOST=localhost:8080  (omit this to use real GCP)
 # Optional: GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-# Optional emulator: FIRESTORE_EMULATOR_HOST=localhost:8080
 DEBUG_PROMPTS=false          # set true to print the full assembled system prompt
 ```
 
-Authenticate for local Firestore access:
+### Firestore emulator (recommended for local)
+
+Keeps local sessions out of the study database.
+
 ```bash
-gcloud auth application-default login
-gcloud config set project your-gcp-project-id
+# once
+brew install openjdk@21
+npm install -g firebase-tools
+
+# each session — leave this terminal open
+./scripts/start-firestore-emulator.sh
 ```
+
+Emulator UI: http://localhost:4000
+
+Ensure `backend/.env` has `FIRESTORE_EMULATOR_HOST=localhost:8080`. Keep `FIRESTORE_DATABASE=tp-feedback-study` for Cloud Run — when the emulator host is set, the backend ignores that name and uses `(default)` locally (emulator limitation), so real study data is never written. Remove `FIRESTORE_EMULATOR_HOST` only when you intentionally want live GCP data.
 
 ```bash
 uvicorn main:app --reload --port 8000
 ```
+
+You should see `[database] Using Firestore (emulator@localhost:8080)` on startup.
 
 ### Frontend
 
