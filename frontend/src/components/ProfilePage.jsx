@@ -185,6 +185,28 @@ export default function ProfilePage({ token, role, navProps, onBack }) {
           </div>
         </div>
 
+        {user?.completions && Object.keys(user.completions).length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-3">
+            <h2 className="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+              Completion codes
+            </h2>
+            <p className="text-xs text-gray-500">
+              Paste the code for your condition into the survey form.
+            </p>
+            {Object.entries(user.completions).map(([key, entry]) => (
+              <div
+                key={key}
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 bg-gray-50 rounded-lg px-4 py-3"
+              >
+                <span className="text-xs text-gray-500 capitalize">{entry?.condition || key}</span>
+                <span className="font-mono text-sm font-semibold text-gray-900 select-all">
+                  {entry?.code}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Tabs — password tab only shown to researchers */}
         <div className="flex border-b border-gray-200">
           {(role === "researcher" ? ["sessions", "password"] : ["sessions"]).map(t => (

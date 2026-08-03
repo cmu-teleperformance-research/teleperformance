@@ -1,9 +1,11 @@
+import hashlib
 import json as json_lib
 import os
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from pydantic import BaseModel
 from google.cloud import firestore
@@ -32,6 +34,16 @@ app.add_middleware(
 
 VALID_SCENARIOS = {"flight_cancellation", "baggage_delay", "book_flight", "loan_delay", "refund_request", "package_never_arrived", "exchange_item"}
 VALID_PERSONAS = {"angry", "confused", "demanding", "anxious"}
+VALID_CONDITIONS = {"cond1", "cond2", "cond3", "cond4"}
+PATH_SESSION_COUNT = 3
+
+
+def _completion_code_for(user_id: str, condition: str) -> str:
+    """Deterministic completion hash for a participant + condition (for survey forms)."""
+    secret = os.getenv("COMPLETION_SECRET", "csr-completion-v1")
+    digest = hashlib.sha256(f"{user_id}:{condition}:{secret}".encode()).hexdigest()[:12].upper()
+    cond_tag = condition.upper().replace("COND", "C")
+    return f"TP-{cond_tag}-{digest}"
 
 SCENARIO_LABELS = {
     "flight_cancellation": "Flight Cancellation",
@@ -125,7 +137,52 @@ def me(current_user: models.User = Depends(get_current_user)):
         "name": current_user.name,
         "username": current_user.username,
         "role": get_role(current_user.username),
+        "completions": current_user.completions or {},
     }
+
+
+class CompletePathRequest(BaseModel):
+    condition: str | None = None
+    domain: str | None = None
+
+
+@app.post("/complete-path")
+def complete_path(
+    request: CompletePathRequest,
+    db: firestore.Client = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Issue (or return) a completion code after the participant finishes all path scenarios."""
+    condition = (request.condition or "").strip() or None
+    if condition and condition not in VALID_CONDITIONS:
+        raise HTTPException(status_code=400, detail=f"condition must be one of {VALID_CONDITIONS}")
+
+    # Key completions by condition, or "default" when no experimental condition is set
+    completion_key = condition or "default"
+    existing = (current_user.completions or {}).get(completion_key)
+    if existing and existing.get("code"):
+        return existing
+
+    reported = [
+        s for s in models.list_sessions_for_user(db, current_user.id)
+        if s.report is not None and (not condition or s.condition == condition)
+    ]
+    if len(reported) < PATH_SESSION_COUNT:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Complete all {PATH_SESSION_COUNT} scenarios before requesting a completion code "
+                   f"(found {len(reported)} with reports).",
+        )
+
+    completion = {
+        "code": _completion_code_for(current_user.id, completion_key),
+        "condition": condition,
+        "domain": request.domain,
+        "session_count": len(reported),
+        "completed_at": datetime.now(timezone.utc).isoformat(),
+    }
+    models.save_user_completion(db, current_user.id, completion_key, completion)
+    return completion
 
 
 class ChangePasswordRequest(BaseModel):
@@ -208,6 +265,7 @@ def get_session(
             for m in messages
         ],
         "report": session.report,
+        "attention_check": session.attention_check,
     }
 
 
@@ -269,7 +327,41 @@ def research_get_session(
             for m in messages
         ],
         "report": session.report,
+        "attention_check": session.attention_check,
     }
+
+
+class AttentionCheckRequest(BaseModel):
+    selected_id: str
+
+
+@app.post("/sessions/{session_id}/attention-check")
+def submit_attention_check(
+    session_id: str,
+    request: AttentionCheckRequest,
+    db: firestore.Client = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    session = models.get_session(db, session_id)
+    if not session or session.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if session.attention_check:
+        return session.attention_check
+
+    if request.selected_id not in VALID_SCENARIOS:
+        raise HTTPException(status_code=400, detail=f"selected_id must be one of {VALID_SCENARIOS}")
+
+    payload = {
+        "question_type": "scenario_main_issue",
+        "prompt": "What was the customer's main issue?",
+        "selected_id": request.selected_id,
+        "correct_id": session.scenario,
+        "correct": request.selected_id == session.scenario,
+        "answered_at": datetime.now(timezone.utc).isoformat(),
+    }
+    models.save_attention_check(db, session_id, payload)
+    return payload
 
 
 # ── Chat ──────────────────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ import WelcomePage from "./components/WelcomePage";
 import ModeSelector from "./components/ModeSelector";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
+import CompletionPage from "./components/CompletionPage";
 import ProfilePage from "./components/ProfilePage";
 import ResearchDashboard from "./components/ResearchDashboard";
 import NavBar from "./components/NavBar";
@@ -23,12 +24,40 @@ function readStoredSession(conditionId) {
       localStorage.removeItem(`messages_${id}`);
       localStorage.removeItem("sessionId");
       localStorage.removeItem("sessionConfig");
+      localStorage.removeItem("trainingPath");
       return null;
     }
     return parsed;
   } catch {
     return null;
   }
+}
+
+function readStoredPath(conditionId) {
+  try {
+    const raw = localStorage.getItem("trainingPath");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (conditionId && parsed.condition && parsed.condition !== conditionId) {
+      localStorage.removeItem("trainingPath");
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function sessionConfigFromPath(path, index, conditionId) {
+  const session = path.sessions[index];
+  return {
+    ...session,
+    domain: path.domain,
+    domainLabel: path.domainLabel,
+    pathIndex: index,
+    pathTotal: path.sessions.length,
+    ...(conditionId ? { condition: conditionId } : {}),
+  };
 }
 
 export default function App({ conditionId = null }) {
@@ -39,6 +68,7 @@ export default function App({ conditionId = null }) {
   const [displayName, setDisplayName] = useState(() => localStorage.getItem("displayName"));
   const [role, setRole] = useState(() => localStorage.getItem("role") || "participant");
   const [sessionConfig, setSessionConfig] = useState(() => readStoredSession(conditionId));
+  const [trainingPath, setTrainingPath] = useState(() => readStoredPath(conditionId));
   const [view, setView] = useState(() => {
     const stored = readStoredSession(conditionId);
     return stored ? "chat" : "landing";
@@ -47,6 +77,10 @@ export default function App({ conditionId = null }) {
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(null);
+  const [reportSessionId, setReportSessionId] = useState(null);
+  const [completion, setCompletion] = useState(null);
+  const [completionLoading, setCompletionLoading] = useState(false);
+  const [completionError, setCompletionError] = useState(null);
   const [sessionExpiredMessage, setSessionExpiredMessage] = useState(null);
 
   // Persist experimental condition from the URL so it survives login / refresh
@@ -67,8 +101,11 @@ export default function App({ conditionId = null }) {
         if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
         localStorage.removeItem("sessionId");
         localStorage.removeItem("sessionConfig");
+        localStorage.removeItem("trainingPath");
         setSessionConfig(null);
+        setTrainingPath(null);
         setReport(null);
+        setReportSessionId(null);
         setReportError(null);
         setView("landing");
       }
@@ -93,11 +130,21 @@ export default function App({ conditionId = null }) {
     setView(conditionId ? "landing" : "mode-select");
   }
 
-  function clearStoredSession() {
+  function clearStoredChat() {
     const sessionId = localStorage.getItem("sessionId");
     if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
     localStorage.removeItem("sessionId");
     localStorage.removeItem("sessionConfig");
+  }
+
+  function clearTrainingPath() {
+    localStorage.removeItem("trainingPath");
+    setTrainingPath(null);
+  }
+
+  function clearStoredSession() {
+    clearStoredChat();
+    clearTrainingPath();
   }
 
   function handleLogout() {
@@ -113,6 +160,10 @@ export default function App({ conditionId = null }) {
     setView("landing");
     setSessionConfig(null);
     setReport(null);
+    setReportSessionId(null);
+    setCompletion(null);
+    setCompletionError(null);
+    setCompletionLoading(false);
     setPreLoginView("welcome");
   }
 
@@ -128,17 +179,32 @@ export default function App({ conditionId = null }) {
     setRole("participant");
     setSessionConfig(null);
     setReport(null);
+    setReportSessionId(null);
     setSessionExpiredMessage("Session expired. Please log in again.");
   }
 
-  function handleModeSelect(config) {
-    clearStoredSession();
-    const configWithCondition = conditionId
-      ? { ...config, condition: conditionId }
-      : config;
-    localStorage.setItem("sessionConfig", JSON.stringify(configWithCondition));
-    setSessionConfig(configWithCondition);
+  function startPathSession(path, index) {
+    const config = sessionConfigFromPath(path, index, conditionId);
+    localStorage.setItem("sessionConfig", JSON.stringify(config));
+    setSessionConfig(config);
     setView("chat");
+  }
+
+  function handleModeSelect({ domain, domainLabel, sessions }) {
+    clearStoredChat();
+    const path = {
+      domain,
+      domainLabel,
+      sessions,
+      index: 0,
+      ...(conditionId ? { condition: conditionId } : {}),
+    };
+    localStorage.setItem("trainingPath", JSON.stringify(path));
+    setTrainingPath(path);
+    setReport(null);
+    setReportSessionId(null);
+    setReportError(null);
+    startPathSession(path, 0);
   }
 
   function handleSessionStarted(id) {
@@ -150,7 +216,12 @@ export default function App({ conditionId = null }) {
   }
 
   async function handleEndSession(messages, sessionId) {
-    clearStoredSession();
+    // Clear chat restore keys; keep React sessionConfig + trainingPath for the report / continue flow
+    const sid = sessionId || localStorage.getItem("sessionId");
+    if (sid) localStorage.removeItem(`messages_${sid}`);
+    localStorage.removeItem("sessionId");
+    localStorage.removeItem("sessionConfig");
+    setReportSessionId(sid || null);
     setReportLoading(true);
     setReportError(null);
     setView("report");
@@ -162,7 +233,7 @@ export default function App({ conditionId = null }) {
           persona: sessionConfig.persona,
           training: sessionConfig.training,
           history: messages,
-          session_id: sessionId,
+          session_id: sid,
           ...(conditionId ? { condition: conditionId } : {}),
         },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -179,12 +250,79 @@ export default function App({ conditionId = null }) {
     }
   }
 
-  function handleNewSession() {
+  function handleContinuePath() {
+    if (!trainingPath) {
+      handleFinishPath();
+      return;
+    }
+    const nextIndex = (trainingPath.index ?? 0) + 1;
+    if (nextIndex >= trainingPath.sessions.length) {
+      handleFinishPath();
+      return;
+    }
+    const updated = { ...trainingPath, index: nextIndex };
+    localStorage.setItem("trainingPath", JSON.stringify(updated));
+    setTrainingPath(updated);
+    setReport(null);
+    setReportSessionId(null);
+    setReportError(null);
+    clearStoredChat();
+    startPathSession(updated, nextIndex);
+  }
+
+  async function handleFinishPath() {
+    const domain = trainingPath?.domain ?? sessionConfig?.domain ?? null;
     clearStoredSession();
     setSessionConfig(null);
     setReport(null);
+    setReportSessionId(null);
     setReportError(null);
+    setCompletion(null);
+    setCompletionError(null);
+    setCompletionLoading(true);
+    setView("completion");
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/complete-path`,
+        {
+          ...(conditionId ? { condition: conditionId } : {}),
+          ...(domain ? { domain } : {}),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCompletion(response.data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        handleAuthExpired();
+        return;
+      }
+      const detail = err.response?.data?.detail;
+      setCompletionError(
+        typeof detail === "string"
+          ? detail
+          : "Could not generate a completion code. Please try again or contact the research team."
+      );
+    } finally {
+      setCompletionLoading(false);
+    }
+  }
+
+  function handleGoHome() {
+    clearStoredSession();
+    setSessionConfig(null);
+    setTrainingPath(null);
+    setReport(null);
+    setReportSessionId(null);
+    setReportError(null);
+    setCompletion(null);
+    setCompletionError(null);
+    setCompletionLoading(false);
     setView("landing");
+  }
+
+  function handleCompletionDone() {
+    handleGoHome();
   }
 
   if (!token) {
@@ -250,6 +388,18 @@ export default function App({ conditionId = null }) {
     return <ModeSelector onSelect={handleModeSelect} navProps={navProps} />;
   }
 
+  if (view === "completion") {
+    return (
+      <CompletionPage
+        completion={completion}
+        error={completionError}
+        loading={completionLoading}
+        navProps={navProps}
+        onDone={handleCompletionDone}
+      />
+    );
+  }
+
   if (view === "profile") {
     return <ProfilePage token={token} role={role} navProps={navProps} onBack={() => setView("landing")} />;
   }
@@ -279,6 +429,7 @@ export default function App({ conditionId = null }) {
       );
     }
     if (reportError) {
+      const hasNext = trainingPath && (trainingPath.index ?? 0) + 1 < trainingPath.sessions.length;
       return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
           <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
@@ -288,21 +439,32 @@ export default function App({ conditionId = null }) {
           <div className="flex-1 flex flex-col items-center justify-center gap-4">
             <p className="text-red-500">{reportError}</p>
             <button
-              onClick={handleNewSession}
+              onClick={hasNext ? handleContinuePath : handleGoHome}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
             >
-              Back to Home
+              {hasNext ? "Continue to Next Scenario" : "Back to Home"}
             </button>
           </div>
         </div>
       );
     }
+    const pathIndex = trainingPath?.index ?? sessionConfig?.pathIndex ?? 0;
+    const pathTotal = trainingPath?.sessions?.length ?? sessionConfig?.pathTotal ?? 1;
+    const hasNextSession = pathIndex + 1 < pathTotal;
     return (
       <ReportPage
+        key={reportSessionId || `${sessionConfig?.scenario}-${pathIndex}`}
         report={report}
         sessionConfig={sessionConfig}
         navProps={navProps}
-        onNewSession={handleNewSession}
+        pathIndex={pathIndex}
+        pathTotal={pathTotal}
+        hasNextSession={hasNextSession}
+        onContinue={hasNextSession ? handleContinuePath : handleFinishPath}
+        sessionId={reportSessionId}
+        token={token}
+        onAuthExpired={handleAuthExpired}
+        conditionId={conditionId}
       />
     );
   }
@@ -313,7 +475,7 @@ export default function App({ conditionId = null }) {
 
   return (
     <ChatWindow
-      key={`${chatConfig.condition}-${chatConfig.scenario}-${chatConfig.persona}-${chatConfig.training}`}
+      key={`${chatConfig.condition}-${chatConfig.pathIndex}-${chatConfig.scenario}-${chatConfig.persona}-${chatConfig.training}`}
       sessionConfig={chatConfig}
       token={token}
       navProps={navProps}

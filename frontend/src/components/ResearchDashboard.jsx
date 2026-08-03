@@ -44,7 +44,22 @@ function SessionDetail({ session, onBack }) {
           <div><span className="text-gray-500">Scenario:</span> <span className="font-medium text-gray-800">{session.scenario_label}</span></div>
           <div><span className="text-gray-500">Mode:</span> <span className="font-medium text-gray-800">{modeLabel}</span></div>
           <div><span className="text-gray-500">Date:</span> <span className="font-medium text-gray-800">{new Date(session.created_at).toLocaleString()}</span></div>
+          <div>
+            <span className="text-gray-500">Attention check:</span>{" "}
+            <span className="font-medium text-gray-800">
+              {session.attention_check
+                ? (session.attention_check.correct ? "Passed" : "Failed")
+                : "Not answered"}
+            </span>
+          </div>
         </div>
+        {session.attention_check && (
+          <p className="text-xs text-gray-500 mt-3">
+            Selected <span className="font-medium">{session.attention_check.selected_id}</span>
+            {" · "}
+            Correct answer <span className="font-medium">{session.attention_check.correct_id}</span>
+          </p>
+        )}
       </div>
 
       {/* Session coaching */}

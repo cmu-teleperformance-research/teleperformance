@@ -1,4 +1,5 @@
 import { useState } from "react";
+import NavBar from "./NavBar";
 
 // ─── DOMAIN / SCENARIO CONFIG ─────────────────────────────────────────────────
 const DOMAINS = [
@@ -58,8 +59,6 @@ const DOMAINS = [
   },
 ];
 
-const ALL_DOMAINS = DOMAINS;
-
 const PERSONAS = [
   {
     id: "angry",
@@ -86,6 +85,46 @@ const PERSONAS = [
     description: "Worried and prone to catastrophizing. Needs reassurance and calm guidance.",
   },
 ];
+
+const ANGRY_PERSONA = PERSONAS.find((p) => p.id === "angry");
+
+const TRAINING_COUNT = 2;
+const EVALUATION_COUNT = 1;
+const PATH_LENGTH = TRAINING_COUNT + EVALUATION_COUNT;
+
+function shuffle(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/** Build a path of 2 random training scenarios + 1 evaluation scenario from a domain. */
+export function buildSessionPath(domain) {
+  if (domain.scenarios.length < PATH_LENGTH) {
+    throw new Error(`Domain "${domain.id}" needs at least ${PATH_LENGTH} scenarios`);
+  }
+
+  const picked = shuffle(domain.scenarios).slice(0, PATH_LENGTH);
+  const evaluation = picked[picked.length - 1];
+  const trainingScenarios = shuffle(picked.slice(0, TRAINING_COUNT));
+
+  const toSession = (scenario, training) => ({
+    scenario: scenario.id,
+    scenarioLabel: scenario.label,
+    persona: ANGRY_PERSONA.id,
+    personaLabel: ANGRY_PERSONA.label,
+    personaEmoji: ANGRY_PERSONA.emoji,
+    training,
+  });
+
+  return [
+    ...trainingScenarios.map((s) => toSession(s, true)),
+    toSession(evaluation, false),
+  ];
+}
 
 // Avery Collins — detailed persona for loan_delay + demanding
 export const AVERY_COLLINS_PERSONA = {
@@ -142,14 +181,6 @@ export const AVERY_COLLINS_PERSONA = {
   ],
 };
 
-// Scenario-specific persona description overrides — shown in the persona selector UI
-// when a particular scenario + persona combination has a distinct character
-const SCENARIO_PERSONA_OVERRIDES = {
-  loan_delay: {
-    demanding: "Calm but firm. Knows what they want and pushes hard for it.",
-  },
-};
-
 // ─── STEP COMPONENTS ─────────────────────────────────────────────────────────
 function StepHeader({ step, total, label }) {
   return (
@@ -171,13 +202,15 @@ function BackButton({ onClick }) {
   );
 }
 
-// Step 1: Choose Domain
 function StepDomain({ onSelect }) {
   return (
     <div>
-      <StepHeader step={1} total={3} label="Choose a Domain" />
+      <StepHeader step={1} total={2} label="Choose a Domain" />
+      <p className="text-center text-sm text-gray-500 mb-6 -mt-4">
+        You will complete {TRAINING_COUNT} training scenarios and {EVALUATION_COUNT} evaluation scenario in this domain.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-        {ALL_DOMAINS.map((d) => (
+        {DOMAINS.map((d) => (
           <button
             key={d.id}
             onClick={() => d.available && onSelect(d)}
@@ -197,7 +230,9 @@ function StepDomain({ onSelect }) {
             </div>
             <p className="text-base font-semibold text-gray-800">{d.label}</p>
             {d.available && (
-              <p className="text-xs text-gray-500">{d.scenarios.length} scenario{d.scenarios.length !== 1 ? "s" : ""} available</p>
+              <p className="text-xs text-gray-500">
+                {d.scenarios.length} scenario{d.scenarios.length !== 1 ? "s" : ""} available
+              </p>
             )}
           </button>
         ))}
@@ -206,158 +241,75 @@ function StepDomain({ onSelect }) {
   );
 }
 
-// Step 2: Choose Scenario
-function StepScenario({ domain, onSelect, onBack }) {
+function StepPathOverview({ domain, sessions, onStart, onBack }) {
   return (
     <div>
       <BackButton onClick={onBack} />
-      <StepHeader step={2} total={3} label={`Choose a Scenario — ${domain.label}`} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-        {domain.scenarios.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => onSelect(s)}
-            className="bg-white border border-gray-200 rounded-xl p-5 text-left hover:shadow-md hover:border-blue-400 transition space-y-2"
-          >
-            <p className="text-base font-semibold text-gray-800">{s.label}</p>
-            <p className="text-sm text-gray-500">{s.description}</p>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Step 3: Choose Persona
-function StepPersona({ onSelect, onBack, scenario }) {
-  return (
-    <div>
-      <BackButton onClick={onBack} />
-      <StepHeader step={3} total={4} label="Choose a Customer Persona" />
+      <StepHeader step={2} total={2} label={`Your Path — ${domain.label}`} />
       <p className="text-center text-sm text-gray-500 mb-6 -mt-4">
-        This sets the emotional style of the virtual customer you will interact with.
+        Scenarios are assigned randomly. After each session you will see a report, then continue to the next one.
       </p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-        {PERSONAS.map((p) => {
-          const overrideDescription = scenario && SCENARIO_PERSONA_OVERRIDES[scenario.id]?.[p.id];
-          return (
-            <button
-              key={p.id}
-              onClick={() => onSelect(p)}
-              className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:shadow-md hover:border-blue-400 transition space-y-2"
-            >
-              <span className="text-3xl block">{p.emoji}</span>
-              <p className="text-sm font-semibold text-gray-800">{p.label}</p>
-              <p className="text-xs text-gray-500 leading-snug">{overrideDescription ?? p.description}</p>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// Step 4: Choose Mode
-function StepMode({ scenario, persona, onSelect, onBack }) {
-  const modes = [
-    {
-      id: "training",
-      label: "Training Mode",
-      // badge: "Explicit Feedback",
-      // badgeColor: "bg-green-100 text-green-800",
-      description: ""
-      // "TODO: CHANGE THIS DESCRIPTION. This is the training mode.",
-    },
-    {
-      id: "evaluation",
-      label: "Evaluation Mode",
-      // badge: "Implicit Feedback",
-      // badgeColor: "bg-yellow-100 text-yellow-800",
-      description: ""
-      // "TODO: CHANGE THIS DESCRIPTION. This is the evaluation mode.",
-    },
-  ];
-
-  return (
-    <div>
-      <BackButton onClick={onBack} />
-      <StepHeader step={3} total={3} label="Choose a Mode" />
-      <p className="text-center text-sm text-gray-500 mb-6 -mt-4">
-        Scenario: <strong>{scenario.label}</strong>
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-        {modes.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => onSelect(m.id)}
-            className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:shadow-md hover:border-blue-400 transition space-y-3"
+      <div className="max-w-lg mx-auto space-y-3 mb-8">
+        {sessions.map((s, i) => (
+          <div
+            key={`${s.scenario}-${i}`}
+            className="bg-white border border-gray-200 rounded-xl px-5 py-4 flex items-center gap-4"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-semibold text-gray-800">{m.label}</span>
-              {/* <span className={`text-xs font-medium px-2 py-1 rounded-full ${m.badgeColor}`}>
-                {m.badge}
-              </span> */}
+            <span className="text-sm font-semibold text-gray-400 w-6">{i + 1}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-semibold text-gray-800">{s.scenarioLabel}</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {s.training ? "Training" : "Evaluation"}
+              </p>
             </div>
-            <p className="text-sm text-gray-500">{m.description}</p>
-          </button>
+            <span
+              className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${
+                s.training
+                  ? "bg-blue-50 text-blue-700"
+                  : "bg-amber-50 text-amber-800"
+              }`}
+            >
+              {s.training ? "Training" : "Evaluation"}
+            </span>
+          </div>
         ))}
+      </div>
+      <div className="text-center">
+        <button
+          onClick={onStart}
+          className="bg-blue-600 text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+        >
+          Start First Scenario
+        </button>
       </div>
     </div>
   );
 }
 
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
-import NavBar from "./NavBar";
-
-const ANGRY_PERSONA = PERSONAS.find((p) => p.id === "angry");
-
 export default function ModeSelector({ onSelect, navProps }) {
   const [step, setStep] = useState(1);
   const [selectedDomain, setSelectedDomain] = useState(null);
-  const [selectedScenario, setSelectedScenario] = useState(null);
-  const [selectedPersona, setSelectedPersona] = useState(null);
+  const [sessions, setSessions] = useState(null);
 
   function handleDomainSelect(domain) {
     setSelectedDomain(domain);
-    // If only one scenario, skip the scenario step and auto-set angry persona
-    if (domain.scenarios.length === 1) {
-      setSelectedScenario(domain.scenarios[0]);
-      setSelectedPersona(ANGRY_PERSONA);
-      setStep(4);
-    } else {
-      setStep(2);
-    }
+    setSessions(buildSessionPath(domain));
+    setStep(2);
   }
 
-  function handleScenarioSelect(scenario) {
-    setSelectedScenario(scenario);
-    // Persona step is skipped — angry is always used
-    setSelectedPersona(ANGRY_PERSONA);
-    setStep(4);
-  }
-
-  function handleModeSelect(modeId) {
+  function handleStart() {
     onSelect({
-      scenario: selectedScenario.id,
-      persona: selectedPersona.id,
-      training: modeId === "training",
-      // labels for display
-      scenarioLabel: selectedScenario.label,
-      personaLabel: selectedPersona.label,
-      personaEmoji: selectedPersona.emoji,
+      domain: selectedDomain.id,
+      domainLabel: selectedDomain.label,
+      sessions,
     });
   }
 
   function handleBack() {
-    if (step === 2) { setStep(1); setSelectedDomain(null); }
-    else if (step === 4) {
-      // Persona step is skipped — go back to scenario or domain
-      if (selectedDomain.scenarios.length === 1) {
-        setStep(1); setSelectedDomain(null); setSelectedScenario(null); setSelectedPersona(null);
-      } else {
-        setStep(2); setSelectedScenario(null); setSelectedPersona(null);
-      }
-    }
+    setStep(1);
+    setSelectedDomain(null);
+    setSessions(null);
   }
 
   return (
@@ -369,14 +321,11 @@ export default function ModeSelector({ onSelect, navProps }) {
       <div className="flex-1 flex flex-col items-center justify-center p-8">
         <div className="w-full max-w-4xl">
           {step === 1 && <StepDomain onSelect={handleDomainSelect} />}
-          {step === 2 && selectedDomain && (
-            <StepScenario domain={selectedDomain} onSelect={handleScenarioSelect} onBack={handleBack} />
-          )}
-          {step === 4 && selectedScenario && selectedPersona && (
-            <StepMode
-              scenario={selectedScenario}
-              persona={selectedPersona}
-              onSelect={handleModeSelect}
+          {step === 2 && selectedDomain && sessions && (
+            <StepPathOverview
+              domain={selectedDomain}
+              sessions={sessions}
+              onStart={handleStart}
               onBack={handleBack}
             />
           )}

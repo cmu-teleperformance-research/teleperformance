@@ -34,6 +34,7 @@ class User:
     username: str
     hashed_password: str
     created_at: datetime
+    completions: dict | None = None
 
 
 @dataclass
@@ -48,6 +49,7 @@ class SessionRecord:
     condition: str | None
     created_at: datetime
     report: dict | None = None
+    attention_check: dict | None = None
 
 
 @dataclass
@@ -67,6 +69,7 @@ def _user_from_doc(doc_id: str, data: dict) -> User:
         username=data["username"],
         hashed_password=data["hashed_password"],
         created_at=_as_datetime(data.get("created_at")),
+        completions=data.get("completions") or {},
     )
 
 
@@ -82,6 +85,7 @@ def _session_from_doc(doc_id: str, data: dict) -> SessionRecord:
         condition=data.get("condition"),
         created_at=_as_datetime(data.get("created_at")),
         report=data.get("report"),
+        attention_check=data.get("attention_check"),
     )
 
 
@@ -152,6 +156,22 @@ def update_user_password(db: firestore.Client, user_id: str, hashed_password: st
     db.collection("users").document(user_id).update({"hashed_password": hashed_password})
 
 
+def save_user_completion(
+    db: firestore.Client,
+    user_id: str,
+    condition: str,
+    completion: dict,
+) -> None:
+    """Merge a path-completion record under users/{id}.completions.{condition}."""
+    ref = db.collection("users").document(user_id)
+    snap = ref.get()
+    if not snap.exists:
+        return
+    existing = (snap.to_dict() or {}).get("completions") or {}
+    existing[condition] = completion
+    ref.update({"completions": existing})
+
+
 # ── Sessions ──────────────────────────────────────────────────────────────────
 
 def create_session(
@@ -214,6 +234,17 @@ def save_session_report(db: firestore.Client, session_id: str | None, report: di
     if not ref.get().exists:
         return
     ref.update({"report": report})
+
+
+def save_attention_check(
+    db: firestore.Client,
+    session_id: str,
+    attention_check: dict,
+) -> None:
+    ref = db.collection("sessions").document(session_id)
+    if not ref.get().exists:
+        return
+    ref.update({"attention_check": attention_check})
 
 
 # ── Messages ──────────────────────────────────────────────────────────────────

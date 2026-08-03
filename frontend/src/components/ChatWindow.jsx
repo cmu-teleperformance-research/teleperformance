@@ -12,6 +12,9 @@ import { CONDITIONS } from "../conditions";
 
 const API_URL = `${API_BASE_URL}/chat`;
 
+/** Suggested user message count before offering to end the session (training & evaluation). */
+const MAX_USER_MESSAGES = 2;
+
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
   baggage_delay: "Lost Baggage",
@@ -21,7 +24,7 @@ const SCENARIO_LABELS = {
 };
 
 export default function ChatWindow({ sessionConfig, token, navProps, onEndSession, onAuthExpired, storedSessionId, onSessionStarted, onSessionRestoreFailed }) {
-  const { scenario, persona, training, scenarioLabel, condition } = sessionConfig;
+  const { scenario, persona, training, scenarioLabel, condition, pathIndex, pathTotal } = sessionConfig;
   const showFeedbackPanel = training && (CONDITIONS[condition]?.showFeedbackPanel ?? true);
   const totalPortalSteps = (screenMap[scenario] ?? screenMap.flight_cancellation).length;
 
@@ -161,6 +164,14 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     return () => controller.abort();
   }, [scenario, persona, training, condition]);
 
+  const traineeMessageCount = messages.filter((m) => m.role === "user").length;
+  const messageLimitReached = traineeMessageCount >= MAX_USER_MESSAGES;
+
+  function endSessionWith(finalMessages) {
+    if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
+    onEndSession(finalMessages, sessionId);
+  }
+
   async function sendMessage() {
     const trimmed = input.trim();
     if (!trimmed || loading) return;
@@ -267,7 +278,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       }
 
       // Run evaluation pipeline in background (hidden from participant, saved to DB)
-      if (userMessageId && showFeedbackPanel) {
+      if (userMessageId) {
         axios.post(
           `${API_BASE_URL}/feedback`,
           {
@@ -303,7 +314,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       // Index of the CSR turn we just appended (not .length — that is past the end)
       const csrIdx = updatedMessages.length - 1;
 
-      if (showFeedbackPanel) {
+      if (true) {
         setFeedbackLoading(true);
         try {
           const fbRes = await axios.post(
@@ -359,20 +370,21 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       const { customer_response } = response.data;
 
       // Append customer reply; re-apply feedback in case a prior update was lost
-      setMessages(prev => {
-        const next = prev.map((m, i) =>
+      const finalMessages = (() => {
+        const next = updatedMessages.map((m, i) =>
           i === csrIdx && fb ? { ...m, feedback: fb } : m
         );
         return [...next, { role: "assistant", content: customer_response }];
-      });
+      })();
+
+      setMessages(finalMessages);
       if (fb) {
         setPanelFeedback(fb);
         setSelectedIdx(csrIdx);
       }
+
       setLoading(false);
       inputRef.current?.focus();
-
-
 
     } catch (err) {
       console.error("❌ ERROR:", err);
@@ -400,6 +412,10 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
   const modeLabel = training ? "Training" : "Evaluation";
   const headerLabel = `${modeLabel} — ${scenarioLabel || SCENARIO_LABELS[scenario]}`;
+  const pathLabel =
+    typeof pathIndex === "number" && pathTotal > 1
+      ? `Scenario ${pathIndex + 1} of ${pathTotal}`
+      : null;
 
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
@@ -407,6 +423,11 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         <div className="flex items-center gap-4">
           <span className="font-semibold text-gray-800">CSR Simulator</span>
           <span className="text-sm text-gray-400">{headerLabel}</span>
+          {pathLabel && (
+            <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+              {pathLabel}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-6">
           <button
@@ -416,10 +437,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             Home Guide
           </button>
           <button
-            onClick={() => {
-              if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
-              onEndSession(messages, sessionId);
-            }}
+            onClick={() => endSessionWith(messages)}
             className="text-sm text-gray-500 hover:text-red-500 transition"
           >
             End Session & Get Report
@@ -479,9 +497,12 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
         <div className="flex-1 flex overflow-hidden">
           <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="bg-gray-50 border-b border-gray-200 px-4 py-1.5">
+            <div className="bg-gray-50 border-b border-gray-200 px-4 py-1.5 flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 Chat
+              </span>
+              <span className="text-xs text-gray-400">
+                Messages {traineeMessageCount}/{MAX_USER_MESSAGES} suggested
               </span>
             </div>
 
@@ -497,6 +518,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                     setSelectedIdx(i);
                     setPanelFeedback(msg.feedback);
                   } : undefined}
+                  showFeedbackPanel={showFeedbackPanel}
                 />
               ))}
 
@@ -512,6 +534,21 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             </div>
 
             <div className="bg-white border-t border-gray-200 px-6 py-3">
+              {messageLimitReached && (
+                <div className="mb-3 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+                  <p className="text-xs text-gray-500 text-center">
+                    Suggested message count reached. You can keep chatting, or end when you&apos;re ready.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => endSessionWith(messages)}
+                    disabled={loading}
+                    className="shrink-0 text-xs font-medium bg-gray-800 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition"
+                  >
+                    End Session & Get Report
+                  </button>
+                </div>
+              )}
               <div className="flex gap-3 items-end">
                 <textarea
                   ref={inputRef}
@@ -525,7 +562,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                 <button
                   onClick={sendMessage}
                   disabled={loading || !input.trim()}
-                  className="bg-blue-600 text-white px-5 py-3 rounded-xl"
+                  className="bg-blue-600 text-white px-5 py-3 rounded-xl disabled:opacity-50"
                 >
                   Send
                 </button>

@@ -5,12 +5,12 @@ function safeContent(content) {
     try {
       const parsed = JSON.parse(trimmed);
       if (parsed.customer_response) return parsed.customer_response;
-    } catch (_) {}
+    } catch (_) { }
   }
   return content;
 }
 
-export default function MessageBubble({ role, content, hasFeedback, isSelected, onClick }) {
+export default function MessageBubble({ role, content, hasFeedback, isSelected, onClick, showFeedbackPanel }) {
   const isUser = role === "user";
   const displayContent = isUser ? content : safeContent(content);
   return (
@@ -28,7 +28,7 @@ export default function MessageBubble({ role, content, hasFeedback, isSelected, 
           <span className="block text-xs font-semibold text-gray-400 mb-1">Customer</span>
         )}
         {displayContent}
-        {isUser && hasFeedback && (
+        {isUser && hasFeedback && showFeedbackPanel && (
           <span className="block text-xs mt-1 opacity-60">
             {isSelected ? "▲ feedback shown" : "▼ click for feedback"}
           </span>
