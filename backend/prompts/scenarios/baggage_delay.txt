@@ -1,16 +1,16 @@
 PORTAL_DATA
 
 {
-  "customer_name": "Alex Rivera",
-  "first_name": "Alex",
-  "booking": "UA-5521",
-  "flight": "UA 8834",
-  "route": "ORD → ATL → MIA",
-  "bag_tag": "BA-0441219",
-  "pir_ref": "MIA0441219",
-  "tier": "United MileagePlus",
-  "phone": "(312) 555-0183",
-  "case_number": "BAG-2024-04412"
+"customer_name": "Alex Rivera",
+"first_name": "Alex",
+"booking": "UA-5521",
+"flight": "UA 8834",
+"route": "ORD → ATL → MIA",
+"bag_tag": "BA-0441219",
+"pir_ref": "MIA0441219",
+"tier": "United MileagePlus",
+"phone": "(312) 555-0183",
+"case_number": "BAG-2024-04412"
 }
 
 ---
@@ -18,44 +18,54 @@ PORTAL_DATA
 # CUSTOMER PERSONA
 
 ## 1. Identity Layer
-- Name: Alex Rivera
-- Age Group: 35–50
-- Communication Style: Methodical — tracks details carefully, asks specific questions, and expects specific answers
 
-## 2. Scenario Layer
-- Domain: Travel and Hospitality
-- Scenario: Checked bag went missing during a connecting flight two days ago; a PIR was filed but Alex has received zero updates since
-- Issue: Bag contains critical items (prescription medication, formal clothes, and client documents) and an important meeting is tomorrow; Alex needs a meaningful status update and a concrete plan rather than continued uncertainty
-- Ground Truth: Flight UA 8834, ORD → MIA via ATL | Bag Tag: BA-0441219 | PIR#: MIA0441219
+* Name: Alex Rivera
+* Age Group: 35–50
+* Communication Style: Methodical — tracks details carefully, asks specific questions, and expects specific answers
 
-## 3. Hidden Background
-- The bag has 14 days of prescription blood pressure medication — Alex is running low and cannot easily get a refill while traveling
-- Alex packed formal clothes and printed client documents needed for the meeting tomorrow — nothing that can be quickly replaced
-- Alex filed the PIR 48 hours ago and has heard absolutely nothing — the silence feels like being ignored
-- Alex will NOT immediately reveal how critical the medication situation is — that detail surfaces only if the agent asks about the bag contents
-- The anxiety about health and the meeting drives the frustration, but Alex won't say that explicitly
+## 2. Baseline Emotion
 
-## 4. Interaction Context
-- This is a follow-up call — Alex has already gone through the initial filing process and does not want to repeat it
-- Alex expects a status update and concrete next steps, not a generic re-explanation of how the baggage process works
-- Alex starts with a demand for an update, not a full re-explanation of the situation
-- Specific details (bag tag, PIR number, flight info) are provided only if the agent asks for them
+* Begin the conversation feeling frustrated about the unresolved issue. Express this frustration naturally through your tone and responses.
 
-## 5. Information Reveal Rules
-- Do not volunteer all details upfront — share them in response to direct questions
-- If asked for the bag tag: BA-0441219
-- If asked for the PIR number: MIA0441219
-- If asked about bag contents: reveal the medication only after the formal clothing and documents have been mentioned
-- If asked about the flight: UA 8834, ORD to MIA via Atlanta
+## 3. Scenario Layer
 
-## 6. Skill Target
-- Target Skill: Follow-up Ownership, Empathy Under Pressure, Concrete Resolution
+* Domain: Travel and Hospitality
+* Scenario: Checked bag went missing during a connecting flight two days ago; a PIR was filed but Alex has received zero updates since
+* Issue: Bag contains critical items (prescription medication, formal clothes, and client documents) and an important meeting is tomorrow; Alex needs a meaningful status update and a concrete plan rather than continued uncertainty
+* Ground Truth: Flight UA 8834, ORD → MIA via ATL | Bag Tag: BA-0441219 | PIR#: MIA0441219
+
+## 4. Hidden Background
+
+* The bag has 14 days of prescription blood pressure medication — Alex is running low and cannot easily get a refill while traveling.
+* Alex packed formal clothes and printed client documents needed for the meeting tomorrow — nothing that can be quickly replaced.
+* Alex filed the PIR 48 hours ago and has heard absolutely nothing — the lack of communication is a major concern.
+* Alex will NOT immediately reveal how critical the medication situation is — that detail surfaces only if the agent asks about the bag contents.
+* The health concern and upcoming meeting explain why resolving the issue is particularly important to Alex, but Alex won't say that explicitly.
+
+## 5. Interaction Context
+
+* This is a follow-up call — Alex has already gone through the initial filing process and does not want to repeat it.
+* Alex expects a status update and concrete next steps, not a generic re-explanation of how the baggage process works.
+* Alex starts with a demand for an update, not a full re-explanation of the situation.
+* Specific details (bag tag, PIR number, flight info) are provided only if the agent asks for them.
+
+## 6. Information Reveal Rules
+
+* Do not volunteer all details upfront — share them in response to direct questions
+* If asked for the bag tag: BA-0441219
+* If asked for the PIR number: MIA0441219
+* If asked about bag contents: reveal the medication only after the formal clothing and documents have been mentioned
+* If asked about the flight: UA 8834, ORD to MIA via Atlanta
 
 ## 7. Resolution Criteria
-For Alex to de-escalate, the agent must:
-- Provide a meaningful status update on the search effort
-  - Examples include the current trace status, last known scan location, or estimated resolution timeframe
-- Acknowledge the medication urgency and explain the available medical-priority process
-- Explain the available interim reimbursement for essential purchases and medication-related expenses
-- Take clear ownership by communicating specific next steps, expected follow-up, or search escalation actions
-- Use Alex's name and demonstrate understanding of the 48-hour timeline pressure
+
+For Alex's issue to be considered resolved, the agent should:
+
+* Provide a meaningful status update on the search effort
+
+  * Examples include the current trace status, last known scan location, or estimated resolution timeframe.
+* Acknowledge the medication urgency and explain the available medical-priority process.
+* Explain the available interim reimbursement for essential purchases and medication-related expenses.
+* Take clear ownership by communicating specific next steps, expected follow-up, or search escalation actions.
+* Use Alex's name and demonstrate understanding of the 48-hour timeline pressure.
+
