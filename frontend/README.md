@@ -6,12 +6,12 @@ React + Vite frontend for the AI-Driven CSR Conflict Resolution Training Simulat
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Framework | React 18 |
-| Build Tool | Vite |
-| Styling | Tailwind CSS |
-| HTTP Client | Axios |
+| Component   | Technology   |
+| ----------- | ------------ |
+| Framework   | React 18     |
+| Build Tool  | Vite         |
+| Styling     | Tailwind CSS |
+| HTTP Client | Axios        |
 
 ---
 
@@ -45,7 +45,16 @@ frontend/
 npm install
 ```
 
-### 2. Run the dev server
+### 2. update the .env
+
+```bash
+cp .env.example .env
+
+```
+
+Open `.env` and change the API. If you are running locally replace the file with `VITE_API_URL=http://localhost:8000`
+
+### 3. Run the dev server
 
 ```bash
 npm run dev
@@ -60,19 +69,24 @@ The app will be available at `http://localhost:5173`.
 ## Components
 
 ### `App.jsx`
+
 Controls which screen is shown. Three states: `landing` → `mode-select` → `chat`. Passes the selected mode down to `ChatWindow`.
 
 ---
 
 ### `ModeSelector.jsx`
+
 Landing page with project description and mode selection buttons:
+
 - **Training (VC1)** — Health insurance billing, with feedback
 - **Evaluation (VC2)** — Flight cancellation, no feedback shown
 
 ---
 
 ### `ChatWindow.jsx`
+
 The main session component. Manages:
+
 - Conversation message history
 - Sending CSR messages to the backend (`POST /chat`)
 - Fetching the customer's opening message on mount (`GET /start/{mode}`)
@@ -85,7 +99,9 @@ The main session component. Manages:
 ---
 
 ### `MessageBubble.jsx`
+
 Renders a single message:
+
 - **Customer** (assistant role) — left-aligned, white bubble
 - **CSR** (user role) — right-aligned, blue bubble
 
@@ -94,23 +110,26 @@ In training mode, CSR bubbles with feedback are clickable. A small hint (`▲ fe
 ---
 
 ### `FeedbackPanel.jsx`
+
 Right sidebar, visible in training mode (`vc1`) only. Shows the feedback for whichever CSR message is currently selected:
 
-| Field | Description |
-|-------|-------------|
-| Empathy | Did the CSR acknowledge the customer's emotion? |
+| Field        | Description                                       |
+| ------------ | ------------------------------------------------- |
+| Empathy      | Did the CSR acknowledge the customer's emotion?   |
 | Transparency | Did the CSR explain what they were doing and why? |
-| Ownership | Did the CSR commit to a next action? |
-| Suggestion | Specific coaching tip for this turn |
+| Ownership    | Did the CSR commit to a next action?              |
+| Suggestion   | Specific coaching tip for this turn               |
 
 Defaults to a prompt to click a blue message when nothing is selected.
 
 ---
 
 ### `WorkflowPortal.jsx`
+
 A simulated internal CRM portal with a step-by-step guided workflow. The CSR navigates this portal while handling the customer call, mirroring real CSR tool usage.
 
 **VC1 workflow** (Health Insurance Billing):
+
 1. Customer Lookup
 2. Billing History — select the disputed bill
 3. Claim Detail — review procedure code
@@ -119,6 +138,7 @@ A simulated internal CRM portal with a step-by-step guided workflow. The CSR nav
 6. Communicate — scripted response to give the customer
 
 **VC2 workflow** (Flight Cancellation):
+
 1. Passenger Lookup
 2. Flight Details — review cancellation
 3. Rebooking Options — select a flight
@@ -127,6 +147,7 @@ A simulated internal CRM portal with a step-by-step guided workflow. The CSR nav
 6. Communicate — scripted response to give the customer
 
 Each step shows:
+
 - A **guidance prompt** (yellow banner) telling the CSR what to do or when to return to the customer
 - **Multiple action buttons** — only one correct path leads forward; wrong buttons show an error message
 - A **step progress sidebar** showing completed and upcoming steps

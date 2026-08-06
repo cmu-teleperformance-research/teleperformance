@@ -69,11 +69,27 @@ GROQ_API_KEY=your_key_here
 
 ```bash
 uvicorn main:app --reload --port 8000
+
+or
+
+python main.py
 ```
 
 The API will be available at `http://localhost:8000`.
 
 ---
+
+# Firestore simulation when running locally
+
+Run this in a **new terminal**, from the project root (`teleperformance/`). The script lives in the `/scripts` folder at the main root (not under `backend/`).
+
+```bash
+npm install -g firebase-tools
+
+cd scripts
+
+./start-firestore-emulator.sh
+```
 
 ## API Endpoints
 
