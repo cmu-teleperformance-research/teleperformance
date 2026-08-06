@@ -6,12 +6,12 @@ FastAPI backend for the AI-Driven CSR Conflict Resolution Training Simulator. Ha
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Framework | FastAPI |
+| Component    | Technology                    |
+| ------------ | ----------------------------- |
+| Framework    | FastAPI                       |
 | LLM Provider | Groq (`llama-3.1-8b-instant`) |
-| Server | Uvicorn |
-| Config | python-dotenv |
+| Server       | Uvicorn                       |
+| Config       | python-dotenv                 |
 
 ---
 
@@ -42,6 +42,9 @@ python -m venv venv
 source venv/Scripts/activate      # Windows (Git Bash)
 # or
 venv\Scripts\activate             # Windows (CMD/PowerShell)
+
+# or
+source venv/bin/activate       # mac
 ```
 
 ### 2. Install dependencies
@@ -75,11 +78,13 @@ The API will be available at `http://localhost:8000`.
 ## API Endpoints
 
 ### `GET /start/{mode}`
+
 Generates the customer's opening message to kick off the conversation.
 
 - **mode**: `vc1` (health insurance) or `vc2` (flight cancellation)
 
 **Response:**
+
 ```json
 {
   "customer_response": "Hello, I'm calling about a $1,200 bill I received..."
@@ -89,20 +94,21 @@ Generates the customer's opening message to kick off the conversation.
 ---
 
 ### `POST /chat`
+
 Sends a CSR message and returns the customer's reply. In training mode (`vc1`), also returns structured skill feedback.
 
 **Request:**
+
 ```json
 {
   "mode": "vc1",
   "message": "I understand your frustration. Can I get your member ID?",
-  "history": [
-    { "role": "assistant", "content": "Hello, I received a bill..." }
-  ]
+  "history": [{ "role": "assistant", "content": "Hello, I received a bill..." }]
 }
 ```
 
 **Response:**
+
 ```json
 {
   "customer_response": "My member ID is 123456...",
@@ -120,9 +126,11 @@ Sends a CSR message and returns the customer's reply. In training mode (`vc1`), 
 ---
 
 ### `POST /lookup`
+
 Answers an internal knowledge base query (used by the CSR from the portal).
 
 **Request:**
+
 ```json
 {
   "mode": "vc1",
@@ -131,6 +139,7 @@ Answers an internal knowledge base query (used by the CSR from the portal).
 ```
 
 **Response:**
+
 ```json
 {
   "answer": "Procedure 99213 is an office visit billed at the established patient rate..."
@@ -140,16 +149,17 @@ Answers an internal knowledge base query (used by the CSR from the portal).
 ---
 
 ### `GET /health`
+
 Returns `{ "status": "ok" }`. Useful for confirming the server is running.
 
 ---
 
 ## Modes
 
-| Mode | Domain | Feedback |
-|------|--------|----------|
+| Mode  | Domain                   | Feedback                                                   |
+| ----- | ------------------------ | ---------------------------------------------------------- |
 | `vc1` | Health Insurance Billing | Yes — empathy, transparency, ownership scores + suggestion |
-| `vc2` | Flight Cancellation | No — evaluation only, feedback hidden |
+| `vc2` | Flight Cancellation      | No — evaluation only, feedback hidden                      |
 
 ---
 
