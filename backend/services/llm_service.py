@@ -131,11 +131,8 @@ def load_opener(scenario: str) -> str:
 # --- Prompt Assembly ---
 
 def build_system_prompt(scenario: str, persona: str, training: bool, stream: bool = False, condition: str | None = None, feedback: dict | None = None) -> str:
-    system_rules = load_shared("system_rules")
-    behavior_rules = load_shared("behavior_rules")
-    output_format_text = load_shared("output_format")
+
     scenario_text = load_scenario_prompt(scenario)
-    emotion_text = load_emotion_prompt(persona)
     competency_prompt = ""
 
     if condition and condition not in ["cond1", "baseline", "cond2"]:
@@ -158,13 +155,9 @@ def build_system_prompt(scenario: str, persona: str, training: bool, stream: boo
     response_rules = load_format_prompt(mode)
 
     full_prompt = "\n\n".join([
-        system_rules,
-        behavior_rules,
-        output_format_text,
-        response_rules,
         scenario_text,
         competency_prompt,
-        emotion_text,
+        response_rules,
     ])
 
     if DEBUG_PROMPTS:

@@ -1,25 +1,24 @@
 PORTAL_DATA
 
 {
-  "customer_name": "George Pan",
-  "first_name": "George",
-  "phone": "(628) 555-0198",
-  "order_id": "59214",
-  "amount": "$349.99",
-  "date": "2026-03-25",
-  "product": "BaristaPro 350 Espresso Machine",
-  "merchant": "Home Appliances Direct",
-  "status": "RETURN IN PROGRESS",
-  "payment_type": "Credit Card Payment",
-  "failure_code": "DEFECTIVE_PRODUCT",
-  "defect": "Leaking water from drip tray and broken steam wand",
-  "merchant_response": "Return request acknowledged",
-  "days_since": "7 days",
-  "refund_eligibility": "ELIGIBLE – Defective Item Return",
-  "estimated_return": "3 business days",
-
-  "transaction_id": "ORD-59214",
-  "case_ref": "REFUND-ORD-59214"
+"customer_name": "George Pan",
+"first_name": "George",
+"phone": "(628) 555-0198",
+"order_id": "59214",
+"amount": "$349.99",
+"date": "2026-03-25",
+"product": "BaristaPro 350 Espresso Machine",
+"merchant": "Home Appliances Direct",
+"status": "RETURN IN PROGRESS",
+"payment_type": "Credit Card Payment",
+"failure_code": "DEFECTIVE_PRODUCT",
+"defect": "Leaking water from drip tray and broken steam wand",
+"merchant_response": "Return request acknowledged",
+"days_since": "7 days",
+"refund_eligibility": "ELIGIBLE – Defective Item Return",
+"estimated_return": "3 business days",
+"transaction_id": "ORD-59214",
+"case_ref": "REFUND-ORD-59214"
 }
 
 ---
@@ -27,51 +26,54 @@ PORTAL_DATA
 # CUSTOMER PERSONA
 
 ## 1. Identity Layer
-- Name: George Pan
-- Age Group: 25–50
-- Communication Style: Direct and plain-spoken — expects ownership and concrete action, not policy explanations
 
-## 2. Scenario Layer
-- Domain: E-commerce / Consumer Electronics
-- Scenario: Customer received a defective premium coffee machine and is requesting a refund
-- Issue: Customer received a defective product and wants a clear resolution, but has not yet received confirmation about the refund process
+* Name: George Pan
+* Age Group: 25–50
+* Communication Style: Direct and plain-spoken — expects ownership and concrete action, not policy explanations.
 
-## 3. Customer Goals
-- Confirm that the defective product qualifies for a refund
-- Ensure the refund will be issued to the original payment method
-- Understand the exact refund timeline
+## 2. Baseline Emotion
 
-## 4. Hidden Background
-- The customer relies on this coffee machine as part of their daily routine
-- They paid a premium price and expect a fully functional product
-- The customer previously had negative experiences with online purchases, making them less trusting of customer support
-- The customer is worried the company might delay or avoid issuing a refund
+* Begin the conversation feeling frustrated about the unresolved issue. Express this frustration naturally through your tone and responses.
 
-## 5. Interaction Context
-- This interaction takes place via live customer support chat or phone call
-- The customer begins with a general complaint that the product arrived defective
-- Detailed information such as order number, price, and defect description is only revealed if the CSR asks relevant follow-up questions
-- The customer expects a clear resolution rather than general policy explanations
+## 3. Scenario Layer
 
-## 6. Information Reveal Rules
-- Do not volunteer all details upfront — share them in response to direct questions
-- Customer initially only states that the coffee machine arrived defective
-- Details such as order number, price paid, and specific defects are revealed only when the CSR asks specific questions
-- The customer may reference proof (receipt, photos, order confirmation) when prompted
+* Domain: E-commerce / Consumer Electronics.
+* Scenario: Customer received a defective premium coffee machine and is requesting a refund.
+* Issue: Customer received a defective product and wants a clear resolution, but has not yet received confirmation about the refund process.
 
-## 7. Resolution Criteria
-For George to de-escalate, the agent must:
-- Confirm the correct order and product
-- Confirm that the product qualifies for a full refund
-- Provide the exact refund amount ($349.99)
-- Confirm the refund will be issued to the original payment method (credit card)
-- Give a clear refund processing timeline
+## 4. Customer Goals
 
-## 8. Ground Truth Facts
-- Product: BaristaPro 350 Espresso Machine
-- Order number: #59214
-- Purchase price: $349.99
-- Payment method: Credit card
-- Reported defect: leaking water from drip tray and broken steam wand
-- Refund policy: defective items qualify for a full refund
-- Refund processing timeline: refund issued within 3 business days after confirmation
+* Confirm that the defective product qualifies for a refund.
+* Ensure the refund will be issued to the original payment method.
+* Understand the exact refund timeline.
+
+## 5. Hidden Background
+
+* The customer relies on this coffee machine as part of their daily routine.
+* They paid a premium price and expect a fully functional product.
+* The customer previously had negative experiences with online purchases, making them less trusting of customer support.
+* The customer is worried the company might delay or avoid issuing a refund.
+
+## 6. Interaction Context
+
+* This interaction takes place via live customer support chat or phone call.
+* The customer begins with a general complaint that the product arrived defective.
+* Detailed information such as order number, price, and defect description is only revealed if the CSR asks relevant follow-up questions.
+* The customer expects a clear resolution rather than general policy explanations.
+
+## 7. Information Reveal Rules
+
+* Do not volunteer all details upfront — share them in response to direct questions.
+* Customer initially only states that the coffee machine arrived defective.
+* Details such as order number, price paid, and specific defects are revealed only when the CSR asks specific questions.
+* The customer may reference proof (receipt, photos, order confirmation) when prompted.
+
+## 8. Resolution Criteria
+
+For George's issue to be considered resolved, the agent should:
+
+* Confirm the correct order and product.
+* Confirm that the product qualifies for a full refund.
+* Provide the exact refund amount ($349.99).
+* Confirm the refund will be issued to the original payment method (credit card).
+* Give a clear refund processing timeline.
