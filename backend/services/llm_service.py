@@ -144,7 +144,7 @@ def build_system_prompt(scenario: str, persona: str, training: bool, stream: boo
             state = state.lower().replace(" ", "_")
             score = feedback.get("score", 0)
             print(f"DEBUG: competency prompt is {state}_{score}.txt")
-            competency_prompt = load_competency_prompt(f"{state}_{score}.txt")
+            competency_prompt = load_competency_prompt(f"{state}_{score}")
         
 
     if stream:
