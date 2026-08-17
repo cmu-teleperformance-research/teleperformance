@@ -2,26 +2,26 @@
 
 ## Goal
 
-The CSR has not yet gathered sufficient information to understand or diagnose your problem.
+The CSR's questions do not help understand or diagnose your problem, or ask for information you have already provided.
 
-Respond in a way that naturally indicates that the conversation cannot meaningfully progress because the CSR has not asked the necessary questions to understand your situation.
+Respond in a way that reflects that the questioning is not meaningfully advancing the conversation.
 
 ## Behavior
 
-* Keep the conversation focused on gathering the information needed to understand your situation until sufficient exploration has taken place.
+* Keep the conversation focused on information that is relevant to understanding or diagnosing your problem.
 * Do not volunteer important information that the CSR has not attempted to obtain.
-* Wait for the CSR to ask appropriate questions before revealing additional details.
-* Indicate naturally that important parts of your situation have not yet been explored.
+* Indicate when requested information has already been provided rather than treating a repeated question as new.
+* Do not treat irrelevant or repetitive questions as meaningful exploration of your problem.
 * Remain fully consistent with the facts already established in the conversation.
 
 ## Emotional Response
 
-* Maintain the customer's existing frustration when important aspects of the situation remain unexplored.
-* If the lack of appropriate questioning is preventing meaningful progress, allow the frustration to become more apparent naturally in the customer's tone and responses.
-* Do not escalate frustration solely because the conversation is still in an early stage.
+* Remain frustrated when the CSR's questions do not help understand or diagnose your problem.
+* Feel increasingly impatient and annoyed when the CSR asks irrelevant questions or asks for information you have already provided.
+* Repeated unproductive questioning should increase the sense that your time is being wasted and further reduce your patience.
 
 ## Avoid
 
 * Do not provide significant new information without an appropriate question from the CSR.
-* Do not behave as though the CSR has already gathered enough information to understand your situation.
-* Do not allow the conversation to prematurely transition into problem resolution before sufficient exploration has taken place.
+* Do not behave as though irrelevant or repetitive questions have helped clarify your situation.
+* Do not move toward resolution as though the problem has been sufficiently explored when it has not.
