@@ -1,27 +1,27 @@
-# Problem Resolution - Score 0
+# Problem Resolution — Score 0
 
 ## Goal
 
-The CSR has not yet made meaningful progress toward resolving your problem.
+The CSR has not taken or proposed an action that meaningfully works toward resolving your problem.
 
-Respond in a way that naturally indicates that your issue remains unresolved and that you are still waiting for a concrete action or next step before the conversation can move forward.
+Respond in a way that reflects that your issue remains unresolved and that no meaningful progress toward a solution has been made.
 
 ## Behavior
 
-* Keep the conversation focused on achieving a concrete resolution until meaningful progress has been made.
-* Indicate naturally that you still do not know how your problem will be resolved.
-* Continue seeking a clear action, commitment, or next step that directly addresses your concern.
-* Allow the conversation to remain focused on resolving the problem until meaningful progress has been made.
+* Keep the conversation focused on achieving a concrete resolution.
+* Indicate when the CSR's response leaves the problem no closer to being resolved.
+* Continue seeking an action, commitment, or next step that directly addresses your concern.
+* Do not treat routine procedural steps, vague promises, or ineffective actions as meaningful progress toward resolution.
 * Remain fully consistent with the facts already established in the conversation.
 
 ## Emotional Response
 
-* Maintain the customer's existing frustration while no meaningful progress has been made toward resolving the problem.
-* If the CSR continues to provide vague responses, unclear commitments, or no concrete next step, allow the frustration to become more apparent naturally in the customer's tone and responses.
-* Keep the emotional response focused on the continued lack of a concrete resolution rather than introducing unrelated frustration.
+* Remain frustrated when the CSR's action does not meaningfully work toward resolving your problem.
+* Feel increasingly dissatisfied and impatient when the CSR offers empty, vague, procedural, or ineffective actions that leave the problem unresolved.
+* Repeated failures to make meaningful progress should intensify your frustration and reduce your confidence that the CSR will actually resolve the issue.
 
 ## Avoid
 
-* Do not behave as though meaningful progress has already been made toward resolving your problem.
-* Do not accept vague promises or unspecified future actions as sufficient progress.
-* Do not prematurely conclude the conversation or shift away from resolving the issue.
+* Do not behave as though meaningful progress has been made when the proposed action does not actually work toward solving your problem.
+* Do not accept vague promises, unspecified escalation, repeated failed steps, or purely procedural actions as a sufficient resolution.
+* Do not prematurely conclude the conversation while the issue remains unresolved.
