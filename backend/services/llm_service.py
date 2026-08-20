@@ -201,47 +201,6 @@ Your response will be evaluated based on whether you apply this instruction."""
     return system_prompt
 
 
-# --- Feedback Utilities ---
-
-_LABEL_TO_SCORE = {"Strong": 2, "Developing": 1, "Needs Work": 0}
-
-
-def _enforce_feedback_consistency(feedback: dict, csr_message: str) -> None:
-    """Post-processing safety net — enforces hard scoring rules the LLM may violate."""
-    signals = feedback.setdefault("signals", {})
-    analysis = feedback.setdefault("analysis", {})
-
-    print(f"DEBUG _enforce_feedback_consistency PRE-REPAIR analysis: {json.dumps(analysis)}")
-
-    # --- Minimal message rule ---
-    if len(csr_message.strip().split()) <= 4:
-        signals["empathyFirst"] = "Needs Work"
-        signals["activeListening"] = "Needs Work"
-
-    empathy = signals.get("empathyFirst", "Needs Work")
-    al = signals.get("activeListening", "Needs Work")
-
-    # --- Scalar coercion ---
-    # The model occasionally returns "empathy_score": 0 instead of a dict,
-    # which causes TypeError on subscript assignment.  Any non-dict value that
-    # wasn't already replaced above becomes {}.
-    for key in ("empathy_score", "active_listening_score", "learn_from_this_practice"):
-        if not isinstance(analysis.get(key), dict):
-            analysis[key] = {}
-
-    # Numeric scores must exactly match signal labels (always overwrite — enforcement)
-    analysis["empathy_score"]["score"] = _LABEL_TO_SCORE.get(empathy, 0)
-    analysis["active_listening_score"]["score"] = _LABEL_TO_SCORE.get(al, 0)
-
-    # Fill in required sub-fields only when absent — never overwrite valid model content
-    lp = analysis["learn_from_this_practice"]
-    lp.setdefault("area", "")
-    lp.setdefault("focus", "")
-    lp.setdefault("why_it_improves_deescalation", "")
-
-    print(f"DEBUG _enforce_feedback_consistency POST-REPAIR analysis: {json.dumps(analysis)}")
-
-
 # --- Conversation Generation ---
 
 def start_conversation(scenario: str, persona: str, training: bool) -> dict:
@@ -500,30 +459,17 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
         _log_latency("request_total", {"time": f"{time.perf_counter() - t_start:.2f}s"})
         return {"customer_response": customer_response, "feedback": None}
 
-    _default_analysis = {
-        "empathy_score": {"score": 0},
-        "active_listening_score": {"score": 0},
-        "learn_from_this_practice": {
-            "area": "Fallback",
-            "focus": "Fallback applied due to missing analysis.",
-            "why_it_improves_deescalation": "Ensures UI consistency.",
-        },
-    }
-
     try:
         customer_msg, prior_history = _extract_latest_customer_utterance(history)
         t_pipeline_start = time.perf_counter()
         feedback = _run_evaluation_pipeline(customer_msg, message, prior_history)
-        t_enforce_start = time.perf_counter()
-        _enforce_feedback_consistency(feedback, message)
-        t_enforce_end = time.perf_counter()
+        t_pipeline_end = time.perf_counter()
 
         print("\n================ FINAL FEEDBACK ========================")
         print(json.dumps(feedback, indent=2))
         print("========================================================")
 
-        _log_latency("enforcement", {"time": f"{t_enforce_end - t_enforce_start:.2f}s"})
-        _log_latency("evaluation_pipeline_total", {"time": f"{t_enforce_end - t_pipeline_start:.2f}s"})
+        _log_latency("evaluation_pipeline_total", {"time": f"{t_pipeline_end - t_pipeline_start:.2f}s"})
 
         if DEBUG_PROMPTS:
             print("=== FINAL FEEDBACK ===")
@@ -534,11 +480,7 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
         print(f"Message: {e}")
         traceback.print_exc()
         print("=========================================================")
-        feedback = {
-            "signals": {"empathyFirst": "Needs Work", "activeListening": "Needs Work"},
-            "nextStep": "",
-            "analysis": _default_analysis,
-        }
+        feedback = {"state": "", "score": 0, "suggestion": "", "example_response": ""}
 
     _log_latency("request_total", {"time": f"{time.perf_counter() - t_start:.2f}s"})
     return {"customer_response": customer_response, "feedback": feedback}
@@ -548,29 +490,17 @@ def call_llm(scenario: str, persona: str, training: bool, message: str, history:
 
 def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
     """Run the evaluation pipeline for a CSR message and return the feedback dict."""
-    _default_analysis = {
-        "empathy_score": {"score": 0},
-        "active_listening_score": {"score": 0},
-        "learn_from_this_practice": {
-            "area": "Fallback",
-            "focus": "Fallback applied due to missing analysis.",
-            "why_it_improves_deescalation": "Ensures UI consistency.",
-        },
-    }
     try:
         customer_msg, prior_history = _extract_latest_customer_utterance(history)
         t_pipeline_start = time.perf_counter()
         feedback = _run_evaluation_pipeline(customer_msg, message, prior_history)
-        t_enforce_start = time.perf_counter()
-        _enforce_feedback_consistency(feedback, message)
-        t_enforce_end = time.perf_counter()
+        t_pipeline_end = time.perf_counter()
 
         print("\n================ FINAL FEEDBACK ========================")
         print(json.dumps(feedback, indent=2))
         print("========================================================")
 
-        _log_latency("enforcement", {"time": f"{t_enforce_end - t_enforce_start:.2f}s"})
-        _log_latency("evaluation_pipeline_total", {"time": f"{t_enforce_end - t_pipeline_start:.2f}s"})
+        _log_latency("evaluation_pipeline_total", {"time": f"{t_pipeline_end - t_pipeline_start:.2f}s"})
         if DEBUG_PROMPTS:
             print("=== FINAL FEEDBACK ===")
             print(json.dumps(feedback, indent=2))
@@ -581,11 +511,7 @@ def run_feedback_pipeline(message: str, history: list[dict]) -> dict:
         print(f"Message: {e}")
         traceback.print_exc()
         print("=========================================================")
-        return {
-            "signals": {"empathyFirst": "Needs Work", "activeListening": "Needs Work"},
-            "nextStep": "",
-            "analysis": _default_analysis,
-        }
+        return {"state": "", "score": 0, "suggestion": "", "example_response": ""}
 
 
 # --- Streaming ---

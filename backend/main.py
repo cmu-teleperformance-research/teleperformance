@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from datetime import datetime, timezone
-from typing import Optional, Dict, Any
 from pydantic import BaseModel
 from google.cloud import firestore
 
@@ -377,16 +376,11 @@ class ChatRequest(BaseModel):
     feedback: dict | None = None
 
 
-class SignalsModel(BaseModel):
-    empathyFirst: str
-    activeListening: str
-    turn_stage: str = ""
-
-
 class FeedbackModel(BaseModel):
-    signals: SignalsModel
-    nextStep: str
-    analysis: Optional[Dict[str, Any]] = None
+    state: str = ""
+    score: int = 0
+    suggestion: str = ""
+    example_response: str = ""
 
 
 class ChatResponse(BaseModel):
