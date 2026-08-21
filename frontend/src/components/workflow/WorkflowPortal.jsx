@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import StepSidebar from "./StepSidebar";
+import WorkflowTutorial from "./WorkflowTutorial";
 import { screenMap } from "./utils/screenMaps";
 import API_BASE_URL from "../../config";
 
@@ -51,6 +52,7 @@ export default function WorkflowPortal({
       <StepSidebar steps={steps} current={step} completed={completed} onGoToStep={onGoToStep} />
       <div className="flex-1 overflow-y-auto p-6 bg-white">
         <div className="max-w-3xl mx-auto space-y-4">
+          <WorkflowTutorial scenario={scenario} stepPrompt={currentStepData?.prompt} />
           <Screen
             onAdvance={advance}
             onReset={onReset}

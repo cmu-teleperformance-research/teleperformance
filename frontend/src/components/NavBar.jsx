@@ -15,12 +15,14 @@ export default function NavBar({ displayName, onProfile, onResearch, onLogout })
       >
         {displayName}
       </button>
-      <button
-        onClick={onLogout}
-        className="text-sm text-gray-400 hover:text-gray-700 transition"
-      >
-        Sign out
-      </button>
+      {onLogout && (
+        <button
+          onClick={onLogout}
+          className="text-sm text-gray-400 hover:text-gray-700 transition"
+        >
+          Sign out
+        </button>
+      )}
     </div>
   );
 }

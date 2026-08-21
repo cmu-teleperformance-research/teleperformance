@@ -2,46 +2,38 @@ import NavBar from "./NavBar";
 
 const SKILLS = [
   {
-    title: "Empathy First",
+    title: "Problem Interpretation",
     items: [
-      "Acknowledge customer emotions",
-      "Demonstrate understanding before problem-solving",
-      "Avoid dismissive language",
+      "Name the customer's specific problem, not just that something went wrong",
+      "Show you understand why it matters to this customer — what it costs them, what's at risk, or what they still need",
+      "Base that understanding on what the customer actually said",
     ],
   },
   {
-    title: "Active Listening",
+    title: "Problem Exploration",
     items: [
-      "Address the customer's specific concerns",
-      "Reference information they provided",
-      "Show that you understand the issue",
+      "Ask for information the customer has not given yet",
+      "Ask questions that help diagnose the problem, not routine or already-answered ones",
+      "Make clear what you are trying to pin down — the cause, a constraint, context, or what the customer needs",
     ],
   },
   {
-    title: "Conversation Stage Awareness",
+    title: "Problem Resolution",
     items: [
-      "Respond appropriately based on the stage of the conversation",
-      "Gather information when necessary",
-      "Provide solutions at appropriate times",
-      "Close conversations effectively",
-    ],
-  },
-  {
-    title: "Continuous Improvement",
-    items: [
-      "Review feedback after customer turns",
-      "Practice applying coaching suggestions",
-      "Improve de-escalation performance over time",
+      "Take or propose an action that actually addresses the problem",
+      "Tell the customer the result and what happens next",
+      "Do not close the conversation while something is still unresolved",
     ],
   },
 ];
 
 const HOW_IT_WORKS = [
-  "Log in or create an account",
-  "Select a scenario",
-  "Respond to the customer",
-  "Review feedback",
-  "Continue until the conversation ends",
+  "You'll be assigned a domain and complete a series of customer scenarios",
+  "Talk with the customer in the chat at the bottom of the screen",
+  "Use the Internal Portal at the top like a company computer: look up the customer, read the record, and take the next correct action",
+  "Ask the customer for IDs or order numbers before searching — they will not tell you everything at once",
+  "When the portal says to return to the customer, switch back to chat and explain what you found",
+  "Review feedback after your replies (in training), then continue until you end the session",
 ];
 
 export function HomeGuideContent({ title, description, what_to_expect }) {
@@ -102,7 +94,7 @@ export function HomeGuideContent({ title, description, what_to_expect }) {
   );
 }
 
-export default function WelcomePage({ onStart, navProps, title, description, what_to_expect }) {
+export default function WelcomePage({ onStart, navProps, title, description, what_to_expect, startLoading, startError }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
@@ -114,12 +106,14 @@ export default function WelcomePage({ onStart, navProps, title, description, wha
         <div className="max-w-3xl mx-auto py-12 px-6">
           <HomeGuideContent title={title} description={description} what_to_expect={what_to_expect} />
 
-          <div className="flex justify-center pb-4 mt-10">
+          <div className="flex flex-col items-center pb-4 mt-10 gap-3">
+            {startError && <p className="text-sm text-red-500">{startError}</p>}
             <button
               onClick={onStart}
-              className="bg-blue-600 text-white px-10 py-3 rounded-lg text-base font-medium hover:bg-blue-700 transition"
+              disabled={startLoading}
+              className="bg-blue-600 text-white px-10 py-3 rounded-lg text-base font-medium hover:bg-blue-700 transition disabled:opacity-50"
             >
-              Start Training
+              {startLoading ? "Assigning..." : "Start Training"}
             </button>
           </div>
         </div>

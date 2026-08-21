@@ -126,6 +126,18 @@ export function buildSessionPath(domain) {
   ];
 }
 
+export function buildPathForDomain(domainId) {
+  const domain = DOMAINS.find((d) => d.id === domainId && d.available && d.scenarios.length >= PATH_LENGTH);
+  if (!domain) {
+    throw new Error(`Unknown or unavailable domain "${domainId}"`);
+  }
+  return {
+    domain: domain.id,
+    domainLabel: domain.label,
+    sessions: buildSessionPath(domain),
+  };
+}
+
 // Avery Collins — detailed persona for loan_delay + demanding
 export const AVERY_COLLINS_PERSONA = {
   name: "Avery Collins",

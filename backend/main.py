@@ -140,6 +140,23 @@ def me(current_user: models.User = Depends(get_current_user)):
     }
 
 
+class AssignDomainRequest(BaseModel):
+    condition: str | None = None
+
+
+@app.post("/assign-domain")
+def assign_domain(
+    request: AssignDomainRequest,
+    db: firestore.Client = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Assign the least-used domain for this condition so cells stay balanced."""
+    condition = (request.condition or "").strip() or None
+    if condition and condition not in VALID_CONDITIONS:
+        raise HTTPException(status_code=400, detail=f"condition must be one of {VALID_CONDITIONS}")
+    return models.assign_domain(db, user_id=current_user.id, condition=condition or "default")
+
+
 class CompletePathRequest(BaseModel):
     condition: str | None = None
     domain: str | None = None

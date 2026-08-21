@@ -5,6 +5,8 @@ Collections:
   usernames/{username}          → { user_id }  (uniqueness index)
   sessions/{sessionId}
   sessions/{sessionId}/messages/{messageId}
+  experiment_balance/{condition} → { counts: { travel, finance } }
+  experiment_balance/{condition}/assignments/{userId} → { domain }
 """
 
 from __future__ import annotations
@@ -170,6 +172,51 @@ def save_user_completion(
     existing = (snap.to_dict() or {}).get("completions") or {}
     existing[condition] = completion
     ref.update({"completions": existing})
+
+
+# ── Experiment domain balance ─────────────────────────────────────────────────
+
+ASSIGNMENT_DOMAINS = ("travel", "finance")
+
+
+def assign_domain(db: firestore.Client, *, user_id: str, condition: str) -> dict:
+    """Assign the least-used domain for this condition in a transaction.
+
+    The same participant always keeps their original domain so refreshes
+    do not inflate counts. Returns { domain, counts, already_assigned }.
+    """
+    condition = condition or "default"
+    counter_ref = db.collection("experiment_balance").document(condition)
+    assignment_ref = counter_ref.collection("assignments").document(user_id)
+
+    @firestore.transactional
+    def _assign(transaction: firestore.Transaction) -> dict:
+        existing = assignment_ref.get(transaction=transaction)
+        counter_snap = counter_ref.get(transaction=transaction)
+        stored = (counter_snap.to_dict() or {}).get("counts") or {} if counter_snap.exists else {}
+        counts = {d: int(stored.get(d) or 0) for d in ASSIGNMENT_DOMAINS}
+
+        if existing.exists:
+            domain = (existing.to_dict() or {}).get("domain")
+            if domain in ASSIGNMENT_DOMAINS:
+                return {"domain": domain, "counts": counts, "already_assigned": True}
+
+        chosen = min(ASSIGNMENT_DOMAINS, key=lambda d: (counts[d], ASSIGNMENT_DOMAINS.index(d)))
+        counts[chosen] += 1
+        now = _utcnow()
+        transaction.set(
+            assignment_ref,
+            {
+                "user_id": user_id,
+                "condition": condition,
+                "domain": chosen,
+                "assigned_at": now,
+            },
+        )
+        transaction.set(counter_ref, {"counts": counts, "updated_at": now}, merge=True)
+        return {"domain": chosen, "counts": counts, "already_assigned": False}
+
+    return _assign(db.transaction())
 
 
 # ── Sessions ──────────────────────────────────────────────────────────────────

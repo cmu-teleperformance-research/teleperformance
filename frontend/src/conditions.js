@@ -1,4 +1,4 @@
-/** Experimental condition routes → post-login landing copy.
+/** Experimental condition routes → landing copy.
  *  Customize title / description / skills per condition as needed.
  */
 export const CONDITIONS = {

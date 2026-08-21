@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from "axios";
 import API_BASE_URL from "./config";
-import EntryPage from "./components/EntryPage";
-import LoginPage from "./components/LoginPage";
 import WelcomePage from "./components/WelcomePage";
-import ModeSelector from "./components/ModeSelector";
+import { buildPathForDomain } from "./components/ModeSelector";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
 import CompletionPage from "./components/CompletionPage";
@@ -12,6 +10,10 @@ import ProfilePage from "./components/ProfilePage";
 import ResearchDashboard from "./components/ResearchDashboard";
 import NavBar from "./components/NavBar";
 import { CONDITIONS } from "./conditions";
+
+function identityMatchesPid(pid) {
+  return Boolean(pid && localStorage.getItem("username") === pid && localStorage.getItem("token"));
+}
 
 function readStoredSession(conditionId) {
   try {
@@ -60,20 +62,32 @@ function sessionConfigFromPath(path, index, conditionId) {
   };
 }
 
-export default function App({ conditionId = null }) {
+export default function App({ conditionId = null, pid = null }) {
   const condition = conditionId ? CONDITIONS[conditionId] : null;
+  const participantId = pid?.trim() || null;
+  const knownParticipant = identityMatchesPid(participantId);
 
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
-  const [username, setUsername] = useState(() => localStorage.getItem("username"));
-  const [displayName, setDisplayName] = useState(() => localStorage.getItem("displayName"));
-  const [role, setRole] = useState(() => localStorage.getItem("role") || "participant");
-  const [sessionConfig, setSessionConfig] = useState(() => readStoredSession(conditionId));
-  const [trainingPath, setTrainingPath] = useState(() => readStoredPath(conditionId));
+  const [token, setToken] = useState(() => (knownParticipant ? localStorage.getItem("token") : null));
+  const [username, setUsername] = useState(() => (knownParticipant ? participantId : null));
+  const [displayName, setDisplayName] = useState(() =>
+    knownParticipant ? localStorage.getItem("displayName") || participantId : null
+  );
+  const [role, setRole] = useState(() =>
+    knownParticipant ? localStorage.getItem("role") || "participant" : "participant"
+  );
+  const [sessionConfig, setSessionConfig] = useState(() =>
+    knownParticipant ? readStoredSession(conditionId) : null
+  );
+  const [trainingPath, setTrainingPath] = useState(() =>
+    knownParticipant ? readStoredPath(conditionId) : null
+  );
   const [view, setView] = useState(() => {
+    if (!knownParticipant) return "landing";
     const stored = readStoredSession(conditionId);
     return stored ? "chat" : "landing";
   });
-  const [preLoginView, setPreLoginView] = useState("welcome");
+  const [joining, setJoining] = useState(() => !knownParticipant);
+  const [joinError, setJoinError] = useState(null);
   const [report, setReport] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(null);
@@ -81,9 +95,10 @@ export default function App({ conditionId = null }) {
   const [completion, setCompletion] = useState(null);
   const [completionLoading, setCompletionLoading] = useState(false);
   const [completionError, setCompletionError] = useState(null);
-  const [sessionExpiredMessage, setSessionExpiredMessage] = useState(null);
+  const [assigning, setAssigning] = useState(false);
+  const [assignError, setAssignError] = useState(null);
 
-  // Persist experimental condition from the URL so it survives login / refresh
+  // Persist experimental condition from the URL so it survives refresh
   useEffect(() => {
     if (conditionId) {
       localStorage.setItem("condition", conditionId);
@@ -114,20 +129,15 @@ export default function App({ conditionId = null }) {
     }
   }, [conditionId]);
 
-  function handleLogin(accessToken, user, name, userRole = "participant") {
-    console.log("[DEBUG handleLogin] raw userRole arg:", userRole, "(undefined means caller dropped it)");
+  function applyIdentity(accessToken, user, name, userRole = "participant") {
     localStorage.setItem("token", accessToken);
     localStorage.setItem("username", user);
     localStorage.setItem("displayName", name);
     localStorage.setItem("role", userRole);
-    console.log("[DEBUG handleLogin] stored user:", { username: user, displayName: name, role: userRole });
     setToken(accessToken);
     setUsername(user);
     setDisplayName(name);
     setRole(userRole);
-    // Condition routes land on the condition-specific WelcomePage first;
-    // the default / route still goes straight to mode select after login.
-    setView(conditionId ? "landing" : "mode-select");
   }
 
   function clearStoredChat() {
@@ -147,40 +157,26 @@ export default function App({ conditionId = null }) {
     clearTrainingPath();
   }
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("displayName");
-    localStorage.removeItem("role");
-    clearStoredSession();
-    setToken(null);
-    setUsername(null);
-    setDisplayName(null);
-    setRole("participant");
-    setView("landing");
-    setSessionConfig(null);
-    setReport(null);
-    setReportSessionId(null);
-    setCompletion(null);
-    setCompletionError(null);
-    setCompletionLoading(false);
-    setPreLoginView("welcome");
+  async function joinWithPid(cleanPid) {
+    const res = await axios.post(`${API_BASE_URL}/participant/join`, { pid: cleanPid });
+    return {
+      accessToken: res.data.access_token,
+      name: res.data.name,
+      role: res.data.role,
+    };
   }
 
   function handleAuthExpired() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("displayName");
-    localStorage.removeItem("role");
-    // Keep sessionId + sessionConfig so session can be restored after re-login
-    setToken(null);
-    setUsername(null);
-    setDisplayName(null);
-    setRole("participant");
-    setSessionConfig(null);
-    setReport(null);
-    setReportSessionId(null);
-    setSessionExpiredMessage("Session expired. Please log in again.");
+    if (!participantId) return;
+    joinWithPid(participantId)
+      .then(({ accessToken, name, role: userRole }) => {
+        applyIdentity(accessToken, participantId, name, userRole);
+      })
+      .catch(() => {
+        setToken(null);
+        setJoining(false);
+        setJoinError("Session expired. Reload the page to continue.");
+      });
   }
 
   function startPathSession(path, index) {
@@ -205,6 +201,28 @@ export default function App({ conditionId = null }) {
     setReportSessionId(null);
     setReportError(null);
     startPathSession(path, 0);
+  }
+
+  async function handleStartTraining() {
+    setAssignError(null);
+    setAssigning(true);
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/assign-domain`,
+        { condition: conditionId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      handleModeSelect(buildPathForDomain(res.data.domain));
+    } catch (err) {
+      if (err.response?.status === 401) {
+        handleAuthExpired();
+        return;
+      }
+      const detail = err.response?.data?.detail;
+      setAssignError(typeof detail === "string" ? detail : "Could not assign a domain. Please try again.");
+    } finally {
+      setAssigning(false);
+    }
   }
 
   function handleSessionStarted(id) {
@@ -325,67 +343,109 @@ export default function App({ conditionId = null }) {
     handleGoHome();
   }
 
+  useEffect(() => {
+    if (!participantId) {
+      setJoining(false);
+      setJoinError("A participant ID is required in the URL.");
+      return;
+    }
+
+    if (identityMatchesPid(participantId)) {
+      setJoining(false);
+      setJoinError(null);
+      return;
+    }
+
+    let cancelled = false;
+    clearStoredSession();
+    setSessionConfig(null);
+    setReport(null);
+    setReportSessionId(null);
+    setView("landing");
+    setJoining(true);
+    setJoinError(null);
+
+    joinWithPid(participantId)
+      .then(({ accessToken, name, role: userRole }) => {
+        if (cancelled) return;
+        applyIdentity(accessToken, participantId, name, userRole);
+        setView("landing");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        const detail = err.response?.data?.detail;
+        setJoinError(typeof detail === "string" ? detail : "Unable to start. Please try again.");
+      })
+      .finally(() => {
+        if (!cancelled) setJoining(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [participantId]);
+
   if (!token) {
-    if (preLoginView === "welcome") {
-      return (
-        <WelcomePage
-          onStart={() => setPreLoginView("entry")}
-          title={condition?.title}
-          description={condition?.description}
-          what_to_expect={condition?.what_to_expect}
-        />
-      );
-    }
-    if (preLoginView === "login") {
-      return (
-        <LoginPage
-          onLogin={(accessToken, user, name, roleArg) => {
-            console.log("[DEBUG LoginPage onLogin callback] user:", user, "roleArg received:", roleArg, "roleArg passed to handleLogin:", roleArg);
-            setSessionExpiredMessage(null);
-            handleLogin(accessToken, user, name, roleArg);
-          }}
-          message={sessionExpiredMessage}
-          onBack={() => setPreLoginView("entry")}
-        />
-      );
-    }
-    // preLoginView === "entry"
     return (
-      <EntryPage
-        onParticipantJoin={(accessToken, user, name, roleArg) => {
-          setSessionExpiredMessage(null);
-          handleLogin(accessToken, user, name, roleArg);
-        }}
-        onResearcherLogin={() => setPreLoginView("login")}
-        onBack={() => setPreLoginView("welcome")}
-        message={sessionExpiredMessage}
-      />
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4 px-6">
+        {joining && !joinError && (
+          <>
+            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <p className="text-gray-600 font-medium">
+              Starting session{participantId ? ` for ${participantId}` : ""}...
+            </p>
+          </>
+        )}
+        {joinError && (
+          <div className="text-center space-y-4 max-w-sm">
+            <p className="text-red-500">{joinError}</p>
+            {participantId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setJoining(true);
+                  setJoinError(null);
+                  joinWithPid(participantId)
+                    .then(({ accessToken, name, role: userRole }) => {
+                      applyIdentity(accessToken, participantId, name, userRole);
+                      setView("landing");
+                    })
+                    .catch((err) => {
+                      const detail = err.response?.data?.detail;
+                      setJoinError(typeof detail === "string" ? detail : "Unable to start. Please try again.");
+                    })
+                    .finally(() => setJoining(false));
+                }}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+              >
+                Try again
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     );
   }
 
   const isResearcher = role === "researcher";
-  console.log("[DEBUG navProps] role:", role, "  isResearcher:", isResearcher, "  → Research button rendered:", isResearcher);
   const navProps = {
-    displayName: displayName || username,
+    displayName: displayName || username || participantId,
     onProfile: () => setView("profile"),
     onResearch: isResearcher ? () => setView("research") : undefined,
-    onLogout: handleLogout,
   };
 
   if (view === "landing") {
     return (
       <WelcomePage
-        onStart={() => setView("mode-select")}
+        onStart={handleStartTraining}
         navProps={navProps}
         title={condition?.title}
         description={condition?.description}
         what_to_expect={condition?.what_to_expect}
+        startLoading={assigning}
+        startError={assignError}
       />
     );
-  }
-
-  if (view === "mode-select") {
-    return <ModeSelector onSelect={handleModeSelect} navProps={navProps} />;
   }
 
   if (view === "completion") {
