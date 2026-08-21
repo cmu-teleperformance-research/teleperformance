@@ -175,6 +175,8 @@ def complete_path(
     # Key completions by condition, or "default" when no experimental condition is set
     completion_key = condition or "default"
     existing = (current_user.completions or {}).get(completion_key)
+    if existing and existing.get("status") == "attention_failed":
+        return existing
     if existing and existing.get("code"):
         return existing
 
@@ -190,6 +192,7 @@ def complete_path(
         )
 
     completion = {
+        "status": "completed",
         "code": _completion_code_for(current_user.id, completion_key),
         "condition": condition,
         "domain": request.domain,
@@ -246,6 +249,7 @@ def list_sessions(
             "condition": s.condition,
             "created_at": s.created_at.isoformat(),
             "has_report": s.report is not None,
+            "ended_reason": s.ended_reason,
         }
         for s in sessions
     ]
@@ -281,6 +285,8 @@ def get_session(
         ],
         "report": session.report,
         "attention_check": session.attention_check,
+        "ended_reason": session.ended_reason,
+        "ended_at": session.ended_at.isoformat() if session.ended_at else None,
     }
 
 
@@ -305,6 +311,8 @@ def research_list_sessions(
             "condition": s.condition,
             "created_at": s.created_at.isoformat(),
             "has_report": s.report is not None,
+            "ended_reason": s.ended_reason,
+            "attention_check": s.attention_check,
         }
         for s in sessions
     ]
@@ -343,6 +351,8 @@ def research_get_session(
         ],
         "report": session.report,
         "attention_check": session.attention_check,
+        "ended_reason": session.ended_reason,
+        "ended_at": session.ended_at.isoformat() if session.ended_at else None,
     }
 
 
@@ -362,20 +372,53 @@ def submit_attention_check(
         raise HTTPException(status_code=404, detail="Session not found")
 
     if session.attention_check:
-        return session.attention_check
+        existing_check = dict(session.attention_check)
+        existing_check["path_ended"] = existing_check.get("correct") is False
+        return existing_check
 
     if request.selected_id not in VALID_SCENARIOS:
         raise HTTPException(status_code=400, detail=f"selected_id must be one of {VALID_SCENARIOS}")
 
+    correct = request.selected_id == session.scenario
     payload = {
         "question_type": "scenario_main_issue",
         "prompt": "What was the customer's main issue?",
         "selected_id": request.selected_id,
         "correct_id": session.scenario,
-        "correct": request.selected_id == session.scenario,
+        "correct": correct,
+        "path_ended": not correct,
         "answered_at": datetime.now(timezone.utc).isoformat(),
     }
-    models.save_attention_check(db, session_id, payload)
+
+    if correct:
+        models.save_attention_check(db, session_id, payload)
+        return payload
+
+    models.save_attention_check(
+        db,
+        session_id,
+        payload,
+        ended_reason="attention_check_failed",
+    )
+    completion_key = session.condition or "default"
+    existing = (current_user.completions or {}).get(completion_key) or {}
+    if not existing.get("code"):
+        models.save_user_completion(
+            db,
+            current_user.id,
+            completion_key,
+            {
+                "status": "attention_failed",
+                "reason": "attention_check_failed",
+                "condition": session.condition,
+                "session_id": session_id,
+                "scenario": session.scenario,
+                "selected_id": request.selected_id,
+                "correct_id": session.scenario,
+                "ended_at": payload["answered_at"],
+                "code": None,
+            },
+        )
     return payload
 
 
@@ -423,6 +466,14 @@ async def start(
         raise HTTPException(status_code=400, detail=f"scenario must be one of {VALID_SCENARIOS}")
     if request.persona not in VALID_PERSONAS:
         raise HTTPException(status_code=400, detail=f"persona must be one of {VALID_PERSONAS}")
+
+    completion_key = (request.condition or "").strip() or "default"
+    outcome = (current_user.completions or {}).get(completion_key) or {}
+    if outcome.get("status") == "attention_failed":
+        raise HTTPException(
+            status_code=403,
+            detail="This session ended because the attention check was not passed.",
+        )
 
     result = start_conversation(request.scenario, request.persona, request.training)
 

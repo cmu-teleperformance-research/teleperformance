@@ -226,6 +226,14 @@ export default function App({ conditionId = null, pid = null }) {
     setAssignError(null);
     setAssigning(true);
     try {
+      const me = await axios.get(`${API_BASE_URL}/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const outcome = me.data?.completions?.[conditionId || "default"];
+      if (outcome?.status === "attention_failed") {
+        setView("attention-failed");
+        return;
+      }
       const res = await axios.post(
         `${API_BASE_URL}/assign-domain`,
         { condition: conditionId },
@@ -242,6 +250,16 @@ export default function App({ conditionId = null, pid = null }) {
     } finally {
       setAssigning(false);
     }
+  }
+
+  function handleAttentionFailed() {
+    clearStoredSession();
+    setSessionConfig(null);
+    setTrainingPath(null);
+    setReport(null);
+    setReportSessionId(null);
+    setShowInstructions(false);
+    setView("attention-failed");
   }
 
   function handleSessionStarted(id) {
@@ -501,6 +519,16 @@ export default function App({ conditionId = null, pid = null }) {
     );
   }
 
+  if (view === "attention-failed") {
+    return (
+      <CompletionPage
+        endedReason="attention_check_failed"
+        navProps={navProps}
+        onDone={handleCompletionDone}
+      />
+    );
+  }
+
   if (view === "profile") {
     return <ProfilePage token={token} role={role} navProps={navProps} onBack={() => setView("landing")} />;
   }
@@ -566,6 +594,7 @@ export default function App({ conditionId = null, pid = null }) {
         token={token}
         onAuthExpired={handleAuthExpired}
         conditionId={conditionId}
+        onAttentionFailed={handleAttentionFailed}
       />
     );
   }

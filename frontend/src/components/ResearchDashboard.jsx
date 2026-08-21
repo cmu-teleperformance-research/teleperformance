@@ -52,6 +52,12 @@ function SessionDetail({ session, onBack }) {
                 : "Not answered"}
             </span>
           </div>
+          {session.ended_reason && (
+            <div>
+              <span className="text-gray-500">Ended:</span>{" "}
+              <span className="font-medium text-gray-800">{session.ended_reason}</span>
+            </div>
+          )}
         </div>
         {session.attention_check && (
           <p className="text-xs text-gray-500 mt-3">

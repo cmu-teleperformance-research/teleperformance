@@ -60,7 +60,7 @@ function TurnCard({ turn }) {
   );
 }
 
-function AttentionCheckCard({ check, selectedId, submitting, onSelect }) {
+function AttentionCheckCard({ check, selectedId, submitting, failed, onSelect }) {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-blue-100">
       <div className="flex items-center gap-3 mb-4 pb-2 border-b border-gray-200">
@@ -78,7 +78,9 @@ function AttentionCheckCard({ check, selectedId, submitting, onSelect }) {
               onClick={() => onSelect(option.id)}
               className={[
                 "w-full text-left text-sm px-4 py-3 rounded-lg border transition",
-                selected
+                selected && failed
+                  ? "border-red-400 bg-red-50 text-red-900"
+                  : selected
                   ? "border-blue-500 bg-blue-50 text-blue-900"
                   : "border-gray-200 bg-white text-gray-800 hover:border-blue-300 hover:bg-blue-50/40",
                 (selectedId || submitting) && !selected ? "opacity-60" : "",
@@ -89,11 +91,15 @@ function AttentionCheckCard({ check, selectedId, submitting, onSelect }) {
           );
         })}
       </div>
-      {!selectedId && (
+      {failed ? (
+        <p className="text-sm text-red-600 mt-3">
+          This study session has ended because the attention check was not passed.
+        </p>
+      ) : !selectedId ? (
         <p className="text-xs text-gray-400 mt-3">
           Answer to continue to the next step.
         </p>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -110,6 +116,7 @@ export default function ReportPage({
   token,
   onAuthExpired,
   conditionId,
+  onAttentionFailed,
 }) {
   const { scenario, training, scenarioLabel, condition } = sessionConfig ?? {};
   const activeCondition = conditionId || condition;
@@ -132,28 +139,44 @@ export default function ReportPage({
   const [attentionCheck] = useState(() => getAttentionCheck(scenario));
   const [selectedId, setSelectedId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [checkFailed, setCheckFailed] = useState(false);
   const requiresCheck = Boolean(attentionCheck);
-  const canContinue = !requiresCheck || Boolean(selectedId);
+  const canContinue = !checkFailed && (!requiresCheck || Boolean(selectedId));
 
   async function handleSelect(optionId) {
     if (selectedId || submitting) return;
     setSelectedId(optionId);
-    if (!sessionId || !token) return;
+    if (!sessionId || !token) {
+      const failed = Boolean(attentionCheck && optionId !== attentionCheck.correctId);
+      if (failed) {
+        setCheckFailed(true);
+        onAttentionFailed?.();
+      }
+      return;
+    }
 
     setSubmitting(true);
     try {
-      await axios.post(
+      const res = await axios.post(
         `${API_BASE_URL}/sessions/${sessionId}/attention-check`,
         { selected_id: optionId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      if (res.data?.correct === false || res.data?.path_ended) {
+        setCheckFailed(true);
+        onAttentionFailed?.();
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         onAuthExpired?.();
         return;
       }
-      // Still allow continue if save fails; answer is kept locally for this view.
       console.error("Failed to save attention check:", err);
+      const failed = Boolean(attentionCheck && optionId !== attentionCheck.correctId);
+      if (failed) {
+        setCheckFailed(true);
+        onAttentionFailed?.();
+      }
     } finally {
       setSubmitting(false);
     }
@@ -202,6 +225,7 @@ export default function ReportPage({
               check={attentionCheck}
               selectedId={selectedId}
               submitting={submitting}
+              failed={checkFailed}
               onSelect={handleSelect}
             />
           )}
@@ -245,16 +269,19 @@ export default function ReportPage({
             >
               {continueLabel}
             </button>
-            {!canContinue && (
+            {checkFailed ? (
+              <p className="text-xs text-red-500 mt-2">
+                This session has ended. You will not continue to further scenarios.
+              </p>
+            ) : !canContinue ? (
               <p className="text-xs text-gray-400 mt-2">
                 Complete the quick check above to continue.
               </p>
-            )}
-            {canContinue && hasNextSession && (
+            ) : hasNextSession ? (
               <p className="text-xs text-gray-400 mt-2">
                 Next up: scenario {pathIndex + 2} of {pathTotal}
               </p>
-            )}
+            ) : null}
           </div>
 
         </div>

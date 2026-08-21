@@ -54,6 +54,8 @@ class SessionRecord:
     created_at: datetime
     report: dict | None = None
     attention_check: dict | None = None
+    ended_reason: str | None = None
+    ended_at: datetime | None = None
 
 
 @dataclass
@@ -90,6 +92,8 @@ def _session_from_doc(doc_id: str, data: dict) -> SessionRecord:
         created_at=_as_datetime(data.get("created_at")),
         report=data.get("report"),
         attention_check=data.get("attention_check"),
+        ended_reason=data.get("ended_reason"),
+        ended_at=_as_datetime(data["ended_at"]) if data.get("ended_at") else None,
     )
 
 
@@ -316,11 +320,17 @@ def save_attention_check(
     db: firestore.Client,
     session_id: str,
     attention_check: dict,
+    *,
+    ended_reason: str | None = None,
 ) -> None:
     ref = db.collection("sessions").document(session_id)
     if not ref.get().exists:
         return
-    ref.update({"attention_check": attention_check})
+    update = {"attention_check": attention_check}
+    if ended_reason:
+        update["ended_reason"] = ended_reason
+        update["ended_at"] = _utcnow()
+    ref.update(update)
 
 
 # ── Messages ──────────────────────────────────────────────────────────────────
@@ -356,6 +366,7 @@ def add_message(
     }
     ref.set(data)
     print(f"[firestore] saved message {ref.id} role={role} session={session_id}")
+    print(f"[firestore] data: {data}")
     return _message_from_doc(ref.id, session_id, data)
 
 

@@ -7,9 +7,11 @@ export default function CompletionPage({
   loading,
   navProps,
   onDone,
+  endedReason,
 }) {
   const [copied, setCopied] = useState(false);
   const code = completion?.code;
+  const attentionFailed = endedReason === "attention_check_failed" || completion?.status === "attention_failed";
 
   async function handleCopy() {
     if (!code) return;
@@ -32,20 +34,34 @@ export default function CompletionPage({
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 max-w-lg w-full p-8 text-center space-y-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Path complete</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {attentionFailed ? "Session ended" : "Path complete"}
+            </h1>
             <p className="text-sm text-gray-500 mt-2">
-              You finished all scenarios. Copy the completion code below and paste it into the survey form.
+              {attentionFailed
+                ? "This study session ended because the attention check was not passed. You will not continue to further scenarios, and no completion code will be issued."
+                : "You finished all scenarios. Copy the completion code below and paste it into the survey form."}
             </p>
           </div>
 
-          {loading && (
+          {attentionFailed && !loading && (
+            <button
+              type="button"
+              onClick={onDone}
+              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+            >
+              Done
+            </button>
+          )}
+
+          {loading && !attentionFailed && (
             <div className="flex flex-col items-center gap-3 py-4">
               <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
               <p className="text-sm text-gray-500">Generating your completion code…</p>
             </div>
           )}
 
-          {error && !loading && (
+          {error && !loading && !attentionFailed && (
             <div className="space-y-3">
               <p className="text-sm text-red-500">{error}</p>
               <button
@@ -58,7 +74,7 @@ export default function CompletionPage({
             </div>
           )}
 
-          {code && !loading && (
+          {code && !loading && !attentionFailed && (
             <>
               <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-5">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
