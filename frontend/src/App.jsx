@@ -3,6 +3,8 @@ import axios from "axios";
 import API_BASE_URL from "./config";
 import WelcomePage from "./components/WelcomePage";
 import { buildPathForDomain } from "./components/ModeSelector";
+import PathOverview from "./components/PathOverview";
+import InstructionsModal from "./components/InstructionsModal";
 import ChatWindow from "./components/ChatWindow";
 import ReportPage from "./components/ReportPage";
 import CompletionPage from "./components/CompletionPage";
@@ -62,6 +64,8 @@ function sessionConfigFromPath(path, index, conditionId) {
   };
 }
 
+const joinInflight = { pid: null, promise: null };
+
 export default function App({ conditionId = null, pid = null }) {
   const condition = conditionId ? CONDITIONS[conditionId] : null;
   const participantId = pid?.trim() || null;
@@ -97,6 +101,7 @@ export default function App({ conditionId = null, pid = null }) {
   const [completionError, setCompletionError] = useState(null);
   const [assigning, setAssigning] = useState(false);
   const [assignError, setAssignError] = useState(null);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Persist experimental condition from the URL so it survives refresh
   useEffect(() => {
@@ -158,12 +163,25 @@ export default function App({ conditionId = null, pid = null }) {
   }
 
   async function joinWithPid(cleanPid) {
-    const res = await axios.post(`${API_BASE_URL}/participant/join`, { pid: cleanPid });
-    return {
-      accessToken: res.data.access_token,
-      name: res.data.name,
-      role: res.data.role,
-    };
+    if (joinInflight.pid === cleanPid && joinInflight.promise) {
+      return joinInflight.promise;
+    }
+    const promise = axios
+      .post(`${API_BASE_URL}/participant/join`, { pid: cleanPid })
+      .then((res) => ({
+        accessToken: res.data.access_token,
+        name: res.data.name,
+        role: res.data.role,
+      }))
+      .finally(() => {
+        if (joinInflight.promise === promise) {
+          joinInflight.pid = null;
+          joinInflight.promise = null;
+        }
+      });
+    joinInflight.pid = cleanPid;
+    joinInflight.promise = promise;
+    return promise;
   }
 
   function handleAuthExpired() {
@@ -200,7 +218,8 @@ export default function App({ conditionId = null, pid = null }) {
     setReport(null);
     setReportSessionId(null);
     setReportError(null);
-    startPathSession(path, 0);
+    setShowInstructions(false);
+    setView("path-overview");
   }
 
   async function handleStartTraining() {
@@ -336,6 +355,7 @@ export default function App({ conditionId = null, pid = null }) {
     setCompletion(null);
     setCompletionError(null);
     setCompletionLoading(false);
+    setShowInstructions(false);
     setView("landing");
   }
 
@@ -445,6 +465,27 @@ export default function App({ conditionId = null, pid = null }) {
         startLoading={assigning}
         startError={assignError}
       />
+    );
+  }
+
+  if (view === "path-overview" && trainingPath) {
+    return (
+      <>
+        <PathOverview
+          domainLabel={trainingPath.domainLabel}
+          sessions={trainingPath.sessions}
+          navProps={navProps}
+          onNext={() => setShowInstructions(true)}
+        />
+        {showInstructions && (
+          <InstructionsModal
+            onBegin={() => {
+              setShowInstructions(false);
+              startPathSession(trainingPath, 0);
+            }}
+          />
+        )}
+      </>
     );
   }
 

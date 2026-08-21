@@ -27,8 +27,8 @@ const DOMAINS = [
     ],
   },
   {
-    id: "finance",
-    label: "Finance",
+    id: "retail",
+    label: "Retail",
     icon: "💰",
     available: true,
     scenarios: [

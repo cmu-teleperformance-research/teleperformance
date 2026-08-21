@@ -78,14 +78,13 @@ def participant_join(request: ParticipantJoinRequest, db: firestore.Client = Dep
         raise HTTPException(status_code=400, detail="Participant ID cannot be empty")
     user = models.get_user_by_username(db, pid)
     if not user:
-        # Hash a random secret so this account can never be accessed via password login
         random_hash = hash_password(os.urandom(32).hex())
         try:
-            user = models.create_user(db, name=pid, username=pid, hashed_password=random_hash)
-        except ValueError:
+            user = models.get_or_create_user(db, name=pid, username=pid, hashed_password=random_hash)
+        except Exception as exc:
             user = models.get_user_by_username(db, pid)
             if not user:
-                raise HTTPException(status_code=500, detail="Failed to create participant")
+                raise HTTPException(status_code=500, detail=f"Failed to create participant: {exc}") from exc
     return {
         "access_token": create_access_token(user.id, user.username),
         "token_type": "bearer",

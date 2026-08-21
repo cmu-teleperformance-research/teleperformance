@@ -5,17 +5,19 @@ Collections:
   usernames/{username}          → { user_id }  (uniqueness index)
   sessions/{sessionId}
   sessions/{sessionId}/messages/{messageId}
-  experiment_balance/{condition} → { counts: { travel, finance } }
+  experiment_balance/{condition} → { counts: { travel, retail } }
   experiment_balance/{condition}/assignments/{userId} → { domain }
 """
 
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from google.api_core import exceptions as gcp_exceptions
 from google.cloud import firestore
 
 
@@ -154,6 +156,33 @@ def create_user(db: firestore.Client, name: str, username: str, hashed_password:
     )
 
 
+def get_or_create_user(db: firestore.Client, name: str, username: str, hashed_password: str) -> User:
+    """Idempotent user lookup/create. Safe when two join requests race for the same pid."""
+    existing = get_user_by_username(db, username)
+    if existing:
+        return existing
+
+    last_error: Exception | None = None
+    for attempt in range(5):
+        try:
+            return create_user(db, name=name, username=username, hashed_password=hashed_password)
+        except ValueError:
+            existing = get_user_by_username(db, username)
+            if existing:
+                return existing
+            last_error = ValueError("Username already taken")
+        except gcp_exceptions.GoogleAPICallError as exc:
+            existing = get_user_by_username(db, username)
+            if existing:
+                return existing
+            last_error = exc
+            time.sleep(0.05 * (2 ** attempt))
+
+    if last_error:
+        raise last_error
+    raise RuntimeError("Failed to create user")
+
+
 def update_user_password(db: firestore.Client, user_id: str, hashed_password: str) -> None:
     db.collection("users").document(user_id).update({"hashed_password": hashed_password})
 
@@ -176,7 +205,7 @@ def save_user_completion(
 
 # ── Experiment domain balance ─────────────────────────────────────────────────
 
-ASSIGNMENT_DOMAINS = ("travel", "finance")
+ASSIGNMENT_DOMAINS = ("travel", "retail")
 
 
 def assign_domain(db: firestore.Client, *, user_id: str, condition: str) -> dict:
