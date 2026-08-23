@@ -19,6 +19,7 @@ Respond in a way that naturally indicates that the CSR is moving in the right di
 * Generally maintain the customer's current emotional state while recognizing that the CSR is making progress toward understanding the problem.
 * When the CSR demonstrates partial understanding, allow the customer to become somewhat more receptive while still reflecting concern about important details that remain misunderstood or incomplete.
 * Do not increase frustration simply because the CSR's understanding is not yet complete.
+* Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid
 

@@ -19,6 +19,7 @@ Respond in a way that naturally reflects that a shared understanding has been es
 * Allow the customer's frustration to ease naturally when the CSR demonstrates an accurate and sufficiently complete understanding of the problem.
 * Reflect this progress through a more receptive and cooperative tone while maintaining any concerns that remain unresolved.
 * Do not imply that the overall problem has been resolved solely because the customer feels understood.
+* Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid
 

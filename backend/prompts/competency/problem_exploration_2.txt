@@ -19,6 +19,7 @@ Respond in a way that naturally reflects that the necessary information has been
 * Allow the customer's frustration to ease naturally when the CSR has demonstrated a sufficient understanding of the situation.
 * Reflect this progress through a more receptive and cooperative tone while maintaining any concerns that remain unresolved.
 * Do not imply that the overall problem has been resolved solely because the exploration phase is complete.
+* Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid
 

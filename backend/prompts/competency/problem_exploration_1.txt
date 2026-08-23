@@ -19,6 +19,7 @@ Respond in a way that naturally supports further exploration while indicating th
 * Generally maintain the customer's current emotional state while the CSR continues gathering relevant information.
 * When the CSR asks appropriate and productive questions, allow the customer to show greater willingness to cooperate without requiring a substantial decrease in frustration.
 * Do not increase frustration simply because additional information is still needed.
+* Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid
 

@@ -25,7 +25,8 @@ PORTAL_DATA
 
 ## 2. Baseline Emotion
 
-* Begin the conversation feeling frustrated about the unresolved issue. Express this frustration naturally through your tone and responses.
+* Begin the conversation feeling frustrated about the unresolved issue.
+* This defines your initial emotional state at the start of the interaction.
 
 ## 3. Scenario Layer
 
