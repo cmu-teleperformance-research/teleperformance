@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NavBar from "./NavBar";
+import { getQualtricsReturnUrl, buildQualtricsReturnUrl } from "../qualtrics";
 
 export default function CompletionPage({
   completion,
@@ -12,6 +13,23 @@ export default function CompletionPage({
   const [copied, setCopied] = useState(false);
   const code = completion?.code;
   const attentionFailed = endedReason === "attention_check_failed" || completion?.status === "attention_failed";
+  const returnUrl = getQualtricsReturnUrl();
+  const surveyUrl = returnUrl
+    ? buildQualtricsReturnUrl(
+        returnUrl,
+        attentionFailed
+          ? { attention_failed: "1" }
+          : { completion_code: code }
+      )
+    : null;
+
+  useEffect(() => {
+    if (!surveyUrl || (!code && !attentionFailed)) return;
+    const timer = setTimeout(() => {
+      window.location.assign(surveyUrl);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [surveyUrl, code, attentionFailed]);
 
   async function handleCopy() {
     if (!code) return;
@@ -40,18 +58,29 @@ export default function CompletionPage({
             <p className="text-sm text-gray-500 mt-2">
               {attentionFailed
                 ? "This study session ended because the attention check was not passed. You will not continue to further scenarios, and no completion code will be issued."
+                : surveyUrl
+                ? "You finished all scenarios. Returning you to the survey…"
                 : "You finished all scenarios. Copy the completion code below and paste it into the survey form."}
             </p>
           </div>
 
           {attentionFailed && !loading && (
-            <button
-              type="button"
-              onClick={onDone}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
-            >
-              Done
-            </button>
+            surveyUrl ? (
+              <a
+                href={surveyUrl}
+                className="block w-full bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+              >
+                Return to survey
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={onDone}
+                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+              >
+                Done
+              </button>
+            )
           )}
 
           {loading && !attentionFailed && (
@@ -85,10 +114,19 @@ export default function CompletionPage({
                 </p>
               </div>
 
+              {surveyUrl && (
+                <a
+                  href={surveyUrl}
+                  className="block w-full bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+                >
+                  Return to survey
+                </a>
+              )}
+
               <button
                 type="button"
                 onClick={handleCopy}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+                className={`w-full ${surveyUrl ? "border border-gray-300 text-gray-700 hover:bg-gray-50" : "bg-blue-600 text-white hover:bg-blue-700"} px-6 py-3 rounded-lg text-sm font-medium transition`}
               >
                 {copied ? "Copied!" : "Copy code"}
               </button>

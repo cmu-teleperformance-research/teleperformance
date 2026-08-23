@@ -61,6 +61,7 @@ function TurnCard({ turn }) {
 }
 
 function AttentionCheckCard({ check, selectedId, submitting, failed, onSelect }) {
+  const locked = submitting || failed;
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-blue-100">
       <div className="flex items-center gap-3 mb-4 pb-2 border-b border-gray-200">
@@ -74,16 +75,16 @@ function AttentionCheckCard({ check, selectedId, submitting, failed, onSelect })
             <button
               key={option.id}
               type="button"
-              disabled={Boolean(selectedId) || submitting}
+              disabled={locked}
               onClick={() => onSelect(option.id)}
               className={[
                 "w-full text-left text-sm px-4 py-3 rounded-lg border transition",
                 selected && failed
                   ? "border-red-400 bg-red-50 text-red-900"
                   : selected
-                  ? "border-blue-500 bg-blue-50 text-blue-900"
-                  : "border-gray-200 bg-white text-gray-800 hover:border-blue-300 hover:bg-blue-50/40",
-                (selectedId || submitting) && !selected ? "opacity-60" : "",
+                    ? "border-blue-500 bg-blue-50 text-blue-900"
+                    : "border-gray-200 bg-white text-gray-800 hover:border-blue-300 hover:bg-blue-50/40",
+                locked && !selected ? "opacity-60" : "",
               ].join(" ")}
             >
               {option.label}
@@ -95,11 +96,13 @@ function AttentionCheckCard({ check, selectedId, submitting, failed, onSelect })
         <p className="text-sm text-red-600 mt-3">
           This study session has ended because the attention check was not passed.
         </p>
-      ) : !selectedId ? (
+      ) : (
         <p className="text-xs text-gray-400 mt-3">
-          Answer to continue to the next step.
+          {selectedId
+            ? "You can change your answer before continuing."
+            : "Answer to continue to the next step."}
         </p>
-      ) : null}
+      )}
     </div>
   );
 }
@@ -141,42 +144,59 @@ export default function ReportPage({
   const [submitting, setSubmitting] = useState(false);
   const [checkFailed, setCheckFailed] = useState(false);
   const requiresCheck = Boolean(attentionCheck);
-  const canContinue = !checkFailed && (!requiresCheck || Boolean(selectedId));
+  const canContinue = !checkFailed && !submitting && (!requiresCheck || Boolean(selectedId));
 
-  async function handleSelect(optionId) {
-    if (selectedId || submitting) return;
+  function handleSelect(optionId) {
+    if (submitting || checkFailed) return;
     setSelectedId(optionId);
+  }
+
+  function applyCheckResult(optionId, result) {
+    const failed =
+      result?.correct === false ||
+      result?.path_ended === true ||
+      (result == null && Boolean(attentionCheck && optionId !== attentionCheck.correctId));
+    if (failed) {
+      setCheckFailed(true);
+      onAttentionFailed?.();
+      return false;
+    }
+    return true;
+  }
+
+  async function submitAttentionCheck(optionId) {
     if (!sessionId || !token) {
-      const failed = Boolean(attentionCheck && optionId !== attentionCheck.correctId);
-      if (failed) {
-        setCheckFailed(true);
-        onAttentionFailed?.();
-      }
-      return;
+      return applyCheckResult(optionId, null);
     }
 
-    setSubmitting(true);
     try {
       const res = await axios.post(
         `${API_BASE_URL}/sessions/${sessionId}/attention-check`,
         { selected_id: optionId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (res.data?.correct === false || res.data?.path_ended) {
-        setCheckFailed(true);
-        onAttentionFailed?.();
-      }
+      return applyCheckResult(optionId, res.data);
     } catch (err) {
       if (err.response?.status === 401) {
         onAuthExpired?.();
-        return;
+        return false;
       }
       console.error("Failed to save attention check:", err);
-      const failed = Boolean(attentionCheck && optionId !== attentionCheck.correctId);
-      if (failed) {
-        setCheckFailed(true);
-        onAttentionFailed?.();
-      }
+      return applyCheckResult(optionId, null);
+    }
+  }
+
+  async function handleContinue() {
+    if (!canContinue) return;
+    if (!requiresCheck) {
+      onContinue();
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const passed = await submitAttentionCheck(selectedId);
+      if (passed) onContinue();
     } finally {
       setSubmitting(false);
     }
@@ -197,11 +217,11 @@ export default function ReportPage({
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={onContinue}
+            onClick={handleContinue}
             disabled={!canContinue}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {continueLabel}
+            {submitting ? "Saving..." : continueLabel}
           </button>
           <NavBar {...navProps} />
         </div>
@@ -230,44 +250,15 @@ export default function ReportPage({
             />
           )}
 
-          {/* Session Coaching — hidden for cond1 (baseline) and cond3 (implicit) */}
-          {coaching && (
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6 pb-2 border-b-2 border-gray-800">
-                <h2 className="text-lg font-bold text-gray-800 uppercase tracking-wide">Session Coaching</h2>
-              </div>
-              <div className="space-y-4">
-                <CoachingField label="Overall Performance" value={coaching.overallPerformance} colorClass="bg-gray-50" />
-                <CoachingField label="Keep Doing" value={coaching.keepDoing} colorClass="bg-green-50" />
-                <CoachingField label="Key Pattern to Improve" value={coaching.keyPatternToImprove} colorClass="bg-yellow-50" />
-                <CoachingField label="Actionable Improvement" value={coaching.actionableImprovement} colorClass="bg-blue-50" />
-                <CoachingField label="Encouragement" value={coaching.encouragement} colorClass="bg-gray-50" />
-              </div>
-            </div>
-          )}
-
-          {/* Turn-by-Turn Feedback */}
-          {turns.length > 0 && !hideCoaching && (
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6 pb-2 border-b-2 border-gray-800">
-                <h2 className="text-lg font-bold text-gray-800 uppercase tracking-wide">Turn-by-Turn Feedback</h2>
-              </div>
-              <div className="space-y-4">
-                {turns.map((turn) => (
-                  <TurnCard key={turn.turn} turn={turn} />
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Bottom CTA */}
           <div className="text-center pt-2 pb-8">
             <button
-              onClick={onContinue}
+              onClick={handleContinue}
               disabled={!canContinue}
               className="bg-blue-600 text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {continueLabel}
+              {submitting ? "Saving..." : continueLabel}
             </button>
             {checkFailed ? (
               <p className="text-xs text-red-500 mt-2">

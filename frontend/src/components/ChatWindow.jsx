@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { flushSync } from "react-dom";
 import axios from "axios";
 import MessageBubble from "./MessageBubble";
+import EvaluationBriefPanel from "./EvaluationBriefPanel";
 import FeedbackPanel from "./FeedbackPanel";
 import WorkflowPortal from "./workflow/WorkflowPortal";
 import NavBar from "./NavBar";
@@ -94,6 +95,11 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (loading || showGuide) return;
+    inputRef.current?.focus();
+  }, [loading, showGuide]);
 
   useEffect(() => {
     console.log("📊 CURRENT MESSAGES:", messages);
@@ -496,6 +502,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         </div>
 
         <div className="flex-1 flex overflow-hidden">
+          <EvaluationBriefPanel activeState={activeFeedback?.state} />
+
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="bg-gray-50 border-b border-gray-200 px-4 py-1.5 flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -558,6 +566,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   disabled={loading}
+                  autoFocus
                 />
                 <button
                   onClick={sendMessage}
