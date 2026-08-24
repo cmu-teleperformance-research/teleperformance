@@ -16,7 +16,7 @@ Feedback Rules:
 
 * Copy the state and score exactly from the scoring output. Do not rescore the response.
 * Use the explanation in the scoring output to identify the main gap between the CSR’s response and score 2 in the assigned state.
-* In the suggestion, first briefly state what the CSR did well, if supported, then give one concise, actionable improvement.
+* In the suggestion, first briefly state what the CSR did well, if supported, then give one concise, actionable improvement. Phrase the improvement as “To make your response better, you can…” or similar. Do not use the word “next” to introduce the improvement.
 * If the score is 2, reinforce the effective behavior rather than inventing a weakness.
 * If the response is routine or administrative, briefly note that it is routine, then remind the CSR that, besides routine questions, they should also focus on diagnosing or meaningfully resolving customer needs and redirect the CSR toward the problem.
 * If the response is off-task or only provides courtesy, clearly state this and tell the CSR to focus on the customer’s current unresolved problem and demonstrate the assigned skill.
