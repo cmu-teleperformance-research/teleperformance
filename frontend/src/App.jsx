@@ -281,18 +281,19 @@ export default function App({ conditionId = null, pid = null }) {
     setReportError(null);
     setView("report");
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/report`,
-        {
-          scenario: sessionConfig.scenario,
-          persona: sessionConfig.persona,
-          training: sessionConfig.training,
-          history: messages,
-          session_id: sid,
-          ...(conditionId ? { condition: conditionId } : {}),
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = {}
+      // const response = await axios.post(
+      //   `${API_BASE_URL}/report`,
+      //   {
+      //     scenario: sessionConfig.scenario,
+      //     persona: sessionConfig.persona,
+      //     training: sessionConfig.training,
+      //     history: messages,
+      //     session_id: sid,
+      //     ...(conditionId ? { condition: conditionId } : {}),
+      //   },
+      //   { headers: { Authorization: `Bearer ${token}` } }
+      // );
       setReport(response.data);
     } catch (err) {
       if (err.response?.status === 401) {

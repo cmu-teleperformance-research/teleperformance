@@ -4,10 +4,10 @@ const DEFAULT_WIDTH = 288;
 const MIN_WIDTH = 220;
 const MAX_WIDTH = 560;
 
-const SCORE_COLORS = {
-  2: "bg-green-100 text-green-700",
-  1: "bg-yellow-100 text-yellow-700",
-  0: "bg-red-100 text-red-600",
+const SCORE_DISPLAY = {
+  2: { label: "Excellent", className: "bg-green-50 text-green-800 border border-green-200" },
+  1: { label: "Good", className: "bg-amber-50 text-amber-800 border border-amber-200" },
+  0: { label: "Needs improvement", className: "bg-red-50 text-red-700 border border-red-200" },
 };
 
 function MarkdownText({ text }) {
@@ -32,19 +32,17 @@ function MarkdownText({ text }) {
 export function TurnFeedbackCard({ feedback }) {
   if (!feedback) return null;
 
-  const scoreColorClass = SCORE_COLORS[feedback.score] ?? "bg-gray-100 text-gray-500";
+  const scoreDisplay = SCORE_DISPLAY[feedback.score];
 
   return (
     <div className="space-y-4">
       {(feedback.state || feedback.score !== undefined) && (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           {feedback.state && (
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-              {feedback.state}
-            </span>
+            <p className="text-sm font-semibold text-blue-700">{feedback.state}</p>
           )}
-          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${scoreColorClass}`}>
-            {feedback.score ?? "—"}
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-md ${scoreDisplay?.className ?? "bg-gray-50 text-gray-500 border border-gray-200"}`}>
+            {scoreDisplay?.label ?? "—"}
           </span>
         </div>
       )}
@@ -52,7 +50,7 @@ export function TurnFeedbackCard({ feedback }) {
         <div className="border-t border-gray-100 pt-4">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Suggestion</p>
           <p className="text-sm text-gray-700 bg-blue-50 rounded-lg p-3 leading-relaxed">
-            {feedback.suggestion ?? "—"}
+            {<MarkdownText text={feedback.suggestion} /> ?? "—"}
             {feedback.example_response && (
               <>
                 {" "}For example:
