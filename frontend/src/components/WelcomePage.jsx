@@ -75,6 +75,7 @@ function toggleInSet(prev, item) {
 }
 
 export function HomeGuideContent({
+  hideQuestions,
   title,
   description,
   what_to_expect,
@@ -144,25 +145,27 @@ export function HomeGuideContent({
       </section>
 
       {/*  attention check question to select all the skills they will be evaluated on */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-800">Attention Check</h2>
-        <p className="text-sm text-gray-600">
-          Please select all the skills that will be part of the training to show you understand the task:
-        </p>
-        <div className="bg-white border border-gray-200 rounded-lg p-5 space-y-3">
-          {attentionOptions.map((skill) => (
-            <label key={skill} className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={selectedSkills.has(skill)}
-                onChange={() => toggleSkill(skill)}
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm font-semibold text-blue-700">{skill}</span>
-            </label>
-          ))}
-        </div>
-      </section>
+      {!hideQuestions && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-800">Attention Check</h2>
+          <p className="text-sm text-gray-600">
+            Please select all the skills that will be part of the training to show you understand the task:
+          </p>
+          <div className="bg-white border border-gray-200 rounded-lg p-5 space-y-3">
+            {attentionOptions.map((skill) => (
+              <label key={skill} className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedSkills.has(skill)}
+                  onChange={() => toggleSkill(skill)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-semibold text-blue-700">{skill}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-800">How It Works</h2>
@@ -178,7 +181,8 @@ export function HomeGuideContent({
         </ol>
       </section>
 
-      <section className="space-y-4">
+      {!hideQuestions && (<section className="space-y-4">
+
         <h2 className="text-lg font-semibold text-gray-800">Attention Check</h2>
         <p className="text-sm text-gray-600">
           Please select all statements that correctly describe how the simulator works:
@@ -197,6 +201,7 @@ export function HomeGuideContent({
           ))}
         </div>
       </section>
+      )}
 
       <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-100 pt-6">
         Feedback is intended for learning and skill development purposes. The simulator

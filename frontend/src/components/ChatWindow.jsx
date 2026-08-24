@@ -42,6 +42,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   const [error, setError] = useState(null);
   const [portalHeight, setPortalHeight] = useState(280);
   const [showGuide, setShowGuide] = useState(false);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [workflowData, setWorkflowData] = useState({
     searchQuery: "",
     applicationStatus: false,
@@ -60,6 +61,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+  const allowNavigateAway = useRef(false);
 
   const authHeaders = { Authorization: `Bearer ${token}` };
 
@@ -97,9 +99,32 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
   }, [messages, loading]);
 
   useEffect(() => {
-    if (loading || showGuide) return;
+    if (loading || showGuide || showLeaveWarning) return;
     inputRef.current?.focus();
-  }, [loading, showGuide]);
+  }, [loading, showGuide, showLeaveWarning]);
+
+  useEffect(() => {
+    window.history.pushState({ chatGuard: true }, "");
+
+    function onPopState() {
+      if (allowNavigateAway.current) return;
+      window.history.pushState({ chatGuard: true }, "");
+      setShowLeaveWarning(true);
+    }
+
+    function onBeforeUnload(e) {
+      if (allowNavigateAway.current) return;
+      e.preventDefault();
+      e.returnValue = "";
+    }
+
+    window.addEventListener("popstate", onPopState);
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+    };
+  }, []);
 
   useEffect(() => {
     console.log("📊 CURRENT MESSAGES:", messages);
@@ -114,6 +139,17 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
   useEffect(() => {
     const controller = new AbortController();
+
+    function readCachedMessages(id) {
+      try {
+        const raw = localStorage.getItem(`messages_${id}`);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
 
     async function startFresh() {
       const response = await axios.post(
@@ -130,11 +166,8 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
       setLoading(true);
       try {
         if (storedSessionId) {
-          // ADD: Show cached messages instantly before backend responds
-          const cached = localStorage.getItem(`messages_${storedSessionId}`);
-          if (cached) {
-            try { setMessages(JSON.parse(cached)); } catch { }
-          }
+          const cachedMessages = readCachedMessages(storedSessionId);
+          if (cachedMessages) setMessages(cachedMessages);
 
           const response = await axios.get(
             `${API_BASE_URL}/sessions/${storedSessionId}`,
@@ -150,6 +183,14 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         if (err.response?.status === 401) { onAuthExpired(); return; }
 
         if (storedSessionId) {
+          const cachedMessages = readCachedMessages(storedSessionId);
+          if (cachedMessages) {
+            setSessionId(storedSessionId);
+            setMessages(cachedMessages);
+            setError("Could not reconnect to the server. Your conversation is still here — try sending again.");
+            return;
+          }
+
           onSessionRestoreFailed();
           try {
             await startFresh();
@@ -175,7 +216,12 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
   function endSessionWith(finalMessages) {
     if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
+    allowNavigateAway.current = true;
     onEndSession(finalMessages, sessionId);
+  }
+
+  function stayInSession() {
+    setShowLeaveWarning(false);
   }
 
   async function sendMessage() {
@@ -442,12 +488,12 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           >
             Home Guide
           </button>
-          <button
+          {/* <button
             onClick={() => endSessionWith(messages)}
             className="text-sm text-gray-500 hover:text-red-500 transition"
           >
             End Session & Get Report
-          </button>
+          </button> */}
           <NavBar {...navProps} />
         </div>
       </header>
@@ -589,7 +635,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-gray-50 rounded-2xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
-              <span className="font-semibold text-gray-800">Home Guide</span>
+              <span className="font-semibold text-gray-800">View Instructions</span>
               <button
                 onClick={() => setShowGuide(false)}
                 className="text-gray-400 hover:text-gray-600 text-xl leading-none transition"
@@ -598,7 +644,27 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-8">
-              <HomeGuideContent />
+              <HomeGuideContent hideQuestions={true} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLeaveWarning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900">Stay in this session</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              You are still in the customer conversation. Leaving this page can interrupt the session.
+            </p>
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={stayInSession}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+              >
+                Continue session
+              </button>
             </div>
           </div>
         </div>
