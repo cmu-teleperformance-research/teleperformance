@@ -8,24 +8,12 @@ const PARTICIPANT_GOAL =
   "Help this customer resolve their issue. Talk with them in chat, and use the Internal Portal to look up records and take the next correct action.";
 
 const EVALUATION_STATES = [
-  {
-    title: "Problem Interpretation",
-    body:
-      "Show an accurate understanding of the customer's problem and, when appropriate, why it matters to them — the consequence, impact, stakes, or unmet need.",
-  },
-  {
-    title: "Problem Exploration",
-    body:
-      "Ask for information that meaningfully improves understanding or diagnosis of the problem, rather than asking only routine or administrative questions.",
-  },
-  {
-    title: "Problem Resolution",
-    body:
-      "Take or propose an action that directly addresses the customer's problem, and clearly communicate what they can expect next.",
-  },
+  "Show an accurate understanding of the customer's problem and why it matters.",
+  "Ask for information that improves diagnosis of the problem.",
+  "Take an action that addresses the problem and tell the customer what happens next.",
 ];
 
-export default function EvaluationBriefPanel({ activeState }) {
+export default function EvaluationBriefPanel() {
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
@@ -86,32 +74,13 @@ export default function EvaluationBriefPanel({ activeState }) {
           <p className="text-xs text-gray-500 leading-relaxed">
             Each reply is classified into one of these skills and scored on how well you perform it.
           </p>
-          <div className="space-y-2">
-            {EVALUATION_STATES.map((state) => {
-              const isActive =
-                activeState &&
-                activeState.toLowerCase() === state.title.toLowerCase();
-              return (
-                <div
-                  key={state.title}
-                  className={`rounded-lg p-3 space-y-1 border ${isActive
-                      ? "bg-blue-50 border-blue-200"
-                      : "bg-gray-50 border-gray-200"
-                    }`}
-                >
-                  <h4
-                    className={`text-sm font-semibold ${isActive ? "text-blue-800" : "text-blue-700"
-                      }`}
-                  >
-                    {state.title}
-                  </h4>
-                  <p className="text-xs text-gray-600 leading-relaxed">
-                    {state.body}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+          <ul className="list-disc pl-5 space-y-1.5">
+            {EVALUATION_STATES.map((state) => (
+              <li key={state} className="text-sm text-gray-600 leading-relaxed">
+                {state}
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
 

@@ -497,6 +497,7 @@ export default function App({ conditionId = null, pid = null }) {
         />
         {showInstructions && (
           <InstructionsModal
+            showCoaching={Boolean(condition?.showFeedbackPanel)}
             onBegin={() => {
               setShowInstructions(false);
               startPathSession(trainingPath, 0);

@@ -10,6 +10,25 @@ const SCORE_COLORS = {
   0: "bg-red-100 text-red-600",
 };
 
+function MarkdownText({ text }) {
+  const nodes = [];
+  const pattern = /\*\*(.+?)\*\*/g;
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+    nodes.push(<strong key={key++}>{match[1]}</strong>);
+    lastIndex = pattern.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+  return <>{nodes}</>;
+}
+
 export function TurnFeedbackCard({ feedback }) {
   if (!feedback) return null;
 
@@ -37,7 +56,9 @@ export function TurnFeedbackCard({ feedback }) {
             {feedback.example_response && (
               <>
                 {" "}For example:
-                <span className="block pl-4 italic font-semibold">"{feedback.example_response}"</span>
+                <span className="block pl-4 italic">
+                  "<MarkdownText text={feedback.example_response} />"
+                </span>
               </>
             )}
           </p>

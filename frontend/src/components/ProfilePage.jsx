@@ -4,7 +4,7 @@ import API_BASE_URL from "../config";
 import NavBar from "./NavBar";
 
 const SIGNAL_COLORS = {
-  "Strong":     "bg-green-100 text-green-700",
+  "Strong": "bg-green-100 text-green-700",
   "Developing": "bg-yellow-100 text-yellow-700",
   "Needs Work": "bg-red-100 text-red-600",
 };
@@ -31,7 +31,7 @@ function SessionDetail({ session, onBack }) {
           <div>
             <h2 className="font-bold text-gray-900 text-lg">{session.scenario_label}</h2>
             <p className="text-sm text-gray-500">
-              {session.training ? "Training" : "Evaluation"} · {new Date(session.created_at).toLocaleDateString()}
+              {session.training ? "Training" : "Practice"} · {new Date(session.created_at).toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -43,11 +43,10 @@ function SessionDetail({ session, onBack }) {
         <div className="space-y-4">
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} flex-col gap-1`}>
-              <div className={`max-w-xl px-4 py-3 rounded-2xl text-sm ${
-                msg.role === "user"
+              <div className={`max-w-xl px-4 py-3 rounded-2xl text-sm ${msg.role === "user"
                   ? "bg-blue-600 text-white rounded-br-sm self-end"
                   : "bg-gray-100 text-gray-800 rounded-bl-sm self-start"
-              }`}>
+                }`}>
                 <p className="text-xs font-semibold mb-1 opacity-70">
                   {msg.role === "user" ? "You (CSR)" : "Customer"}
                 </p>
@@ -56,7 +55,7 @@ function SessionDetail({ session, onBack }) {
               {msg.feedback && (
                 <div className="self-end max-w-xl bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs space-y-2">
                   <div className="flex gap-3">
-                    <SignalBadge label="Empathy First"    value={msg.feedback.signals?.empathyFirst} />
+                    <SignalBadge label="Empathy First" value={msg.feedback.signals?.empathyFirst} />
                     <SignalBadge label="Active Listening" value={msg.feedback.signals?.activeListening} />
                   </div>
                   {msg.feedback.nextStep && (
@@ -213,9 +212,8 @@ export default function ProfilePage({ token, role, navProps, onBack }) {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-5 py-3 text-sm font-medium border-b-2 transition ${
-                tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-5 py-3 text-sm font-medium border-b-2 transition ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
             >
               {t === "sessions" ? "Past Sessions" : "Change Password"}
             </button>
@@ -237,7 +235,7 @@ export default function ProfilePage({ token, role, navProps, onBack }) {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900">{s.scenario_label}</p>
                   <p className="text-sm text-gray-500">
-                    {s.training ? "Training" : "Evaluation"} · {new Date(s.created_at).toLocaleDateString()}
+                    {s.training ? "Training" : "Practice"} · {new Date(s.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 {s.has_report ? (

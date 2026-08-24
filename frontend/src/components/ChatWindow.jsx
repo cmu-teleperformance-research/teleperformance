@@ -416,7 +416,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     setPortalStep(stepIndex);
   }
 
-  const modeLabel = training ? "Training" : "Evaluation";
+  const modeLabel = training ? "Training" : "Practice";
   const headerLabel = `${modeLabel} — ${scenarioLabel || SCENARIO_LABELS[scenario]}`;
   const pathLabel =
     typeof pathIndex === "number" && pathTotal > 1
@@ -502,7 +502,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         </div>
 
         <div className="flex-1 flex overflow-hidden">
-          <EvaluationBriefPanel activeState={activeFeedback?.state} />
+          <EvaluationBriefPanel />
 
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="bg-gray-50 border-b border-gray-200 px-4 py-1.5 flex items-center justify-between">

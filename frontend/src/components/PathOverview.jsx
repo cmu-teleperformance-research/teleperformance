@@ -29,17 +29,16 @@ export default function PathOverview({ domainLabel, sessions, navProps, onNext }
                 <div className="flex-1 min-w-0">
                   <p className="text-base font-semibold text-gray-800">{s.scenarioLabel}</p>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    {s.training ? "Training" : "Evaluation"}
+                    {s.training ? "Training" : "Practice"}
                   </p>
                 </div>
                 <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${
-                    s.training
+                  className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${s.training
                       ? "bg-blue-50 text-blue-700"
                       : "bg-amber-50 text-amber-800"
-                  }`}
+                    }`}
                 >
-                  {s.training ? "Training" : "Evaluation"}
+                  {s.training ? "Training" : "Practice"}
                 </span>
               </div>
             ))}

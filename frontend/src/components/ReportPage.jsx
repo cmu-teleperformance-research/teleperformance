@@ -123,7 +123,7 @@ export default function ReportPage({
 }) {
   const { scenario, training, scenarioLabel, condition } = sessionConfig ?? {};
   const activeCondition = conditionId || condition;
-  const modeLabel = training ? "Training" : "Evaluation";
+  const modeLabel = training ? "Training" : "Practice";
   const label = scenarioLabel || SCENARIO_LABELS[scenario] || scenario;
   const sessionLabel = `${modeLabel} — ${label}`; //TODO: remove the label for production so that its not a cheat for the attention check
   const progressLabel = pathTotal > 1

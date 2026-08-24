@@ -2,12 +2,12 @@ const SKILLS = [
   {
     title: "Problem Interpretation",
     body:
-      "Show an accurate understanding of the customer's problem and, when appropriate, why it matters to them — the consequence, impact, stakes, or unmet need.",
+      "Show an accurate understanding of the customer's problem and, why it matters.",
   },
   {
     title: "Problem Exploration",
     body:
-      "Ask for information that meaningfully improves understanding or diagnosis of the problem, rather than asking only routine or administrative questions.",
+      "Ask for information that meaningfully improves understanding or diagnosis of the problem and how it can be resolved.",
   },
   {
     title: "Problem Resolution",
@@ -16,7 +16,7 @@ const SKILLS = [
   },
 ];
 
-export default function InstructionsModal({ onBegin }) {
+export default function InstructionsModal({ onBegin, showCoaching }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
@@ -33,31 +33,34 @@ export default function InstructionsModal({ onBegin }) {
               <li>
                 Use the Internal Portal at the top like a company computer: look up the customer, read the record, and take the next correct action.
               </li>
-              <li>Ask the customer for IDs or order numbers before searching — they will not tell you everything at once.</li>
+              <li>Ask the customer for IDs or order numbers before searching. They will not tell you everything at once.</li>
               <li>When the portal says to return to the customer, switch back to chat and explain what you found.</li>
               <li>Do not invent company policies, actions, or facts. Use only what the customer said and what the portal shows.</li>
             </ol>
           </section>
 
-          <section className="space-y-3">
-            <h3 className="text-base font-semibold text-gray-900">How you will be coached</h3>
-            <p>
-              After your replies in training, you will receive concise, actionable feedback based only on what you actually said — not on policies or actions that were never taken.
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5">
-              <li>One improvement suggestion aimed at the main limitation in that turn</li>
-              <li>One example response that applies the suggestion to the customer's latest problem</li>
-            </ul>
-          </section>
+          {showCoaching && (
+            <section className="space-y-3">
+              <h3 className="text-base font-semibold text-gray-900">How you will be coached</h3>
+              <p>
+                After your replies in training, you will receive concise feedback based on what you actually
+                said.
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li>One improvement suggestion aimed at the main limitation in that turn</li>
+                <li>One example response that applies the suggestion to the customer's latest problem</li>
+              </ul>
+            </section>
+          )}
 
           <section className="space-y-3">
             <h3 className="text-base font-semibold text-gray-900">Grading criteria</h3>
             <p>
               Each reply is classified into one problem-handling skill and scored on how well that skill is performed:
             </p>
-            <div className="space-y-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-4">
               {SKILLS.map((skill) => (
-                <div key={skill.title} className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-1">
+                <div key={skill.title} className="space-y-1">
                   <h4 className="text-sm font-semibold text-blue-700">{skill.title}</h4>
                   <p className="text-sm text-gray-600 leading-relaxed">{skill.body}</p>
                 </div>
