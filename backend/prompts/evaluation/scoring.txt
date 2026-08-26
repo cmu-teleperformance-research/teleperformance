@@ -41,11 +41,11 @@ States and scoring
 * 0: The action doesn't address the problem, or is empty. This includes routine steps that move the process along regardless of the problem, just logging the complaint, vague escalation ("I'll escalate this") that doesn't say what or to whom, repeating a step that already failed, or a promise with no actual action. These may be procedurally necessary, but they don't work toward solving the problem itself.
 
   * Example: "I've noted your complaint on the account." / "I'll escalate this for you."
-* Closing: If the response tries to end the conversation, score 2 only if the customer has confirmed they're satisfied or need nothing further; score 0 if anything is still unresolved.
+* Closing: If the response ends the conversation after the customer has indicated the issue is resolved or expressed satisfaction with the resolution, score 2. Score 0 if anything is still unresolved. 
 
 Selecting the state
 
-1. Ignore greetings, apologies, sympathy, and politeness when deciding the state: they never determine it. If the response mixes courtesy with real problem-handling, classify and score the problem-handling part. If it's only courtesy or off-task with no problem-handling at all, assign Problem Interpretation and score 0.
+1. Ignore greetings, apologies, sympathy, and politeness when deciding the state: they never determine it. If the response mixes courtesy with real problem-handling, classify and score the problem-handling part. If it's only courtesy or off-task with no problem-handling at all, assign Problem Interpretation and score 0. If the CSR's response is a closing, classify it as Problem Resolution and apply the Closing scoring rule.
 2. Among the real content, pick the state with the strongest support in the text.
 3. If a turn contains multiple states, select the one that has higher priority. The equation below shows the priority order:
    Resolution > Exploration > Interpretation
