@@ -604,7 +604,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                     disabled={loading}
                     className="shrink-0 text-xs font-medium bg-gray-800 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition"
                   >
-                    End Session & Get Report
+                    End Session
                   </button>
                 </div>
               )}
