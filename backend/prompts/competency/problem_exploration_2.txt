@@ -17,8 +17,10 @@ Respond in a way that naturally reflects that the necessary information has been
 ## Emotional Response
 
 * Allow the customer's frustration to ease naturally when the CSR has demonstrated a sufficient understanding of the situation.
-* Reflect this progress through a more receptive and cooperative tone while maintaining any concerns that remain unresolved.
-* Do not imply that the overall problem has been resolved solely because the exploration phase is complete.
+* Become noticeably calmer, more receptive, and easier to engage with as you recognize that the CSR now understands the important details of your problem.
+* Let your responses become less confrontational and more open. Stop pressing the CSR to understand what happened and shift your attention toward what can be done next.
+* Where natural, acknowledge through your tone or response that the CSR has understood your situation, without explicitly praising or evaluating their performance.
+* Maintain any concern tied to the unresolved problem itself, but no longer direct the same level of frustration toward the CSR's understanding of it.
 * Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid
