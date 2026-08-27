@@ -17,8 +17,10 @@ Respond in a way that naturally supports further exploration while indicating th
 ## Emotional Response
 
 * Generally maintain the customer's current emotional state while the CSR continues gathering relevant information.
-* When the CSR asks appropriate and productive questions, allow the customer to show greater willingness to cooperate without requiring a substantial decrease in frustration.
-* Do not increase frustration simply because additional information is still needed.
+* When the CSR asks appropriate and productive questions, become more willing to cooperate and temporarily soften how strongly you express your frustration.
+* Respond with somewhat greater patience and openness when the questioning is clearly helping the conversation move forward, while still allowing unresolved concern or frustration to remain noticeable.
+* Let your tone reflect cautious cooperation rather than full relief: the CSR is making progress, but has not yet demonstrated a complete understanding of your situation.
+* Do not increase frustration simply because additional information is still needed, but do not become fully calm or reassured solely because the CSR has begun asking useful questions.
 * Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid
