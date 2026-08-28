@@ -289,7 +289,34 @@ def _build_history_text(history: list[dict]) -> str:
     return "\n\n".join(turns)
 
 
-def _run_scoring_call(customer_msg: str, csr_msg: str, history_text: str) -> dict:
+def _previous_scoring_labels(prior_history: list[dict]) -> tuple[str, str]:
+    """Return this model's labels on the last scored CSR turn.
+
+    First turn (or no prior label) uses the same sentinels as the notebook:
+    (start of call) / (none).
+    """
+    for turn in reversed(prior_history):
+        if turn.get("role") != "user":
+            continue
+        fb = turn.get("feedback")
+        if not isinstance(fb, dict):
+            continue
+        state = str(fb.get("state") or "").strip()
+        if not state:
+            continue
+        score = fb.get("score")
+        prev_score = str(score) if score is not None and score != "" else "(none)"
+        return state, prev_score
+    return "(start of call)", "(none)"
+
+
+def _run_scoring_call(
+    customer_msg: str,
+    csr_msg: str,
+    history_text: str,
+    previous_state: str,
+    previous_score: str,
+) -> dict:
     from services.prompt_metadata import inject_metadata
 
     scoring_template = load_evaluation_prompt("scoring")
@@ -297,11 +324,14 @@ def _run_scoring_call(customer_msg: str, csr_msg: str, history_text: str) -> dic
         "conversation_history": history_text,
         "customer_message": customer_msg,
         "csr_response": csr_msg,
-        # Notebook v3 threads the model's own prior labels; the live scorer
-        # does not yet, so these stay explicit defaults rather than raw {{placeholders}}.
-        "previous_state": "(not provided)",
-        "previous_score": "(not provided)",
+        "previous_state": previous_state,
+        "previous_score": previous_score,
     })
+
+    print("\n================ SCORING PREVIOUS LABELS ================")
+    print(f"previous_state={previous_state}")
+    print(f"previous_score={previous_score}")
+    print("========================================================")
 
     t_api = time.perf_counter()
     try:
@@ -327,6 +357,8 @@ def _run_scoring_call(customer_msg: str, csr_msg: str, history_text: str) -> dic
     _log_latency("scoring_call", {
         "input_chars": len(scoring_system),
         "output_chars": len(raw),
+        "previous_state": previous_state,
+        "previous_score": previous_score,
         **usage,
         "api_time": f"{t_api_end - t_api:.2f}s",
     })
@@ -386,9 +418,12 @@ def _run_feedback_call(customer_msg: str, csr_msg: str, history_text: str, scori
 
 def _run_evaluation_pipeline(customer_msg: str, csr_msg: str, prior_history: list[dict]) -> dict:
     history_text = _build_history_text(prior_history)
+    previous_state, previous_score = _previous_scoring_labels(prior_history)
     t_pipeline = time.perf_counter()
 
-    scoring_output = _run_scoring_call(customer_msg, csr_msg, history_text)
+    scoring_output = _run_scoring_call(
+        customer_msg, csr_msg, history_text, previous_state, previous_score,
+    )
     feedback_output = _run_feedback_call(customer_msg, csr_msg, history_text, scoring_output)
 
     _log_latency("evaluation_pipeline", {

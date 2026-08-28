@@ -126,9 +126,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     };
   }, []);
 
-  useEffect(() => {
-    console.log("📊 CURRENT MESSAGES:", messages);
-  }, [messages]);
+
 
   // ADD: Persist messages to localStorage per session
   useEffect(() => {
@@ -231,7 +229,6 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
     const trimmed = input.trim();
     if (!trimmed || loading || messageLimitReached) return;
 
-    console.log("🚀 Sending message:", trimmed);
 
     const userMessage = { role: "user", content: trimmed };
     const updatedMessages = [...messages, userMessage];
@@ -332,7 +329,9 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         inputRef.current?.focus();
       }
 
-      // Run evaluation pipeline in background (hidden from participant, saved to DB)
+      // Run evaluation pipeline in background (hidden from participant, saved to DB).
+      // Still attach feedback on the CSR turn so the next scoring call can read
+      // previous_state / previous_score from history without opening the panel.
       if (userMessageId) {
         axios.post(
           `${API_BASE_URL}/feedback`,
@@ -345,7 +344,13 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             ...(condition ? { condition } : {}),
           },
           { headers: authHeaders }
-        ).catch(err => {
+        ).then((fbRes) => {
+          const fb = fbRes.data.feedback;
+          if (!fb) return;
+          setMessages(prev =>
+            prev.map((m, i) => i === csrIdx ? { ...m, feedback: fb } : m)
+          );
+        }).catch(err => {
           console.error("❌ BACKGROUND FEEDBACK ERROR:", err);
         });
       }
@@ -354,15 +359,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
     // ── Non-streaming path (training mode — full JSON with feedback) ───────
     try {
-      console.log("📤 Request payload:", {
-        scenario,
-        persona,
-        training,
-        message: trimmed,
-        history: updatedMessages,
-        session_id: sessionId,
-        condition,
-      });
+
 
       // Declare fb in this outer scope so /chat below can read it.
       let fb = null;
@@ -386,18 +383,15 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
           );
           fb = fbRes.data.feedback;
 
-          console.log("Feedback returned:", fb);
           if (fb) {
             // Drive the side panel immediately from this value
             setPanelFeedback(fb);
             setMessages(prev =>
               prev.map((m, i) => i === csrIdx ? { ...m, feedback: fb } : m)
             );
-            console.log("🎯 Setting selectedIdx to:", csrIdx);
             setSelectedIdx(csrIdx);
           }
         } catch (fbErr) {
-          console.error("❌ FEEDBACK ERROR:", fbErr);
           if (fbErr.response?.status === 401) { onAuthExpired(); return; }
         } finally {
           setFeedbackLoading(false);
@@ -420,7 +414,6 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
         { headers: authHeaders }
       );
 
-      console.log("📥 FULL RESPONSE:", response.data);
 
       const { customer_response } = response.data;
 
@@ -569,9 +562,9 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                   key={i}
                   role={msg.role}
                   content={msg.content}
-                  hasFeedback={!!msg.feedback}
-                  isSelected={selectedIdx === i}
-                  onClick={msg.feedback ? () => {
+                  hasFeedback={showFeedbackPanel && !!msg.feedback}
+                  isSelected={showFeedbackPanel && selectedIdx === i}
+                  onClick={showFeedbackPanel && msg.feedback ? () => {
                     setSelectedIdx(i);
                     setPanelFeedback(msg.feedback);
                   } : undefined}
