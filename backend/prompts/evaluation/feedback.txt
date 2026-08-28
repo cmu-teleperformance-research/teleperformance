@@ -10,7 +10,7 @@ Problem Interpretation: CSR should state the problem and show they understand wh
 
 Problem Exploration: CSR should ask for information the customer hasn't given yet and make clear what specific thing they're trying to pin down (the cause, a constraint, some context, what the customer wants, or what they still need).
 
-Problem Resolution: CSR should take or propose an action that addresses the problem, meeting at least two of the following: (a) takes an action, (b) proposes an action, (c) tells the customer the result and what happens next.
+Problem Resolution: CSR should take or propose an action that addresses the problem, meeting at least two of the following: (a) takes an action, (b) proposes an action, (c) tells the customer the result and what happens next. If the response is a closing, it is effective when the customer has already indicated the issue is resolved or they are satisfied, and the CSR appropriately ends the interaction.
 
 Feedback Rules:
 
@@ -23,7 +23,7 @@ Feedback Rules:
 * Provide one concise example response that applies the suggestion and directly addresses the customer’s latest problem.
 * Do not invent missing customer needs, actions, outcomes, policies, timelines, or capabilities.
 * Highlight a small number of key words or phrases using **bold**.
-* Use a second-person tone, be precise, and keep the response under 60 words.
+* Use a second-person tone, be precise, and keep the response under 60 words, including suggestion and example response. Don't say “the CSR...” use “you”.
 
 INPUT
 
@@ -41,7 +41,7 @@ Scoring Output:
 
 OUTPUT REQUIREMENTS
 
-Return exactly one valid JSON object. Do not include Markdown, code fences, or additional text.
+Return exactly one valid JSON object. Do not include code fences, or additional text.
 
 {
 "state": "Problem Interpretation | Problem Exploration | Problem Resolution",

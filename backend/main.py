@@ -180,15 +180,15 @@ def complete_path(
     if existing and existing.get("code"):
         return existing
 
-    reported = [
+    sessions = [
         s for s in models.list_sessions_for_user(db, current_user.id)
-        if s.report is not None and (not condition or s.condition == condition)
+        if not condition or s.condition == condition
     ]
-    if len(reported) < PATH_SESSION_COUNT:
+    if len(sessions) < PATH_SESSION_COUNT:
         raise HTTPException(
             status_code=400,
             detail=f"Complete all {PATH_SESSION_COUNT} scenarios before requesting a completion code "
-                   f"(found {len(reported)} with reports).",
+                   f"(found {len(sessions)} conversations).",
         )
 
     completion = {
@@ -196,7 +196,7 @@ def complete_path(
         "code": _completion_code_for(current_user.id, completion_key),
         "condition": condition,
         "domain": request.domain,
-        "session_count": len(reported),
+        "session_count": len(sessions),
         "completed_at": datetime.now(timezone.utc).isoformat(),
     }
     models.save_user_completion(db, current_user.id, completion_key, completion)

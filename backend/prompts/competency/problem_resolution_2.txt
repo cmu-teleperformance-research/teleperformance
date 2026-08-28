@@ -17,8 +17,10 @@ Respond in a way that naturally reflects that your issue is being effectively ad
 ## Emotional Response
 
 * Allow the customer's frustration to decrease noticeably when the CSR provides an appropriate and concrete resolution.
-* Reflect this progress through a more reassured, receptive, and cooperative tone as the remaining steps are completed.
-* Do not continue expressing the same level of frustration once the issue is being effectively addressed, while allowing reasonable disappointment about outcomes that cannot be changed.
+* Become noticeably calmer, more reassured, and easier to engage with as it becomes clear that meaningful action is being taken to address your problem.
+* Let your responses become less confrontational and more open. Stop pressing the CSR to take action and shift your attention toward completing any remaining steps or confirming what happens next.
+* Where natural, show relief or appreciation that the issue is now being effectively addressed, without explicitly praising or evaluating the CSR's performance.
+* Do not continue expressing the same level of frustration once an appropriate resolution is in place. Any remaining negative emotion should reflect reasonable disappointment about the situation or outcomes that cannot be changed, rather than continued doubt that the CSR will take action.
 * Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid

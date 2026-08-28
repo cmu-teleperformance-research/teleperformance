@@ -13,8 +13,8 @@ import { CONDITIONS } from "../conditions";
 
 const API_URL = `${API_BASE_URL}/chat`;
 
-/** Suggested user message count before offering to end the session (training & evaluation). */
-const MAX_USER_MESSAGES = 2;
+/** Max CSR messages per conversation before input is locked. */
+const MAX_USER_MESSAGES = 10;
 
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
@@ -213,6 +213,9 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
   const traineeMessageCount = messages.filter((m) => m.role === "user").length;
   const messageLimitReached = traineeMessageCount >= MAX_USER_MESSAGES;
+  // Show End Session when the trainee reaches the last portal screen (no need to mark resolved).
+  const onLastPortalPage = portalStep >= totalPortalSteps - 1;
+  const canEndSession = onLastPortalPage || messageLimitReached;
 
   function endSessionWith(finalMessages) {
     if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
@@ -226,7 +229,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
   async function sendMessage() {
     const trimmed = input.trim();
-    if (!trimmed || loading) return;
+    if (!trimmed || loading || messageLimitReached) return;
 
     console.log("🚀 Sending message:", trimmed);
 
@@ -588,10 +591,12 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
             </div>
 
             <div className="bg-white border-t border-gray-200 px-6 py-3">
-              {messageLimitReached && (
+              {canEndSession && (
                 <div className="mb-3 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
                   <p className="text-xs text-gray-500 text-center">
-                    Suggested message count reached. You can keep chatting, or end when you&apos;re ready.
+                    {messageLimitReached
+                      ? "Message limit reached. End the session to continue."
+                      : "Portal complete. You can keep chatting up to 10 messages, or end when you're ready."}
                   </p>
                   <button
                     type="button"
@@ -599,7 +604,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                     disabled={loading}
                     className="shrink-0 text-xs font-medium bg-gray-800 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition"
                   >
-                    End Session & Get Report
+                    End Session
                   </button>
                 </div>
               )}
@@ -611,12 +616,12 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  disabled={loading}
+                  disabled={loading || messageLimitReached}
                   autoFocus
                 />
                 <button
                   onClick={sendMessage}
-                  disabled={loading || !input.trim()}
+                  disabled={loading || messageLimitReached || !input.trim()}
                   className="bg-blue-600 text-white px-5 py-3 rounded-xl disabled:opacity-50"
                 >
                   Send

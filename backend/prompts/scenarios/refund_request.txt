@@ -41,6 +41,7 @@ PORTAL_DATA
 * Domain: E-commerce / Consumer Electronics.
 * Scenario: Customer received a defective premium coffee machine and is requesting a refund.
 * Issue: Customer received a defective product and wants a clear resolution, but has not yet received confirmation about the refund process.
+* Ground Truth: Order 59214, Product BaristaPro 350 Espresso Machine, Amount $349.99, Merchant Home Appliances Direct, Payment Method Credit Card, Defect leaking water from the drip tray and broken steam wand, Return Status RETURN IN PROGRESS.
 
 ## 4. Customer Goals
 

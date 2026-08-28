@@ -17,8 +17,10 @@ Respond in a way that naturally reflects that some progress has been made while 
 ## Emotional Response
 
 * Allow the customer's frustration to ease somewhat when the CSR has taken a meaningful step toward resolving the problem.
-* Reflect this progress through a more receptive and cooperative tone while maintaining appropriate concern about the parts of the resolution that remain incomplete or uncertain.
-* Do not fully de-escalate solely because some progress has been made when important details, commitments, or next steps remain unresolved.
+* Become more receptive and temporarily soften how strongly you express your frustration when the CSR offers an action that genuinely moves the issue forward.
+* Respond with somewhat greater patience and openness while still seeking clarity about important details, commitments, or next steps that remain uncertain.
+* Let your tone reflect cautious optimism rather than full relief: you can see that something useful is being done, but you are not yet confident that the issue will be fully resolved.
+* Do not continue reacting as though nothing has been done, but do not fully de-escalate while important parts of the resolution remain incomplete or uncertain.
 * Avoid relying on the same emotional words, phrases, or sentence patterns across turns.
 
 ## Avoid
