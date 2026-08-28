@@ -1,0 +1,1844 @@
+{
+  "model": "gpt-4o",
+  "persona": "angry",
+  "scenarios": [
+    "baggage_delay",
+    "book_flight",
+    "exchange_item",
+    "flight_cancellation",
+    "package_never_arrived",
+    "refund_request"
+  ],
+  "n_backbones": 1,
+  "require_verified": true,
+  "started_at": "2026-08-24T23:02:28.936833+00:00",
+  "finished_at": "2026-08-24T23:07:21.109786+00:00",
+  "n_cases": 53,
+  "backbones": [
+    {
+      "backbone_id": "baggage_delay_00",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "full_history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, it's been very frustrating. I really need to know what the status is, and if there's any chance of getting it back in time for my meeting. Can you please check on the status for me?"
+        },
+        {
+          "role": "user",
+          "content": "To help me check on the status of your bag, could you please provide the bag tag number or the case number associated with your report? This will allow me to access the specific details of your case and see if there's any update on its location."
+        },
+        {
+          "role": "assistant",
+          "content": "The bag tag number is BA-0441219 and the PIR number is MIA0441219. I hope this helps you find some information for me."
+        }
+      ],
+      "backbone_csr": [
+        {
+          "target_state": "Problem Interpretation",
+          "target_score": 2,
+          "csr_message": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation.",
+          "verified": true,
+          "scored_state": "Problem Interpretation",
+          "scored_score": 2,
+          "explanation": "The CSR correctly identifies the specific problem: the customer's missing bag and the lack of updates after filing a report two days ago. Additionally, the CSR shows understanding of why it matters to the customer by acknowledging the importance of having the bag back before the meeting tomorrow, highlighting the urgency and critical nature of the situation for the customer.",
+          "n_attempts": 1
+        },
+        {
+          "target_state": "Problem Exploration",
+          "target_score": 2,
+          "csr_message": "To help me check on the status of your bag, could you please provide the bag tag number or the case number associated with your report? This will allow me to access the specific details of your case and see if there's any update on its location.",
+          "verified": true,
+          "scored_state": "Problem Exploration",
+          "scored_score": 2,
+          "explanation": "The CSR asks for the bag tag number or case number to access specific details of the case, which is new information that hasn't been provided yet. The CSR makes clear that they need this information to check the status of the bag, showing they are trying to diagnose the problem by verifying the current status and location of the bag.",
+          "n_attempts": 1
+        }
+      ]
+    },
+    {
+      "backbone_id": "book_flight_00",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "full_history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        },
+        {
+          "role": "user",
+          "content": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's right. I do have an important commitment to attend to in San Francisco. Could you help me find flights that arrive before noon, preferably nonstop if possible?"
+        },
+        {
+          "role": "user",
+          "content": "I understand you need to arrive before noon for your commitment. Could you confirm if you are looking for a flight that departs in the morning, and are you flexible with the departure time if it means getting a nonstop flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I am looking for a morning flight, and I am flexible with the exact departure time as long as I can get a nonstop flight that arrives before noon."
+        }
+      ],
+      "backbone_csr": [
+        {
+          "target_state": "Problem Interpretation",
+          "target_score": 2,
+          "csr_message": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to.",
+          "verified": true,
+          "scored_state": "Problem Interpretation",
+          "scored_score": 2,
+          "explanation": "The CSR correctly identifies the customer's problem: booking a flight from Chicago to San Francisco for tomorrow. Additionally, the CSR demonstrates understanding why it matters by acknowledging the urgency of the request and the potential importance of plans or commitments in San Francisco.",
+          "n_attempts": 1
+        },
+        {
+          "target_state": "Problem Exploration",
+          "target_score": 2,
+          "csr_message": "I understand you need to arrive before noon for your commitment. Could you confirm if you are looking for a flight that departs in the morning, and are you flexible with the departure time if it means getting a nonstop flight?",
+          "verified": true,
+          "scored_state": "Problem Exploration",
+          "scored_score": 2,
+          "explanation": "The CSR asks for additional information that has not yet been provided and makes clear what specific thing they're trying to pin down: whether the customer is flexible with the departure time if it means getting a nonstop flight. This helps to determine the availability of flights that meet the customer's needs.",
+          "n_attempts": 1
+        }
+      ]
+    },
+    {
+      "backbone_id": "exchange_item_00",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "full_history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        },
+        {
+          "role": "user",
+          "content": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly! I got the shoes in a Women's size 7, but I need to exchange them for a Women's size 8. They're really nice shoes, and I want to make sure I get the right fit."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for letting me know, Olivia. To help with the exchange process, could you please provide your order number? This will allow me to check the details of your purchase and assist you further."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, the order number is ORD-20938451. Let me know if you need any other information to help with the exchange."
+        }
+      ],
+      "backbone_csr": [
+        {
+          "target_state": "Problem Interpretation",
+          "target_score": 2,
+          "csr_message": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort.",
+          "verified": true,
+          "scored_state": "Problem Interpretation",
+          "scored_score": 2,
+          "explanation": "The CSR correctly identifies the customer's problem by stating that the running shoes received are too small and that the customer needs a larger size. They also demonstrate understanding of why this matters to the customer by mentioning that proper fit is important for enjoying running activities without discomfort.",
+          "n_attempts": 1
+        },
+        {
+          "target_state": "Problem Exploration",
+          "target_score": 2,
+          "csr_message": "Thanks for letting me know, Olivia. To help with the exchange process, could you please provide your order number? This will allow me to check the details of your purchase and assist you further.",
+          "verified": true,
+          "scored_state": "Problem Exploration",
+          "scored_score": 2,
+          "explanation": "The CSR asks for the order number, which the customer hasn't provided yet. This request is specifically aimed at checking the details of the purchase to assist with the exchange process, making it clear what specific information they are trying to pin down.",
+          "n_attempts": 1
+        }
+      ]
+    },
+    {
+      "backbone_id": "flight_cancellation_00",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "full_history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to JFK, which was supposed to connect through Chicago, has been cancelled due to weather, and you have a critical business meeting in New York that you can't afford to miss. This cancellation puts your important meeting at risk, and I can see how urgent it is for you to find an alternative way to get there on time."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly, I need to know what my options are for getting to New York ASAP. Will the Business class upgrade I paid for be honored on the new booking?"
+        },
+        {
+          "role": "user",
+          "content": "I understand the urgency of your situation, Jordan. To help explore the best options for you, could you confirm if you're open to alternative routes or airports in the New York area, or if flying directly to JFK is a must for your meeting?"
+        },
+        {
+          "role": "assistant",
+          "content": "I would prefer a direct flight to JFK if possible. Chicago is just a connection point, and I need to avoid further potential delays. Can you confirm that my Business class upgrade will be carried over to the new booking?"
+        }
+      ],
+      "backbone_csr": [
+        {
+          "target_state": "Problem Interpretation",
+          "target_score": 2,
+          "csr_message": "I understand that your flight UA 4492 from LAX to JFK, which was supposed to connect through Chicago, has been cancelled due to weather, and you have a critical business meeting in New York that you can't afford to miss. This cancellation puts your important meeting at risk, and I can see how urgent it is for you to find an alternative way to get there on time.",
+          "verified": true,
+          "scored_state": "Problem Interpretation",
+          "scored_score": 2,
+          "explanation": "The CSR correctly identifies the specific problem: the cancellation of flight UA 4492 from LAX to JFK, connecting through Chicago. They also demonstrate an understanding of why it matters to the customer by acknowledging the urgency due to the critical business meeting in New York and the risk it poses to the customer's important meeting.",
+          "n_attempts": 1
+        },
+        {
+          "target_state": "Problem Exploration",
+          "target_score": 2,
+          "csr_message": "I understand the urgency of your situation, Jordan. To help explore the best options for you, could you confirm if you're open to alternative routes or airports in the New York area, or if flying directly to JFK is a must for your meeting?",
+          "verified": true,
+          "scored_state": "Problem Exploration",
+          "scored_score": 2,
+          "explanation": "The CSR asks a relevant question about the customer's flexibility regarding alternative routes or airports, which helps in understanding and diagnosing the problem better. The question specifically aims to determine if the customer is open to options other than flying directly to JFK, which is crucial for offering suitable solutions given the urgency of the situation.",
+          "n_attempts": 1
+        }
+      ]
+    },
+    {
+      "backbone_id": "package_never_arrived_00",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "full_history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        },
+        {
+          "role": "user",
+          "content": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly. I'd appreciate any help you can offer to resolve this. I've already checked with my neighbors, the mailbox, and around the property, and there's no sign of the package."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for checking with your neighbors and around your property. To better understand the situation, could you confirm if the tracking information shows the package was delivered to your correct address at 245 Maple Street? This will help us determine if there might have been an issue with the delivery location."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, the tracking information does show that it was supposed to be delivered to 245 Maple Street, Denver, CO, but there's no package here. It’s really frustrating because I need those electronics soon."
+        }
+      ],
+      "backbone_csr": [
+        {
+          "target_state": "Problem Interpretation",
+          "target_score": 2,
+          "csr_message": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible.",
+          "verified": true,
+          "scored_state": "Problem Interpretation",
+          "scored_score": 2,
+          "explanation": "The CSR correctly identifies the customer's specific problem that the package shows as delivered but was not received. They also show understanding of why it matters to the customer by acknowledging that the customer is missing the electronics they ordered and expected to have by now.",
+          "n_attempts": 1
+        },
+        {
+          "target_state": "Problem Exploration",
+          "target_score": 2,
+          "csr_message": "Thanks for checking with your neighbors and around your property. To better understand the situation, could you confirm if the tracking information shows the package was delivered to your correct address at 245 Maple Street? This will help us determine if there might have been an issue with the delivery location.",
+          "verified": true,
+          "scored_state": "Problem Exploration",
+          "scored_score": 2,
+          "explanation": "The CSR asks a relevant question to help diagnose the problem by confirming if the package was delivered to the correct address, which is information the customer hasn't provided yet. The question is clear about what specific information they are trying to pin down to understand the issue better.",
+          "n_attempts": 1
+        }
+      ]
+    },
+    {
+      "backbone_id": "refund_request_00",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "full_history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        },
+        {
+          "role": "user",
+          "content": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you. I appreciate you helping me with this. Can you confirm if my purchase qualifies for a refund and what the refund process would look like?"
+        },
+        {
+          "role": "user",
+          "content": "To ensure I provide you with the most accurate information about your refund eligibility and the process, could you confirm if you have already initiated a return request or if there are any specific concerns you have about the return process?"
+        },
+        {
+          "role": "assistant",
+          "content": "I haven't initiated a return request yet because I wanted to confirm first if the product qualifies for a refund. Can you let me know if this applies and what the next steps would be?"
+        }
+      ],
+      "backbone_csr": [
+        {
+          "target_state": "Problem Interpretation",
+          "target_score": 2,
+          "csr_message": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund.",
+          "verified": true,
+          "scored_state": "Problem Interpretation",
+          "scored_score": 2,
+          "explanation": "The CSR accurately identifies the specific problem: the coffee machine arrived defective. Additionally, they show understanding of why it matters to the customer by acknowledging the customer's reliance on the machine for daily coffee needs and their frustration. This demonstrates a deep understanding of the problem's impact on the customer.",
+          "n_attempts": 1
+        },
+        {
+          "target_state": "Problem Exploration",
+          "target_score": 2,
+          "csr_message": "To ensure I provide you with the most accurate information about your refund eligibility and the process, could you confirm if you have already initiated a return request or if there are any specific concerns you have about the return process?",
+          "verified": true,
+          "scored_state": "Problem Exploration",
+          "scored_score": 2,
+          "explanation": "The CSR asks the customer to confirm whether they have already initiated a return request or if they have any specific concerns about the return process. This question is relevant and seeks new information that would help in understanding the customer's situation more clearly. The CSR makes it clear they are trying to determine specific details that could affect the refund eligibility and process.",
+          "n_attempts": 1
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "baggage_delay_00__problem_interpretation__score0",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        }
+      ],
+      "csr_message": "I'm sorry to hear about the inconvenience, Alex. Let's see what we can do to help with your situation.",
+      "state": "Problem Interpretation",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR acknowledges a problem and expresses willingness to help, but does not specifically state the problem of the missing bag or why it's important to the customer. The response lacks any identification of the specific issue or its significance to Alex, such as the need for the bag before a meeting tomorrow.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_0.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_interpretation__score1",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        }
+      ],
+      "csr_message": "I understand that you filed a report for your missing bag two days ago and haven't received any updates since then.",
+      "state": "Problem Interpretation",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR correctly identifies the customer's specific problem by stating that a report for a missing bag was filed two days ago and no updates have been received since then. However, the CSR does not demonstrate understanding of why this matters to the customer, such as the urgency due to the customer's meeting tomorrow.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_1.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_interpretation__score2",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        }
+      ],
+      "csr_message": "I understand that your missing bag report was filed two days ago, and you haven't received any updates since then. I recognize how important it is for you to have your bag back in time for your meeting tomorrow.",
+      "state": "Problem Interpretation",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR correctly identifies the customer's problem by acknowledging that the report for the missing bag was filed two days ago and that no updates have been received since. Additionally, the CSR shows understanding of why this matters to the customer by recognizing the importance of having the bag back before the meeting tomorrow.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_2.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_exploration__score0",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, it's been very frustrating. I really need to know what the status is, and if there's any chance of getting it back in time for my meeting. Can you please check on the status for me?"
+        }
+      ],
+      "csr_message": "Can you please confirm your name for me once again?",
+      "state": "Problem Exploration",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR asks the customer to confirm their name, which does not help understand or diagnose the problem of the missing bag or its status. The customer's name was already provided in the conversation history, making this question unnecessary for problem exploration.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_0.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_exploration__score1",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, it's been very frustrating. I really need to know what the status is, and if there's any chance of getting it back in time for my meeting. Can you please check on the status for me?"
+        }
+      ],
+      "csr_message": "Could you please provide your case number so I can look into the status of your missing bag?",
+      "state": "Problem Exploration",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR asks for the customer's case number, which is a relevant question to help understand and diagnose the problem by allowing them to check the status. However, it doesn't specify what they're trying to figure out or how it will help address the customer's issue.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_1.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_exploration__score2",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, it's been very frustrating. I really need to know what the status is, and if there's any chance of getting it back in time for my meeting. Can you please check on the status for me?"
+        }
+      ],
+      "csr_message": "I understand your urgency in needing the bag back before your meeting. To check the status of your missing bag, could you please provide your bag tag number or the case number associated with your report? This will help me locate the most recent update on your case.",
+      "state": "Problem Exploration",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR asks for specific information, the bag tag number or case number, which the customer has not yet provided. The CSR clearly explains that this information is needed to locate the most recent update on the customer's missing bag case, which is necessary to address the customer's request for a status update.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_2.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_resolution__score0",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, it's been very frustrating. I really need to know what the status is, and if there's any chance of getting it back in time for my meeting. Can you please check on the status for me?"
+        },
+        {
+          "role": "user",
+          "content": "To help me check on the status of your bag, could you please provide the bag tag number or the case number associated with your report? This will allow me to access the specific details of your case and see if there's any update on its location."
+        },
+        {
+          "role": "assistant",
+          "content": "The bag tag number is BA-0441219 and the PIR number is MIA0441219. I hope this helps you find some information for me."
+        }
+      ],
+      "csr_message": "I've noted your complaint in the system and will escalate this issue for further review. Thank you for your patience.",
+      "state": "Problem Resolution",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response indicates that they have noted the complaint and will escalate the issue for further review. However, this action does not address the customer's specific problem of finding out the status of their missing bag. The response lacks details about what the escalation entails, who it is being escalated to, or what the customer can expect next. Therefore, it does not work toward solving the problem itself or provide clear expectations for the customer.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_0.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_resolution__score1",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, it's been very frustrating. I really need to know what the status is, and if there's any chance of getting it back in time for my meeting. Can you please check on the status for me?"
+        },
+        {
+          "role": "user",
+          "content": "To help me check on the status of your bag, could you please provide the bag tag number or the case number associated with your report? This will allow me to access the specific details of your case and see if there's any update on its location."
+        },
+        {
+          "role": "assistant",
+          "content": "The bag tag number is BA-0441219 and the PIR number is MIA0441219. I hope this helps you find some information for me."
+        }
+      ],
+      "csr_message": "I've accessed your case, Alex, and initiated a trace for your missing bag. Our team is working on locating it as quickly as possible.",
+      "state": "Problem Resolution",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR takes an action by initiating a trace for the missing bag, which is related to addressing the customer's problem. However, the CSR does not specify what the customer can expect from this action, such as a timeline for updates or potential outcomes, which is necessary for a higher score.",
+      "n_attempts": 5,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_1.txt"
+    },
+    {
+      "id": "baggage_delay_00__problem_resolution__score2",
+      "scenario": "baggage_delay",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, this is Alex Rivera. I filed a report for my missing bag two days ago, and I haven't received any updates since then. I'm calling to get a status update, as it's really important I have that bag back before my meeting tomorrow."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your missing bag is critical because you need it back before your meeting tomorrow. You filed a report two days ago and haven't received any updates since then, which must be frustrating given the urgency of your situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, it's been very frustrating. I really need to know what the status is, and if there's any chance of getting it back in time for my meeting. Can you please check on the status for me?"
+        },
+        {
+          "role": "user",
+          "content": "To help me check on the status of your bag, could you please provide the bag tag number or the case number associated with your report? This will allow me to access the specific details of your case and see if there's any update on its location."
+        },
+        {
+          "role": "assistant",
+          "content": "The bag tag number is BA-0441219 and the PIR number is MIA0441219. I hope this helps you find some information for me."
+        }
+      ],
+      "csr_message": "Thank you for providing the bag tag and PIR numbers, Alex. I've checked the status of your missing bag with reference number MIA0441219. It appears that your bag has been located and is currently being forwarded to Miami. We expect it to arrive by this evening. Once it arrives, it will be delivered directly to your address. I'll ensure you receive updates via your phone number, (312) 555-0183, as soon as it reaches Miami. Please let me know if there's anything else I can assist you with in the meantime.",
+      "state": "Problem Resolution",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR provides a comprehensive resolution by confirming the bag has been located and is being forwarded to Miami, expected by this evening. They explain that it will be delivered directly to the customer's address, meeting the customer's need to have it back before the meeting. Additionally, the CSR informs the customer that they will receive updates via phone, covering what happens next. This response addresses the problem and informs the customer of the expected outcome, satisfying the criteria for a score of 2 in Problem Resolution.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_2.txt"
+    },
+    {
+      "id": "book_flight_00__problem_interpretation__score0",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        }
+      ],
+      "csr_message": "Hi Sophia, thank you for reaching out. I'm here to help you with your travel plans.",
+      "state": "Problem Interpretation",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response is limited to a greeting and a general offer of help without identifying or acknowledging the specific problem or request, which is to find flight options from Chicago to San Francisco for tomorrow. There is no mention of the customer's specific need or problem in the response.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_0.txt"
+    },
+    {
+      "id": "book_flight_00__problem_interpretation__score1",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        }
+      ],
+      "csr_message": "You're looking to book a flight from Chicago to San Francisco for tomorrow.",
+      "state": "Problem Interpretation",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR correctly states the customer's specific problem: they are looking to book a flight from Chicago to San Francisco for tomorrow. However, the CSR does not show any understanding of why this booking is important to the customer or what they aim to achieve by it.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_1.txt"
+    },
+    {
+      "id": "book_flight_00__problem_interpretation__score2",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        }
+      ],
+      "csr_message": "I understand you're looking to book a flight from Chicago to San Francisco for tomorrow, and it seems important to you to secure a suitable option quickly. Let's see how we can assist you with this.",
+      "state": "Problem Interpretation",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR accurately identifies the customer's specific problem, which is booking a flight from Chicago to San Francisco for tomorrow. Additionally, the CSR demonstrates an understanding of why it matters to the customer by acknowledging the importance of securing a suitable option quickly.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_2.txt"
+    },
+    {
+      "id": "book_flight_00__problem_exploration__score0",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        },
+        {
+          "role": "user",
+          "content": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's right. I do have an important commitment to attend to in San Francisco. Could you help me find flights that arrive before noon, preferably nonstop if possible?"
+        }
+      ],
+      "csr_message": "Could you please confirm your name and the date of travel for this booking?",
+      "state": "Problem Exploration",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR asks for confirmation of the customer's name and the date of travel, which the customer has already provided in the conversation history. The request for confirmation does not help understand or diagnose the problem itself, as it repeats information already given by the customer.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_0.txt"
+    },
+    {
+      "id": "book_flight_00__problem_exploration__score1",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        },
+        {
+          "role": "user",
+          "content": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's right. I do have an important commitment to attend to in San Francisco. Could you help me find flights that arrive before noon, preferably nonstop if possible?"
+        }
+      ],
+      "csr_message": "Sure, I can help with that. Could you let me know if you have any specific airline preferences or if you're open to any carrier as long as it meets your requirements?",
+      "state": "Problem Exploration",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR asks the customer if they have any specific airline preferences, which is relevant to understanding the customer's needs and finding suitable flight options. However, the question does not specify what the CSR is trying to figure out in terms of the problem, like constraints or context beyond the customer's preference.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_1.txt"
+    },
+    {
+      "id": "book_flight_00__problem_exploration__score2",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        },
+        {
+          "role": "user",
+          "content": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's right. I do have an important commitment to attend to in San Francisco. Could you help me find flights that arrive before noon, preferably nonstop if possible?"
+        }
+      ],
+      "csr_message": "I can certainly help with that. Could you let me know if you're flexible with the departure time in the morning, or is there a specific earliest time you can leave? This will help me narrow down the best nonstop options that arrive before noon.",
+      "state": "Problem Exploration",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR asks a specific question about the customer's flexibility with the departure time. This helps understand and diagnose the problem by determining the range of flight options that can meet the customer's requirement to arrive before noon and prefer nonstop flights. The question is clear about what specific detail they are trying to pin down to assist the customer effectively.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_2.txt"
+    },
+    {
+      "id": "book_flight_00__problem_resolution__score0",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        },
+        {
+          "role": "user",
+          "content": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's right. I do have an important commitment to attend to in San Francisco. Could you help me find flights that arrive before noon, preferably nonstop if possible?"
+        },
+        {
+          "role": "user",
+          "content": "I understand you need to arrive before noon for your commitment. Could you confirm if you are looking for a flight that departs in the morning, and are you flexible with the departure time if it means getting a nonstop flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I am looking for a morning flight, and I am flexible with the exact departure time as long as I can get a nonstop flight that arrives before noon."
+        }
+      ],
+      "csr_message": "I'll escalate this request for you to see if we can find a suitable nonstop morning flight. Please hold on while I look into it.",
+      "state": "Problem Resolution",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response indicates an escalation but lacks specificity about what action is being taken, does not propose a clear action, and does not inform the customer about what to expect next. The response is vague and does not provide a tangible step towards solving the customer's problem of finding a suitable nonstop morning flight.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_0.txt"
+    },
+    {
+      "id": "book_flight_00__problem_resolution__score1",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        },
+        {
+          "role": "user",
+          "content": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's right. I do have an important commitment to attend to in San Francisco. Could you help me find flights that arrive before noon, preferably nonstop if possible?"
+        },
+        {
+          "role": "user",
+          "content": "I understand you need to arrive before noon for your commitment. Could you confirm if you are looking for a flight that departs in the morning, and are you flexible with the departure time if it means getting a nonstop flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I am looking for a morning flight, and I am flexible with the exact departure time as long as I can get a nonstop flight that arrives before noon."
+        }
+      ],
+      "csr_message": "I've found a nonstop morning flight from Chicago to San Francisco for you. I've gone ahead and booked it under your account, Sophia.",
+      "state": "Problem Resolution",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR takes an action by booking a nonstop morning flight for the customer, addressing the problem of finding a suitable flight. However, the CSR does not provide information on what the customer can expect next, such as confirmation details or any follow-up actions required by the customer.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_1.txt"
+    },
+    {
+      "id": "book_flight_00__problem_resolution__score2",
+      "scenario": "book_flight",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is Sophia Chen. I'm looking to book a flight from Chicago to San Francisco for tomorrow. Can you help me find some options?"
+        },
+        {
+          "role": "user",
+          "content": "Hi Sophia, I understand you're looking to book a flight from Chicago to San Francisco for tomorrow. Since it's a last-minute request, I can see how important it is to find a suitable flight option quickly, especially if you have plans or commitments in San Francisco that you need to attend to."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's right. I do have an important commitment to attend to in San Francisco. Could you help me find flights that arrive before noon, preferably nonstop if possible?"
+        },
+        {
+          "role": "user",
+          "content": "I understand you need to arrive before noon for your commitment. Could you confirm if you are looking for a flight that departs in the morning, and are you flexible with the departure time if it means getting a nonstop flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I am looking for a morning flight, and I am flexible with the exact departure time as long as I can get a nonstop flight that arrives before noon."
+        }
+      ],
+      "csr_message": "I've found a nonstop flight for you from Chicago (ORD) to San Francisco (SFO) that departs tomorrow morning and arrives before noon. I'll go ahead and book it for you now. You will receive a confirmation email shortly with all the details. If you have any other questions or need further assistance, feel free to let me know!",
+      "state": "Problem Resolution",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR takes action by finding and booking a nonstop flight that meets the customer's requirements of departing in the morning and arriving before noon. The CSR also informs the customer of the next steps by stating that a confirmation email will be sent shortly, and offers further assistance if needed. This response meets all the criteria for a high-quality problem resolution.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_2.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_interpretation__score0",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        }
+      ],
+      "csr_message": "I'm sorry for any inconvenience this may have caused, Olivia.",
+      "state": "Problem Interpretation",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response is limited to an apology for the inconvenience, which acknowledges that a problem occurred but does not identify the specific problem. The customer's issue about receiving the wrong shoe size is not mentioned in the response.",
+      "n_attempts": 2,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_0.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_interpretation__score1",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        }
+      ],
+      "csr_message": "I understand that you received the Nike Air Zoom Pegasus 42 running shoes in the wrong size, and they are too small for you.",
+      "state": "Problem Interpretation",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR correctly states the specific problem, which is that the customer received the running shoes in the wrong size and they are too small. However, the response does not show an understanding of why this matters to the customer, such as the inconvenience or urgency of needing the correct size.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_1.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_interpretation__score2",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        }
+      ],
+      "csr_message": "Hi Olivia, I understand that you received the Nike Air Zoom Pegasus 42 in a size that's too small for you. I can see how important it is for you to have the right fit, especially if you're planning to use them for running or daily activities. Let's work on getting you the correct size.",
+      "state": "Problem Interpretation",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR correctly identifies the customer's problem: receiving shoes in the wrong size. Additionally, the CSR demonstrates understanding of why this matters to the customer by acknowledging the importance of having the right fit for running or daily activities. This shows an understanding of the impact on the customer's intended use.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_2.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_exploration__score0",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        },
+        {
+          "role": "user",
+          "content": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly! I got the shoes in a Women's size 7, but I need to exchange them for a Women's size 8. They're really nice shoes, and I want to make sure I get the right fit."
+        }
+      ],
+      "csr_message": "Can you confirm the size you received? I just want to make sure we're on the same page.",
+      "state": "Problem Exploration",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR asks the customer to confirm the size they received, which is information the customer has already provided in their latest message ('I got the shoes in a Women's size 7'). Therefore, the question does not help understand or diagnose the problem further, as it repeats information already given.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_0.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_exploration__score1",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        },
+        {
+          "role": "user",
+          "content": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly! I got the shoes in a Women's size 7, but I need to exchange them for a Women's size 8. They're really nice shoes, and I want to make sure I get the right fit."
+        }
+      ],
+      "csr_message": "Can you please provide me with your order number so I can look into this for you?",
+      "state": "Problem Exploration",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR asks for the order number, which is relevant to understanding the problem related to the shoe exchange. However, the CSR does not make it clear what they're trying to figure out by asking for the order number, such as verifying the purchase or checking stock availability. Therefore, it scores a 1 for asking a relevant question without specifying what they're trying to determine.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_1.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_exploration__score2",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        },
+        {
+          "role": "user",
+          "content": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly! I got the shoes in a Women's size 7, but I need to exchange them for a Women's size 8. They're really nice shoes, and I want to make sure I get the right fit."
+        }
+      ],
+      "csr_message": "I understand you need to exchange the shoes for a Women's size 8. To ensure we handle this quickly, could you please provide your order number? This will help me verify the purchase details and proceed with the exchange process.",
+      "state": "Problem Exploration",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR asks for the order number, which is information the customer hasn't provided yet. The CSR also makes it clear that this information will help verify the purchase details and proceed with the exchange process, indicating what they're trying to pin down. This meets the criteria for a score of 2 in Problem Exploration.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_2.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_resolution__score0",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        },
+        {
+          "role": "user",
+          "content": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly! I got the shoes in a Women's size 7, but I need to exchange them for a Women's size 8. They're really nice shoes, and I want to make sure I get the right fit."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for letting me know, Olivia. To help with the exchange process, could you please provide your order number? This will allow me to check the details of your purchase and assist you further."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, the order number is ORD-20938451. Let me know if you need any other information to help with the exchange."
+        }
+      ],
+      "csr_message": "I've noted your request for an exchange in our system. I'll escalate this to the relevant department for further handling.",
+      "state": "Problem Resolution",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response indicates that they have noted the request for an exchange and will escalate it to the relevant department. However, the response lacks specific details about what the customer can expect next, such as a timeline or steps in the exchange process. Therefore, it does not effectively address the problem or provide clarity on the resolution process.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_0.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_resolution__score1",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        },
+        {
+          "role": "user",
+          "content": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly! I got the shoes in a Women's size 7, but I need to exchange them for a Women's size 8. They're really nice shoes, and I want to make sure I get the right fit."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for letting me know, Olivia. To help with the exchange process, could you please provide your order number? This will allow me to check the details of your purchase and assist you further."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, the order number is ORD-20938451. Let me know if you need any other information to help with the exchange."
+        }
+      ],
+      "csr_message": "I've initiated the exchange process for your Nike Air Zoom Pegasus 42 shoes from Women's size 7 to Women's size 8.",
+      "state": "Problem Resolution",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR has taken action by initiating the exchange process for the customer's shoes. However, the CSR does not specify what the customer can expect next, such as confirmation details, timelines for the exchange, or any further actions required from the customer. Therefore, it scores 1 as it involves an action related to the problem but lacks complete information on what the customer can expect.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_1.txt"
+    },
+    {
+      "id": "exchange_item_00__problem_resolution__score2",
+      "scenario": "exchange_item",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi there, I'm Olivia Martinez. I recently received a pair of running shoes that I ordered, but they arrived in the wrong size. They're a bit too small for me, and I would like to exchange them for a larger size."
+        },
+        {
+          "role": "user",
+          "content": "Hi Olivia, I understand that the Nike Air Zoom Pegasus 42 running shoes you received are too small, and you need them in a larger size to ensure they fit comfortably. This is important so you can enjoy your running activities without any discomfort."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly! I got the shoes in a Women's size 7, but I need to exchange them for a Women's size 8. They're really nice shoes, and I want to make sure I get the right fit."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for letting me know, Olivia. To help with the exchange process, could you please provide your order number? This will allow me to check the details of your purchase and assist you further."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, the order number is ORD-20938451. Let me know if you need any other information to help with the exchange."
+        }
+      ],
+      "csr_message": "Thank you, Olivia. I've initiated the exchange process for your Nike Air Zoom Pegasus 42 shoes to the requested Women's size 8. You'll receive an email confirmation shortly with the return instructions and a prepaid shipping label. Once we receive the original pair, we'll send out the new size. You can expect the replacement to arrive within 5-7 business days after we receive your return. If you have any other questions, feel free to ask!",
+      "state": "Problem Resolution",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR's response proposes a complete resolution to the customer's problem. They have initiated the exchange process for the shoes to the requested Women's size 8, which addresses the problem of the wrong size. The CSR also informs the customer about the next steps: receiving an email confirmation with return instructions and a prepaid shipping label, and the timeline for receiving the replacement (5-7 business days after receiving the return). This meets all criteria for a score of 2 in Problem Resolution: proposing an action, taking an action, and telling the customer what to expect next.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_2.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_interpretation__score0",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        }
+      ],
+      "csr_message": "I'm really sorry to hear about the inconvenience you're facing with the flight cancellation. Let me see how I can assist you further.",
+      "state": "Problem Interpretation",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR acknowledges that there is a problem with a flight cancellation by mentioning the inconvenience, but they do not specify what the problem is or why it matters to the customer. There is no mention of the critical business meeting or the need for immediate rebooking, which are key aspects of the customer's issue.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_0.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_interpretation__score1",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        }
+      ],
+      "csr_message": "I understand that your flight UA 4492 from LAX to JFK, connecting through Chicago, has been cancelled.",
+      "state": "Problem Interpretation",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR correctly identifies the specific problem by stating that the customer's flight UA 4492 has been cancelled. However, the CSR does not show understanding of why this matters to the customer, which is important because the customer has a critical business meeting in New York and cannot afford any delays. Thus, the response lacks depth in addressing the customer's urgency and needs.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_1.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_interpretation__score2",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        }
+      ],
+      "csr_message": "I understand that your flight UA 4492 was cancelled, which is concerning because you have a critical business meeting in New York and cannot afford any delays. Let's see how we can assist you in rebooking to ensure you reach your destination on time.",
+      "state": "Problem Interpretation",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR correctly identifies the specific problem: the cancellation of flight UA 4492. Additionally, they understand why it matters to the customer, acknowledging that the customer has a critical business meeting in New York and cannot afford any delays. This demonstrates an understanding of both the problem and its significance to the customer.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_2.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_exploration__score0",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to JFK, which was supposed to connect through Chicago, has been cancelled due to weather, and you have a critical business meeting in New York that you can't afford to miss. This cancellation puts your important meeting at risk, and I can see how urgent it is for you to find an alternative way to get there on time."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly, I need to know what my options are for getting to New York ASAP. Will the Business class upgrade I paid for be honored on the new booking?"
+        }
+      ],
+      "csr_message": "Could you please confirm your name and flight details for me?",
+      "state": "Problem Exploration",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR asks the customer to confirm their name and flight details, which the customer already provided in their initial message ('Hello, I'm Jordan Blake. I just found out that UA 4492...'). Therefore, the CSR's request does not seek new information that would help diagnose or understand the problem further.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_0.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_exploration__score1",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to JFK, which was supposed to connect through Chicago, has been cancelled due to weather, and you have a critical business meeting in New York that you can't afford to miss. This cancellation puts your important meeting at risk, and I can see how urgent it is for you to find an alternative way to get there on time."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly, I need to know what my options are for getting to New York ASAP. Will the Business class upgrade I paid for be honored on the new booking?"
+        }
+      ],
+      "csr_message": "Can you provide more details about your meeting schedule in New York? This will help me understand how urgently you need to arrive.",
+      "state": "Problem Exploration",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR asks for more information about the customer's meeting schedule in New York, which is relevant to understanding the urgency of the situation. However, the CSR does not make clear what specific aspect they are trying to pin down, such as the exact timing of the meeting or potential constraints for rebooking, which is necessary for a higher score.",
+      "n_attempts": 2,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_1.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_exploration__score2",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to JFK, which was supposed to connect through Chicago, has been cancelled due to weather, and you have a critical business meeting in New York that you can't afford to miss. This cancellation puts your important meeting at risk, and I can see how urgent it is for you to find an alternative way to get there on time."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly, I need to know what my options are for getting to New York ASAP. Will the Business class upgrade I paid for be honored on the new booking?"
+        }
+      ],
+      "csr_message": "I see how important it is for you to get to New York as soon as possible. Can you let me know what the latest time is that you can arrive in New York for your meeting? This information will help me understand which flights might be suitable for your needs.",
+      "state": "Problem Exploration",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR asks for specific information about the latest time the customer can arrive in New York, which is a critical detail needed to find suitable flight options. This question is relevant and clearly aims to understand the customer's needs better to address the problem effectively.",
+      "n_attempts": 2,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_2.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_resolution__score0",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to JFK, which was supposed to connect through Chicago, has been cancelled due to weather, and you have a critical business meeting in New York that you can't afford to miss. This cancellation puts your important meeting at risk, and I can see how urgent it is for you to find an alternative way to get there on time."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly, I need to know what my options are for getting to New York ASAP. Will the Business class upgrade I paid for be honored on the new booking?"
+        },
+        {
+          "role": "user",
+          "content": "I understand the urgency of your situation, Jordan. To help explore the best options for you, could you confirm if you're open to alternative routes or airports in the New York area, or if flying directly to JFK is a must for your meeting?"
+        },
+        {
+          "role": "assistant",
+          "content": "I would prefer a direct flight to JFK if possible. Chicago is just a connection point, and I need to avoid further potential delays. Can you confirm that my Business class upgrade will be carried over to the new booking?"
+        }
+      ],
+      "csr_message": "I've noted your concern about the flight cancellation and the need for a direct route to JFK with the Business class upgrade. I'll escalate this for you to the relevant department.",
+      "state": "Problem Resolution",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response involves escalating the issue to another department, but it lacks details on what action will be taken or what the customer can expect next. Without specifying the outcome or providing a clear resolution path, it doesn't effectively work toward solving the customer's problem.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_0.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_resolution__score2",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hello, I'm Jordan Blake. I just found out that UA 4492 from LAX to JFK, connecting through Chicago, was cancelled, and I need immediate assistance with rebooking. I have a critical business meeting in New York, so I can't afford any delays."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to JFK, which was supposed to connect through Chicago, has been cancelled due to weather, and you have a critical business meeting in New York that you can't afford to miss. This cancellation puts your important meeting at risk, and I can see how urgent it is for you to find an alternative way to get there on time."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly, I need to know what my options are for getting to New York ASAP. Will the Business class upgrade I paid for be honored on the new booking?"
+        },
+        {
+          "role": "user",
+          "content": "I understand the urgency of your situation, Jordan. To help explore the best options for you, could you confirm if you're open to alternative routes or airports in the New York area, or if flying directly to JFK is a must for your meeting?"
+        },
+        {
+          "role": "assistant",
+          "content": "I would prefer a direct flight to JFK if possible. Chicago is just a connection point, and I need to avoid further potential delays. Can you confirm that my Business class upgrade will be carried over to the new booking?"
+        }
+      ],
+      "csr_message": "Jordan, I've rebooked you on a direct flight to JFK with flight UA 4510, departing tomorrow at 8:00 AM and arriving at 4:22 PM. Your Business class upgrade has been confirmed for this new booking as well. The new confirmation number for this flight is UA-9934. If there's anything else you need or any further assistance required, please let me know.",
+      "state": "Problem Resolution",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR effectively resolves the customer's problem by rebooking them on a direct flight to JFK, which addresses the customer's preference and urgency. The CSR confirms that the Business class upgrade will be honored on the new booking and provides the new confirmation number, thereby meeting criteria (a), (b), and (c) for Problem Resolution: taking action, proposing action, and informing the customer of the result and next steps.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_2.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_interpretation__score0",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        }
+      ],
+      "csr_message": "I'm sorry to hear that, Emma. That must be frustrating.",
+      "state": "Problem Interpretation",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR acknowledges the customer's frustration, but does not identify the specific problem of the undelivered package despite the tracking information indicating delivery. The response does not state what the problem is, which is necessary for a score above 0 in Problem Interpretation.",
+      "n_attempts": 2,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_0.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_interpretation__score1",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        }
+      ],
+      "csr_message": "I understand that you ordered some electronics, and the tracking information shows they were delivered, but you haven't received the package.",
+      "state": "Problem Interpretation",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR correctly identifies the customer's specific problem by stating that the customer ordered electronics, the tracking information shows they were delivered, but the customer hasn't received the package. However, the response does not explain why this situation matters to the customer, such as potential loss or inconvenience, so it does not reach the level of understanding required for a higher score.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_1.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_interpretation__score2",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        }
+      ],
+      "csr_message": "I understand that your electronics order was marked as delivered, but you haven't received it, which is understandably concerning. This situation is frustrating as you're left without the items you purchased and expected to have by now. Let's work on resolving this issue for you.",
+      "state": "Problem Interpretation",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR correctly identifies the specific problem: the customer's electronics order was marked as delivered but not received. They also show understanding of why it matters to the customer, acknowledging the concern and frustration of not receiving the purchased items expected by now. This response clearly states the problem and its impact on the customer.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_2.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_exploration__score0",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        },
+        {
+          "role": "user",
+          "content": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly. I'd appreciate any help you can offer to resolve this. I've already checked with my neighbors, the mailbox, and around the property, and there's no sign of the package."
+        }
+      ],
+      "csr_message": "Can you confirm your name for me once again?",
+      "state": "Problem Exploration",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR asks the customer to confirm their name, which is information already provided in the conversation history. This request does not help to further understand or diagnose the problem with the missing package.",
+      "n_attempts": 5,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_0.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_exploration__score1",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        },
+        {
+          "role": "user",
+          "content": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly. I'd appreciate any help you can offer to resolve this. I've already checked with my neighbors, the mailbox, and around the property, and there's no sign of the package."
+        }
+      ],
+      "csr_message": "Thank you for checking around your property. Could you let me know more about what the tracking information indicates?",
+      "state": "Problem Exploration",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR asks for more information about the tracking information, which is relevant to understanding the problem better. However, the CSR does not specify what they are trying to figure out by asking about the tracking details, such as whether they're trying to determine if it's a carrier issue or another type of issue. Thus, it does not fully clarify the purpose of the inquiry.",
+      "n_attempts": 2,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_1.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_exploration__score2",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        },
+        {
+          "role": "user",
+          "content": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly. I'd appreciate any help you can offer to resolve this. I've already checked with my neighbors, the mailbox, and around the property, and there's no sign of the package."
+        }
+      ],
+      "csr_message": "Thank you for checking with your neighbors and around your property. To help us figure out what happened, could you let me know if there was any indication on the tracking information about where exactly the package was left? This will help us determine if it might be a delivery error or something else.",
+      "state": "Problem Exploration",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR asks for specific information about the tracking details, aiming to understand where the package might have been left. This question is relevant and seeks to determine the cause of the issue, such as a delivery error, which makes it clear what they are trying to figure out.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_2.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_resolution__score0",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        },
+        {
+          "role": "user",
+          "content": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly. I'd appreciate any help you can offer to resolve this. I've already checked with my neighbors, the mailbox, and around the property, and there's no sign of the package."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for checking with your neighbors and around your property. To better understand the situation, could you confirm if the tracking information shows the package was delivered to your correct address at 245 Maple Street? This will help us determine if there might have been an issue with the delivery location."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, the tracking information does show that it was supposed to be delivered to 245 Maple Street, Denver, CO, but there's no package here. It’s really frustrating because I need those electronics soon."
+        }
+      ],
+      "csr_message": "I've noted your issue and will escalate this for further review. Thank you for your patience.",
+      "state": "Problem Resolution",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response indicates an escalation but does not specify what action will be taken, what the customer can expect, or any next steps. Simply noting the issue and escalating it without providing further details does not address the problem or inform the customer about the resolution process, making it an empty action regarding problem resolution.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_0.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_resolution__score1",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        },
+        {
+          "role": "user",
+          "content": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly. I'd appreciate any help you can offer to resolve this. I've already checked with my neighbors, the mailbox, and around the property, and there's no sign of the package."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for checking with your neighbors and around your property. To better understand the situation, could you confirm if the tracking information shows the package was delivered to your correct address at 245 Maple Street? This will help us determine if there might have been an issue with the delivery location."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, the tracking information does show that it was supposed to be delivered to 245 Maple Street, Denver, CO, but there's no package here. It’s really frustrating because I need those electronics soon."
+        }
+      ],
+      "csr_message": "I've initiated a claim with UPS regarding your missing package, and we'll work on tracking it down for you. Thank you for your patience as we address this issue.",
+      "state": "Problem Resolution",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR takes an action related to the problem by initiating a claim with UPS to track down the missing package. However, they do not explain what the customer can expect from this action, such as the next steps or timeline for resolution. Therefore, it scores 1 as it is related but lacks details on the outcome.",
+      "n_attempts": 2,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_1.txt"
+    },
+    {
+      "id": "package_never_arrived_00__problem_resolution__score2",
+      "scenario": "package_never_arrived",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Emma Thompson. I ordered some electronics that were supposed to be delivered to my address, but the tracking information says they were delivered and I never received the package. Can you help me sort this out?"
+        },
+        {
+          "role": "user",
+          "content": "I understand that your package shows as delivered, but you haven't received it. This is concerning because you're missing the electronics you ordered, which you expected to have by now. Let's work on resolving this so you can get your items as soon as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly. I'd appreciate any help you can offer to resolve this. I've already checked with my neighbors, the mailbox, and around the property, and there's no sign of the package."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for checking with your neighbors and around your property. To better understand the situation, could you confirm if the tracking information shows the package was delivered to your correct address at 245 Maple Street? This will help us determine if there might have been an issue with the delivery location."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, the tracking information does show that it was supposed to be delivered to 245 Maple Street, Denver, CO, but there's no package here. It’s really frustrating because I need those electronics soon."
+        }
+      ],
+      "csr_message": "I'm going to initiate a claim with UPS for the missing package using your tracking number 1Z84A9130492184752. As a Premium Member, you qualify for expedited resolution. Once the claim is processed, we'll either have the package located or send a replacement to you. I'll keep you updated via email on the progress, and you should expect to hear back within 48 hours.",
+      "state": "Problem Resolution",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR's response proposes a clear action to address the problem by initiating a claim with UPS for the missing package. It meets the criteria by proposing an action (initiating a claim), telling the customer what happens next (locating the package or sending a replacement), and setting an expectation for the timeline (hearing back within 48 hours).",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_2.txt"
+    },
+    {
+      "id": "refund_request_00__problem_interpretation__score0",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        }
+      ],
+      "csr_message": "I'm really sorry to hear that you're frustrated.",
+      "state": "Problem Interpretation",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response acknowledges the customer's frustration but does not identify the specific problem the customer is facing, which is the defective coffee machine and the need for a refund process. The response is limited to expressing sympathy without stating the specific issue.",
+      "n_attempts": 2,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_0.txt"
+    },
+    {
+      "id": "refund_request_00__problem_interpretation__score1",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        }
+      ],
+      "csr_message": "I understand that you received a defective coffee machine from your recent purchase.",
+      "state": "Problem Interpretation",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR correctly identifies the specific problem by stating that the customer received a defective coffee machine. However, the response does not demonstrate an understanding of why this matters to the customer or what impact it has on their situation, such as the customer's reliance on the machine for daily use.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_1.txt"
+    },
+    {
+      "id": "refund_request_00__problem_interpretation__score2",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        }
+      ],
+      "csr_message": "I understand that you're frustrated because your BaristaPro 350 Espresso Machine arrived defective, which is impacting your daily routine. I can see how important this product is for you, and I'm here to help you with the refund process.",
+      "state": "Problem Interpretation",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR correctly identifies the customer's problem: a defective coffee machine impacting their daily routine. They also demonstrate understanding of why this matters to the customer, acknowledging the frustration and the importance of the product in their daily life. This meets the criteria for a score of 2 in Problem Interpretation.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_2.txt"
+    },
+    {
+      "id": "refund_request_00__problem_exploration__score0",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        },
+        {
+          "role": "user",
+          "content": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you. I appreciate you helping me with this. Can you confirm if my purchase qualifies for a refund and what the refund process would look like?"
+        }
+      ],
+      "csr_message": "Can you please confirm your name for verification purposes?",
+      "state": "Problem Exploration",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's request for the customer's name is a procedural step for verification but does not help to understand or diagnose the specific problem with the refund. The customer's identity is already known from the initial message, and this question does not gather any new information about the refund qualification or process.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_0.txt"
+    },
+    {
+      "id": "refund_request_00__problem_exploration__score1",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        },
+        {
+          "role": "user",
+          "content": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you. I appreciate you helping me with this. Can you confirm if my purchase qualifies for a refund and what the refund process would look like?"
+        }
+      ],
+      "csr_message": "Could you tell me more about the issues you encountered with the coffee machine?",
+      "state": "Problem Exploration",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR asks the customer to provide more details about the issues with the coffee machine, which is relevant to understanding the problem. However, the CSR does not clarify what specific information they are trying to gather or how it will help with the refund process, hence the score of 1.",
+      "n_attempts": 2,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_1.txt"
+    },
+    {
+      "id": "refund_request_00__problem_exploration__score2",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        },
+        {
+          "role": "user",
+          "content": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you. I appreciate you helping me with this. Can you confirm if my purchase qualifies for a refund and what the refund process would look like?"
+        }
+      ],
+      "csr_message": "Could you let me know if you've already initiated the return process with the merchant, and if so, when? This will help determine the current status and any further steps needed for your refund.",
+      "state": "Problem Exploration",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR asks the customer for specific information about whether they have initiated the return process with the merchant and when it was done. This helps to determine the current status of the refund and the next steps needed, demonstrating a clear purpose for the question.",
+      "n_attempts": 2,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_2.txt"
+    },
+    {
+      "id": "refund_request_00__problem_resolution__score0",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        },
+        {
+          "role": "user",
+          "content": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you. I appreciate you helping me with this. Can you confirm if my purchase qualifies for a refund and what the refund process would look like?"
+        },
+        {
+          "role": "user",
+          "content": "To ensure I provide you with the most accurate information about your refund eligibility and the process, could you confirm if you have already initiated a return request or if there are any specific concerns you have about the return process?"
+        },
+        {
+          "role": "assistant",
+          "content": "I haven't initiated a return request yet because I wanted to confirm first if the product qualifies for a refund. Can you let me know if this applies and what the next steps would be?"
+        }
+      ],
+      "csr_message": "I'll escalate this issue for you.",
+      "state": "Problem Resolution",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response, 'I'll escalate this issue for you,' does not address the customer's specific problem of confirming refund eligibility or outlining the next steps for the refund process. The response is vague, does not provide any concrete action or information, and does not tell the customer what to expect next. It is a generic escalation without clear direction or resolution.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_0.txt"
+    },
+    {
+      "id": "refund_request_00__problem_resolution__score1",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        },
+        {
+          "role": "user",
+          "content": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you. I appreciate you helping me with this. Can you confirm if my purchase qualifies for a refund and what the refund process would look like?"
+        },
+        {
+          "role": "user",
+          "content": "To ensure I provide you with the most accurate information about your refund eligibility and the process, could you confirm if you have already initiated a return request or if there are any specific concerns you have about the return process?"
+        },
+        {
+          "role": "assistant",
+          "content": "I haven't initiated a return request yet because I wanted to confirm first if the product qualifies for a refund. Can you let me know if this applies and what the next steps would be?"
+        }
+      ],
+      "csr_message": "I've confirmed that your purchase of the BaristaPro 350 Espresso Machine is eligible for a refund due to the defect. I'll go ahead and initiate the return request for you.",
+      "state": "Problem Resolution",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR takes an action by confirming the purchase is eligible for a refund and states they will initiate the return request. However, they do not provide details on what the customer can expect next, such as timelines or further steps in the process.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_1.txt"
+    },
+    {
+      "id": "refund_request_00__problem_resolution__score2",
+      "scenario": "refund_request",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, my name is George Pan. I recently purchased a coffee machine from your site, and it arrived defective. I'm quite frustrated as I rely on this daily, and I need to understand how to proceed with getting a refund."
+        },
+        {
+          "role": "user",
+          "content": "I'm sorry to hear that the coffee machine arrived defective. I understand how frustrating this must be, especially since you rely on it daily for your coffee needs. Let's work on getting this resolved so you can receive your refund."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you. I appreciate you helping me with this. Can you confirm if my purchase qualifies for a refund and what the refund process would look like?"
+        },
+        {
+          "role": "user",
+          "content": "To ensure I provide you with the most accurate information about your refund eligibility and the process, could you confirm if you have already initiated a return request or if there are any specific concerns you have about the return process?"
+        },
+        {
+          "role": "assistant",
+          "content": "I haven't initiated a return request yet because I wanted to confirm first if the product qualifies for a refund. Can you let me know if this applies and what the next steps would be?"
+        }
+      ],
+      "csr_message": "George, your purchase of the BaristaPro 350 Espresso Machine is eligible for a refund due to the defect. To initiate the return process, please send the defective machine back to us. Once we receive it, the refund will be processed within 3 business days to your credit card. If you have any questions or need further assistance with the return process, feel free to ask.",
+      "state": "Problem Resolution",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR takes and proposes an action that directly addresses the customer's problem by confirming that the product is eligible for a refund and explaining the steps to initiate the return process. The CSR also informs the customer about the expected timeline for the refund to be processed and encourages the customer to ask further questions if needed. This meets all three criteria: takes an action, proposes an action, and tells the customer what happens next.",
+      "n_attempts": 2,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_2.txt"
+    }
+  ]
+}

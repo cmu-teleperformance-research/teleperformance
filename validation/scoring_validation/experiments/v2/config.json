@@ -1,0 +1,54 @@
+{
+  "version": "v2",
+  "date": "2026-08-27",
+  "status": "complete",
+  "model": "gpt-4.1-mini-2025-04-14",
+  "temperature": 0,
+  "response_format": "json_object",
+  "gold": "same round-4 RA files as v1",
+  "inputs": [
+    "conversation_history",
+    "customer_message",
+    "csr_response"
+  ],
+  "sequential_previous_state": false,
+  "outputs": {
+    "zero_shot": "predictions_zero_shot.csv  (also scoring_validation/round4_llm_v2.csv)",
+    "few_shot": "predictions_few_shot.csv  (also scoring_validation/round4_llm_fewshot_v2.csv)"
+  },
+  "few_shot_n_demos": 10,
+  "prompt_changes": [
+    "Persist in-progress activity on backchannels instead of dumping to Interpretation 0",
+    "Advice and reported lookup results = Resolution; looking-without-result is not",
+    "Closings after completed work = Resolution 2; 0 only if a request is still unanswered",
+    "Exploration 2 requires stated purpose this turn (or immediate follow-up); routine intake = 1",
+    "Opening questions ('How am I assisting you?') = Exploration",
+    "Few-shot: replaced 'specific intake = 2' demo; added persist / advice / wrap-up demos"
+  ],
+  "hypothesis": "Align rubric with RA conventions to raise state \u03ba and score ICC.",
+  "result_summary": "Zero-shot acc 76.9%\u219280.0%, score ICC 0.35\u21920.54, closings fixed. \u03ba vs consensus stuck at 0.62 because Interpretation collapsed (18\u21922); 9 remaining errors are greetings/empty ASR persisted as Exploration.",
+  "metrics": {
+    "zero_shot": {
+      "krippendorff_alpha": 0.8,
+      "fleiss_kappa": 0.799,
+      "kappa_vs_consensus": 0.618,
+      "state_acc_vs_consensus": 0.8,
+      "score_mae": 0.487,
+      "score_icc_a1": 0.537,
+      "kappa_joyce": 0.64,
+      "kappa_shiyu": 0.594,
+      "kappa_simret": 0.618
+    },
+    "few_shot": {
+      "krippendorff_alpha": 0.786,
+      "fleiss_kappa": 0.785,
+      "kappa_vs_consensus": 0.589,
+      "state_acc_vs_consensus": 0.785,
+      "score_mae": 0.436,
+      "score_icc_a1": 0.497,
+      "kappa_joyce": 0.61,
+      "kappa_shiyu": 0.565,
+      "kappa_simret": 0.589
+    }
+  }
+}

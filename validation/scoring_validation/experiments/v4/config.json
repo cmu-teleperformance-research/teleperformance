@@ -1,0 +1,42 @@
+{
+  "version": "v4",
+  "date": "2026-08-27",
+  "status": "complete",
+  "model": "gpt-4o",
+  "temperature": 0,
+  "response_format": "json_object",
+  "gold": "same round-4 RA files as v1/v2",
+  "inputs": [
+    "previous_state",
+    "previous_score",
+    "conversation_history",
+    "customer_message",
+    "csr_response"
+  ],
+  "sequential_previous_state": true,
+  "previous_state_source": "this model's own prior prediction on the same transcript (not RA gold)",
+  "outputs": {
+    "zero_shot": "predictions_zero_shot.csv  (also scoring_validation/round4_llm_v4.csv)",
+    "few_shot": "not run"
+  },
+  "few_shot_n_demos": 10,
+  "prompt_changes": [
+    "Same rubric/prompt as v3 (tighter persistence + sequential previous_state)",
+    "Model swap only: gpt-4.1-mini-2025-04-14 -> gpt-4o"
+  ],
+  "hypothesis": "Holding the v3 prompt fixed, a larger model (gpt-4o) should follow mixed-state and ASR-fragment rules more reliably than mini.",
+  "result_summary": "Zero-shot acc 0.892, kappa vs consensus 0.821, alpha 0.883, score ICC 0.474, MAE 0.431. 7 state disagreements vs consensus.",
+  "metrics": {
+    "zero_shot": {
+      "krippendorff_alpha": 0.883,
+      "fleiss_kappa": 0.882,
+      "kappa_vs_consensus": 0.821,
+      "state_acc_vs_consensus": 0.892,
+      "score_mae": 0.431,
+      "score_icc_a1": 0.474,
+      "kappa_joyce": 0.793,
+      "kappa_shiyu": 0.796,
+      "kappa_simret": 0.821
+    }
+  }
+}

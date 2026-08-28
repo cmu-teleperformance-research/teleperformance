@@ -1,0 +1,200 @@
+[
+  {
+    "id": "flight_cancellation_00__problem_interpretation__score0",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      }
+    ],
+    "csr_message": "I'm really sorry to hear about the inconvenience you've experienced with your flight cancellation. Let me assist you with this issue.",
+    "state": "Problem Interpretation",
+    "score": 0
+  },
+  {
+    "id": "flight_cancellation_00__problem_interpretation__score1",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      }
+    ],
+    "csr_message": "I understand that your flight UA 4492 from LAX to New York was cancelled.",
+    "state": "Problem Interpretation",
+    "score": 1
+  },
+  {
+    "id": "flight_cancellation_00__problem_interpretation__score2",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      }
+    ],
+    "csr_message": "I understand that your flight UA 4492 was cancelled, which is a significant issue because you have a critical business meeting in New York. You need assistance with rebooking to ensure you can still attend this important meeting, and you're also concerned about accommodations since you might be stuck overnight.",
+    "state": "Problem Interpretation",
+    "score": 2
+  },
+  {
+    "id": "flight_cancellation_00__problem_exploration__score0",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      },
+      {
+        "role": "user",
+        "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+      },
+      {
+        "role": "assistant",
+        "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+      }
+    ],
+    "csr_message": "Can you please confirm your flight number, Jordan? I want to make sure I have the correct details.",
+    "state": "Problem Exploration",
+    "score": 0
+  },
+  {
+    "id": "flight_cancellation_00__problem_exploration__score1",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      },
+      {
+        "role": "user",
+        "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+      },
+      {
+        "role": "assistant",
+        "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+      }
+    ],
+    "csr_message": "I understand this situation is frustrating. Can you please provide your booking number so I can look into your reservation details and see how we can assist you further?",
+    "state": "Problem Exploration",
+    "score": 1
+  },
+  {
+    "id": "flight_cancellation_00__problem_exploration__score2",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      },
+      {
+        "role": "user",
+        "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+      },
+      {
+        "role": "assistant",
+        "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+      }
+    ],
+    "csr_message": "I understand the urgency of your situation. To assist you with the rebooking, could you let me know if you have any time constraints for arriving in New York, or if there are specific times you need to avoid? This information will help me find the best available flight options for you.",
+    "state": "Problem Exploration",
+    "score": 2
+  },
+  {
+    "id": "flight_cancellation_00__problem_resolution__score0",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      },
+      {
+        "role": "user",
+        "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+      },
+      {
+        "role": "assistant",
+        "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+      },
+      {
+        "role": "user",
+        "content": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?"
+      },
+      {
+        "role": "assistant",
+        "content": "I need to be in New York before my business meeting tomorrow, so the sooner, the better. Do you have any direct flights to JFK available, and will my Business class upgrade be maintained on the new booking?"
+      }
+    ],
+    "csr_message": "I'll escalate this issue for you to ensure it gets the attention it needs.",
+    "state": "Problem Resolution",
+    "score": 0
+  },
+  {
+    "id": "flight_cancellation_00__problem_resolution__score1",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      },
+      {
+        "role": "user",
+        "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+      },
+      {
+        "role": "assistant",
+        "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+      },
+      {
+        "role": "user",
+        "content": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?"
+      },
+      {
+        "role": "assistant",
+        "content": "I need to be in New York before my business meeting tomorrow, so the sooner, the better. Do you have any direct flights to JFK available, and will my Business class upgrade be maintained on the new booking?"
+      }
+    ],
+    "csr_message": "I've gone ahead and rebooked you on a direct flight to JFK, departing tomorrow at 8:00 AM. Your Business Class upgrade is confirmed for this flight.",
+    "state": "Problem Resolution",
+    "score": 1
+  },
+  {
+    "id": "flight_cancellation_00__problem_resolution__score2",
+    "scenario": "flight_cancellation",
+    "persona": "angry",
+    "history": [
+      {
+        "role": "assistant",
+        "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+      },
+      {
+        "role": "user",
+        "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+      },
+      {
+        "role": "assistant",
+        "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+      },
+      {
+        "role": "user",
+        "content": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?"
+      },
+      {
+        "role": "assistant",
+        "content": "I need to be in New York before my business meeting tomorrow, so the sooner, the better. Do you have any direct flights to JFK available, and will my Business class upgrade be maintained on the new booking?"
+      }
+    ],
+    "csr_message": "Jordan, I've already rebooked you on a direct flight to JFK. Your new flight is UA 4510, departing tomorrow at 8:00 AM and arriving at 4:22 PM. Your Business Class upgrade has been maintained, and your new confirmation number is UA-9934. Unfortunately, due to the weather-related cancellation, our policy does not cover hotel accommodations for tonight. If you need any further assistance, please let me know.",
+    "state": "Problem Resolution",
+    "score": 2
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "version": "v3",
+  "date": "2026-08-27",
+  "status": "complete",
+  "model": "gpt-4.1-mini-2025-04-14",
+  "temperature": 0,
+  "response_format": "json_object",
+  "gold": "same round-4 RA files as v1/v2",
+  "inputs": [
+    "previous_state",
+    "previous_score",
+    "conversation_history",
+    "customer_message",
+    "csr_response"
+  ],
+  "sequential_previous_state": true,
+  "previous_state_source": "this model's own prior prediction on the same transcript (not RA gold)",
+  "outputs": {
+    "zero_shot": "predictions_zero_shot.csv  (also scoring_validation/round4_llm_v3.csv)",
+    "few_shot": "optional; few-shot is not sequential, so it is a prompt-only ablation"
+  },
+  "few_shot_n_demos": 10,
+  "prompt_changes": [
+    "Tighter persistence: greetings, rapport, empty ASR, completed-verification thanks -> Interpretation 0 even if previous state was Exploration/Resolution",
+    "Persist only when acknowledging information just collected",
+    "Pass previous_state / previous_score from the model's last turn on this call",
+    "How are you? is rapport, not an opening need question",
+    "Sure. mid-intake stays Exploration; I can handle that. is Resolution 0",
+    "Mixed result+question still Resolution"
+  ],
+  "hypothesis": "The 9 Interpretation->Exploration errors in v2 were over-persistence. Structured previous_state plus a narrower persist rule should raise kappa vs consensus without undoing the closing/resolution gains.",
+  "result_summary": "Zero-shot acc 0.877, \u03ba vs consensus 0.792, \u03b1 0.869, score ICC 0.570, MAE 0.451. 8 state disagreements vs consensus.",
+  "metrics": {
+    "zero_shot": {
+      "krippendorff_alpha": 0.869,
+      "fleiss_kappa": 0.869,
+      "kappa_vs_consensus": 0.792,
+      "state_acc_vs_consensus": 0.877,
+      "score_mae": 0.451,
+      "score_icc_a1": 0.57,
+      "kappa_joyce": 0.764,
+      "kappa_shiyu": 0.768,
+      "kappa_simret": 0.792
+    }
+  }
+}

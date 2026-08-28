@@ -1,0 +1,326 @@
+{
+  "model": "gpt-4o",
+  "persona": "angry",
+  "scenarios": [
+    "flight_cancellation"
+  ],
+  "n_backbones": 1,
+  "require_verified": true,
+  "started_at": "2026-08-24T14:46:57.532301+00:00",
+  "finished_at": "2026-08-24T14:47:56.089826+00:00",
+  "n_cases": 9,
+  "backbones": [
+    {
+      "backbone_id": "flight_cancellation_00",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "full_history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+        },
+        {
+          "role": "user",
+          "content": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "I need to be in New York before my business meeting tomorrow, so the sooner, the better. Do you have any direct flights to JFK available, and will my Business class upgrade be maintained on the new booking?"
+        }
+      ],
+      "backbone_csr": [
+        {
+          "target_state": "Problem Interpretation",
+          "target_score": 2,
+          "csr_message": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight.",
+          "verified": true,
+          "scored_state": "Problem Interpretation",
+          "scored_score": 2,
+          "explanation": "The CSR correctly identifies the customer's specific problem: the cancellation of flight UA 4492 from LAX to New York. They also demonstrate understanding of why it matters to the customer by acknowledging the need to attend a critical business meeting and the concern about accommodations if stuck overnight.",
+          "n_attempts": 1
+        },
+        {
+          "target_state": "Problem Exploration",
+          "target_score": 2,
+          "csr_message": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?",
+          "verified": true,
+          "scored_state": "Problem Exploration",
+          "scored_score": 2,
+          "explanation": "The CSR asks for specific information about the customer's preferences for rebooking, such as specific arrival times or other flight preferences. This question seeks information the customer hasn't provided yet and clarifies what specific details the CSR is trying to pin down for finding the best rebooking option.",
+          "n_attempts": 3
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "flight_cancellation_00__problem_interpretation__score0",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        }
+      ],
+      "csr_message": "I'm really sorry to hear about the inconvenience you've experienced with your flight cancellation. Let me assist you with this issue.",
+      "state": "Problem Interpretation",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR acknowledges the inconvenience of the flight cancellation but does not state the specific problem of needing rebooking or accommodations, nor do they show understanding of the urgency for a business meeting.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_0.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_interpretation__score1",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        }
+      ],
+      "csr_message": "I understand that your flight UA 4492 from LAX to New York was cancelled.",
+      "state": "Problem Interpretation",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR correctly states the specific problem that the customer's flight UA 4492 from LAX to New York was cancelled. However, they do not demonstrate understanding of why this matters to the customer, such as the need to attend a critical business meeting and concerns about overnight accommodations.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_1.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_interpretation__score2",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        }
+      ],
+      "csr_message": "I understand that your flight UA 4492 was cancelled, which is a significant issue because you have a critical business meeting in New York. You need assistance with rebooking to ensure you can still attend this important meeting, and you're also concerned about accommodations since you might be stuck overnight.",
+      "state": "Problem Interpretation",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Interpretation",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR accurately states the customer's problem by identifying the flight cancellation and the need to rebook for a critical business meeting in New York. Additionally, the CSR demonstrates an understanding of why this matters to the customer, acknowledging the importance of the meeting and the concern about accommodations if they are stuck overnight.",
+      "n_attempts": 1,
+      "history_turns": 1,
+      "competency_file": "problem_interpretation_2.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_exploration__score0",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+        }
+      ],
+      "csr_message": "Can you please confirm your flight number, Jordan? I want to make sure I have the correct details.",
+      "state": "Problem Exploration",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR asks for the customer's flight number, which has already been provided in the initial message. This does not help understand or diagnose the problem further, as the flight number is not in question and has been clearly stated by the customer.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_0.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_exploration__score1",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+        }
+      ],
+      "csr_message": "I understand this situation is frustrating. Can you please provide your booking number so I can look into your reservation details and see how we can assist you further?",
+      "state": "Problem Exploration",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR asks for the customer's booking number, which is a relevant question to understand and diagnose the problem further. However, the CSR does not clarify what they are trying to figure out with this information, such as rebooking options or accommodation arrangements. Therefore, it scores 1 for inviting more information without specifying the purpose.",
+      "n_attempts": 1,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_1.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_exploration__score2",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+        }
+      ],
+      "csr_message": "I understand the urgency of your situation. To assist you with the rebooking, could you let me know if you have any time constraints for arriving in New York, or if there are specific times you need to avoid? This information will help me find the best available flight options for you.",
+      "state": "Problem Exploration",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Exploration",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR asks the customer if they have any time constraints or specific times to avoid for arriving in New York. This question seeks additional information that the customer hasn't provided yet and specifies what the CSR is trying to figure out, namely the customer's schedule constraints, to assist in finding the best available flight options. This demonstrates a clear effort to understand and diagnose the problem further.",
+      "n_attempts": 2,
+      "history_turns": 3,
+      "competency_file": "problem_exploration_2.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_resolution__score0",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+        },
+        {
+          "role": "user",
+          "content": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "I need to be in New York before my business meeting tomorrow, so the sooner, the better. Do you have any direct flights to JFK available, and will my Business class upgrade be maintained on the new booking?"
+        }
+      ],
+      "csr_message": "I'll escalate this issue for you to ensure it gets the attention it needs.",
+      "state": "Problem Resolution",
+      "score": 0,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 0,
+      "scoring_explanation": "The CSR's response 'I'll escalate this issue for you to ensure it gets the attention it needs.' suggests an intention to address the problem, but it does not specify any concrete actions being taken, nor does it inform the customer about what to expect next. The escalation is vague, lacking details such as what 'escalation' involves, who it is being escalated to, or how it will resolve the customer's request for rebooking and accommodation. Therefore, it does not effectively address the customer's concerns or provide a clear resolution path.",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_0.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_resolution__score1",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+        },
+        {
+          "role": "user",
+          "content": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "I need to be in New York before my business meeting tomorrow, so the sooner, the better. Do you have any direct flights to JFK available, and will my Business class upgrade be maintained on the new booking?"
+        }
+      ],
+      "csr_message": "I've gone ahead and rebooked you on a direct flight to JFK, departing tomorrow at 8:00 AM. Your Business Class upgrade is confirmed for this flight.",
+      "state": "Problem Resolution",
+      "score": 1,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 1,
+      "scoring_explanation": "The CSR takes an action by rebooking the customer on a direct flight to JFK and confirms the Business Class upgrade. However, the response does not address the customer's question about hotel accommodations, nor does it specify what the customer can expect next regarding their travel plans or accommodations. This limits the resolution score to 1 as it doesn't fully address all aspects of the customer's problem.",
+      "n_attempts": 2,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_1.txt"
+    },
+    {
+      "id": "flight_cancellation_00__problem_resolution__score2",
+      "scenario": "flight_cancellation",
+      "persona": "angry",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Hi, I'm Jordan Blake. My flight UA 4492 was just cancelled out of LAX, and I need help getting rebooked to New York for a critical business meeting. I also need to know what's being done about accommodations if I'm stuck overnight."
+        },
+        {
+          "role": "user",
+          "content": "I understand that your flight UA 4492 from LAX to New York was cancelled due to weather, which is concerning because you need to attend a critical business meeting. I can see how important it is for you to get rebooked promptly and to know about accommodations since you might be stuck overnight."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I'm not happy about this situation, and I need to be rebooked on another flight to JFK as soon as possible. Also, can you tell me if the airline will cover hotel accommodations for tonight since the cancellation is due to weather?"
+        },
+        {
+          "role": "user",
+          "content": "I understand the urgency, Jordan. To ensure we find the best option for your rebooking, could you share if there are any specific times you need to arrive in New York by, or if there are any other preferences you have for the flight?"
+        },
+        {
+          "role": "assistant",
+          "content": "I need to be in New York before my business meeting tomorrow, so the sooner, the better. Do you have any direct flights to JFK available, and will my Business class upgrade be maintained on the new booking?"
+        }
+      ],
+      "csr_message": "Jordan, I've already rebooked you on a direct flight to JFK. Your new flight is UA 4510, departing tomorrow at 8:00 AM and arriving at 4:22 PM. Your Business Class upgrade has been maintained, and your new confirmation number is UA-9934. Unfortunately, due to the weather-related cancellation, our policy does not cover hotel accommodations for tonight. If you need any further assistance, please let me know.",
+      "state": "Problem Resolution",
+      "score": 2,
+      "verified": true,
+      "scored_state": "Problem Resolution",
+      "scored_score": 2,
+      "scoring_explanation": "The CSR's response directly addresses the customer's problem by rebooking them on a direct flight to JFK, maintaining their Business Class upgrade, and providing the new confirmation number. The CSR also explains the policy regarding hotel accommodations due to weather-related cancellations. This response meets all three criteria for a score of 2: taking an action (rebooking the flight), proposing an action (providing confirmation details), and telling the customer what to expect (no hotel accommodation coverage).",
+      "n_attempts": 1,
+      "history_turns": 5,
+      "competency_file": "problem_resolution_2.txt"
+    }
+  ]
+}

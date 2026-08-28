@@ -1,0 +1,10 @@
+,v1 zero-shot,v1 few-shot,v2 zero-shot,v2 few-shot
+"Krippendorff α (state, 4-way)",0.779,0.738,0.8,0.786
+"Fleiss κ (state, 4-way)",0.778,0.737,0.799,0.785
+κ LLM–Joyce (state),0.589,0.539,0.64,0.61
+κ LLM–Shiyu (state),0.595,0.54,0.594,0.565
+κ LLM–Simret (state),0.617,0.561,0.618,0.589
+State acc vs consensus,0.769,0.708,0.8,0.785
+κ vs consensus (state),0.617,0.561,0.618,0.589
+Score MAE vs RA-mean (lower=better),0.523,0.559,0.487,0.436
+"Score ICC(A,1) vs RA-mean",0.352,0.358,0.537,0.497

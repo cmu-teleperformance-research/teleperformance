@@ -1,0 +1,58 @@
+[
+  {
+    "state": "Problem Interpretation",
+    "score": 0,
+    "history": "(start of call)",
+    "customer": "(CSR spoke first)",
+    "csr": "This call may be recorded. My name is [PERSON_NAME]. How you doing today?",
+    "explanation": "Only a greeting and self-introduction; no customer problem is named. Courtesy-only turns default to Problem Interpretation and score 0."
+  },
+  {
+    "state": "Problem Exploration",
+    "score": 0,
+    "history": "Customer: Hi, I'd like to make an appointment for my son.\nCSR: Okay, and do we know anybody else in your family here?",
+    "customer": "Yes.",
+    "csr": "Okay. And what's your son's name?",
+    "explanation": "Asks for routine identifying information (the son's name) to process the request; it does not help understand or diagnose the problem itself, so Problem Exploration, score 0."
+  },
+  {
+    "state": "Problem Exploration",
+    "score": 1,
+    "history": "(qualifying the customer for insurance benefits)",
+    "customer": "Sometime I think and sometime I don't.",
+    "csr": "Okay. Who helps you make your healthcare decisions?",
+    "explanation": "Asks a relevant question that invites more information about the customer's situation, but does not make clear what specific thing it is trying to pin down, so Problem Exploration, score 1."
+  },
+  {
+    "state": "Problem Exploration",
+    "score": 2,
+    "history": "(building an insurance quote; the customer just mentioned they have home insurance)",
+    "customer": "I have house insurance, yes.",
+    "csr": "Do you pay your home insurance through your mortgage or do you pay directly out of pocket?",
+    "explanation": "Asks for new, specific information (how the home insurance is paid) that pins down a concrete detail needed to build the quote, so Problem Exploration, score 2."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 0,
+    "history": "Customer: I don't remember what it was, and I haven't got anything yet.",
+    "customer": "I do not know. I don't remember what it was. I hadn't got anything yet.",
+    "csr": "Okay. All right, Ms. [PERSON_NAME]. Well, you have a great day, ma'am.",
+    "explanation": "The CSR moves to end the call while the customer's issue is still unresolved. Per the closing rule, ending with anything unresolved scores 0, so Problem Resolution, score 0."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 1,
+    "history": "(wrapping up; the requested documents were discussed)",
+    "customer": "All right, thank you.",
+    "csr": "I'm going to email these to you.",
+    "explanation": "States an action related to resolving the request (emailing the documents) but does not tell the customer what to expect from it, so Problem Resolution, score 1."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 2,
+    "history": "(finalizing an appointment)",
+    "customer": "Okay, perfect. Thank you.",
+    "csr": "We'll plan to see [PERSON_NAME] on [DATE] at [TIME] in [LOCATION]. If you need anything between now and then just give us a call.",
+    "explanation": "Confirms the concrete result (appointment set for a specific date, time, and location) and tells the customer what to do next, meeting multiple resolution criteria, so Problem Resolution, score 2."
+  }
+]

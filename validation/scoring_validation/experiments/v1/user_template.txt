@@ -1,0 +1,51 @@
+Task: Classify the CSR's current response into the single best-supported state, then score how well that behavior is performed. A response can belong to a state and still score 0.
+
+States and scoring
+
+1. Problem Interpretation: The CSR shows they understand the customer's problem usually in the early stages of conversations. The score reflects how deeply: do they just repeat what happened, or do they show they understand why it matters to this customer?
+- 2: States the problem and shows they understand why it matters to the customer (what it costs them, what's at risk, or what they still need), based on what the customer actually said.
+  - Example: "So the cancellation means you might miss your sister's wedding, and you still need to get there by tomorrow morning."
+- 1: Correctly states what the specific problem is, but not why it matters to the customer.
+  - Example: "So your flight for tomorrow morning has been cancelled."
+- 0: Does not identify the customer's specific problem. This includes standalone apologies, sympathy, or acknowledgments that a problem occurred without saying what it is, and repeating a single detail (a name, date, or booking number) without the actual problem.
+  - Example: "I'm so sorry for the inconvenience.": acknowledges a problem but doesn't say what it is.
+- Scoring note: A response names the specific problem if it does so anywhere, including inside an apology or pleasantry. Only a response that names no specific problem scores 0. Do not discard problem content just because it appears inside courtesy.
+
+2. Problem Exploration: The CSR asks for information from the customer. The score reflects whether the question actually helps understand or diagnose the problem, or is just routine.
+- 2: Asks for information the customer hasn't given yet, and makes clear what specific thing they're trying to pin down (the cause, a constraint, some context, what the customer wants, or what they still need).
+  - Example: "Was the package marked as delivered to your address, or did tracking stop before it arrived? That tells me whether this is a carrier issue or a wrong-address issue."
+- 1: Asks a relevant question that invites more information to help understand and diagnose the problem, but doesn't make clear what they're trying to figure out.
+  - Example: "Can you tell me a bit more about what happened with the package?"
+- 0: Asks for something the customer has already provided or questions that don't help understand or diagnose the problem itself.
+
+3. Problem Resolution: The CSR does something about the problem, or says what happens next. The score reflects whether the action actually addresses the problem and tells the customer what to expect.
+- 2: Takes or proposes an action that addresses the problem, meeting at least two of the following: (a) takes an action, (b) proposes an action, (c) tells the customer the result and what happens next.
+  - Example: "I've approved a replacement. It'll ship today and arrive within two business days, and you'll get a tracking email tonight."
+- 1: Takes an action related to the problem but doesn't say what the customer can expect from it.
+  - Example: "I've gone ahead and started a replacement for you."
+- 0: The action doesn't address the problem, or is empty. This includes routine steps that move the process along regardless of the problem, just logging the complaint, vague escalation ("I'll escalate this") that doesn't say what or to whom, repeating a step that already failed, or a promise with no actual action. These may be procedurally necessary, but they don't work toward solving the problem itself.
+  - Example: "I've noted your complaint on the account." / "I'll escalate this for you."
+- Closing: If the response tries to end the conversation, score 2 only if the customer has confirmed they're satisfied or need nothing further; score 0 if anything is still unresolved.
+
+Selecting the state
+1. Ignore greetings, apologies, sympathy, and politeness when deciding the state: they never determine it. If the response mixes courtesy with real problem-handling, classify and score the problem-handling part. If it's only courtesy or off-task with no problem-handling at all, assign Problem Interpretation and score 0.
+2. Among the real content, pick the state with the strongest support in the text.
+3. If a turn contains multiple states, select the one that has higher priority. The equation below shows the priority order.
+   a. Resolution > Exploration > Interpretation
+
+Scoring rules
+- Judge the behavior against the customer's latest message. Use earlier conversation only to understand the problem, see what was already provided, or tell what's still unresolved.
+- Repetitive or unsupported responses score 0 even when they clearly belong to a state.
+- The examples show the level of each score, not the only wording that qualifies: do not pattern-match on them. Score only what's visible. Do not invent policies, actions, or facts.
+
+Input
+Conversation History: "{conversation_history}"
+Customer's Latest Message: "{customer_message}"
+CSR's Current Response: "{csr_response}"
+
+Output: Return exactly one valid JSON object, with no Markdown, code fences, or surrounding text:
+{{
+"state": "Problem Interpretation | Problem Exploration | Problem Resolution",
+"score": 0,
+"explanation": "Concise, evidence-based justification grounded in the CSR's current response."
+}}

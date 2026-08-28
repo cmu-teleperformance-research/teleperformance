@@ -1,0 +1,52 @@
+{
+  "version": "v1",
+  "date": "2026-08-26",
+  "status": "complete",
+  "model": "gpt-4.1-mini-2025-04-14",
+  "temperature": 0,
+  "response_format": "json_object",
+  "gold": "round 4, 3 RAs (Joyce, Shiyu, Simret), n=65 turns, 3 transcripts",
+  "inputs": [
+    "conversation_history",
+    "customer_message",
+    "csr_response"
+  ],
+  "sequential_previous_state": false,
+  "outputs": {
+    "zero_shot": "predictions_zero_shot.csv  (also scoring_validation/round4_llm.csv)",
+    "few_shot": "predictions_few_shot.csv  (also scoring_validation/round4_llm_fewshot.csv)"
+  },
+  "few_shot_n_demos": 7,
+  "prompt_changes": [
+    "Original rubric: courtesy-only -> Interpretation 0",
+    "Closing scores 2 only if customer confirmed satisfaction, else 0",
+    "Evaluate only what the current response explicitly demonstrates",
+    "Exploration 2 = specific new question that pins something down (no 'purpose must be stated' bar)"
+  ],
+  "hypothesis": "Zero-shot / few-shot LLM as 4th rater against RA gold.",
+  "result_summary": "RAs \u03b1=0.965; LLM\u2013RA \u03ba\u22480.59\u20130.62. Main errors: courtesy dump to Interpretation, strict closings 2\u21920, mixed-state advice/lookup as Interpretation, Exploration score inflation. Few-shot made state agreement worse (Interpretation 18\u219229).",
+  "metrics": {
+    "zero_shot": {
+      "krippendorff_alpha": 0.779,
+      "fleiss_kappa": 0.778,
+      "kappa_vs_consensus": 0.617,
+      "state_acc_vs_consensus": 0.769,
+      "score_mae": 0.523,
+      "score_icc_a1": 0.352,
+      "kappa_joyce": 0.589,
+      "kappa_shiyu": 0.595,
+      "kappa_simret": 0.617
+    },
+    "few_shot": {
+      "krippendorff_alpha": 0.738,
+      "fleiss_kappa": 0.737,
+      "kappa_vs_consensus": 0.561,
+      "state_acc_vs_consensus": 0.708,
+      "score_mae": 0.559,
+      "score_icc_a1": 0.358,
+      "kappa_joyce": 0.539,
+      "kappa_shiyu": 0.54,
+      "kappa_simret": 0.561
+    }
+  }
+}

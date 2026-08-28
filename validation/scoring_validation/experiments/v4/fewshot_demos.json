@@ -1,0 +1,82 @@
+[
+  {
+    "state": "Problem Interpretation",
+    "score": 0,
+    "history": "(start of call)",
+    "customer": "(CSR spoke first)",
+    "csr": "This call may be recorded. My name is [PERSON_NAME]. How you doing today?",
+    "explanation": "Start-of-call greeting with no question and no in-progress activity. Courtesy-only turns default to Problem Interpretation and score 0."
+  },
+  {
+    "state": "Problem Exploration",
+    "score": 0,
+    "history": "Customer: Hi, I'd like to make an appointment for my son.\nCSR: Okay, and do we know anybody else in your family here?",
+    "customer": "Yes.",
+    "csr": "Okay. And what's your son's name?",
+    "explanation": "Asks for routine identifying information to process the appointment, not to diagnose a problem, so Problem Exploration, score 0."
+  },
+  {
+    "state": "Problem Exploration",
+    "score": 1,
+    "history": "(qualifying the customer for insurance benefits)",
+    "customer": "Sometime I think and sometime I don't.",
+    "csr": "Okay. Who helps you make your healthcare decisions?",
+    "explanation": "Asks a relevant question that invites more information but does not make the diagnostic purpose explicit, so Problem Exploration, score 1."
+  },
+  {
+    "state": "Problem Exploration",
+    "score": 2,
+    "history": "(start of a Medicare benefits discussion)",
+    "customer": "I'm doing kind of okay.",
+    "csr": "So first I just want to verify a few things so we can pull up your available options. Just to confirm you are enrolled in Medicare A and B, is that correct?",
+    "explanation": "Asks a new question and states why (to pull up available options), so Problem Exploration, score 2."
+  },
+  {
+    "state": "Problem Exploration",
+    "score": 0,
+    "history": "CSR: And what's a good email for you?\nCustomer: Yeah. [EMAIL_ADDRESS] [EMAIL_ADDRESS].",
+    "customer": "[EMAIL_ADDRESS].",
+    "csr": "Okay.",
+    "explanation": "The CSR is in the middle of gathering contact information. A bare acknowledgment does not change the state: keep Problem Exploration. The turn asks nothing new, so score 0."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 0,
+    "history": "Customer: I don't remember what it was, and I haven't got anything yet.",
+    "customer": "I do not know. I don't remember what it was. I hadn't got anything yet.",
+    "csr": "Okay. All right, Ms. [PERSON_NAME]. Well, you have a great day, ma'am.",
+    "explanation": "The CSR ends the call while the customer's issue is still unanswered. Closings with a clearly outstanding request score 0, so Problem Resolution, score 0."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 1,
+    "history": "(wrapping up; the requested documents were discussed)",
+    "customer": "All right, thank you.",
+    "csr": "I'm going to email these to you.",
+    "explanation": "States an action related to resolving the request (emailing the documents) but does not tell the customer what to expect from it, so Problem Resolution, score 1."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 2,
+    "history": "(finalizing an appointment)",
+    "customer": "Okay, perfect. Thank you.",
+    "csr": "We'll plan to see [PERSON_NAME] on [DATE] at [TIME] in [LOCATION]. If you need anything between now and then just give us a call.",
+    "explanation": "Confirms the concrete result (appointment set for a specific date, time, and location) and tells the customer what to do next, meeting multiple resolution criteria, so Problem Resolution, score 2."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 2,
+    "history": "Customer has existing employer retirement coverage and called about additional Medicare benefits.\nCSR: So you have your current insurance through your retirement plan?",
+    "customer": "Yes, I still have that too.",
+    "csr": "What I would recommend is you just staying right where you're at because you have really great coverage through your past employer and we don't want to jeopardize that.",
+    "explanation": "Recommending a course of action is Problem Resolution, not Interpretation, even though it restates why the coverage matters. The recommendation plus the reason meets score 2."
+  },
+  {
+    "state": "Problem Resolution",
+    "score": 2,
+    "history": "CSR already took or promised the action the customer needed.\nCustomer: Thank you.",
+    "customer": "Thank you.",
+    "csr": "All right, bye.",
+    "explanation": "Wrap-up after the work is done; the customer is thanking and has no new outstanding request. Closings in that situation are Problem Resolution, score 2."
+  }
+]

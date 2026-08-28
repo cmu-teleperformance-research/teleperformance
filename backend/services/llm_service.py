@@ -297,6 +297,10 @@ def _run_scoring_call(customer_msg: str, csr_msg: str, history_text: str) -> dic
         "conversation_history": history_text,
         "customer_message": customer_msg,
         "csr_response": csr_msg,
+        # Notebook v3 threads the model's own prior labels; the live scorer
+        # does not yet, so these stay explicit defaults rather than raw {{placeholders}}.
+        "previous_state": "(not provided)",
+        "previous_score": "(not provided)",
     })
 
     t_api = time.perf_counter()
