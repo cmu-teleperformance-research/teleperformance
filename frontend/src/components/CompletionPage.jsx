@@ -16,11 +16,11 @@ export default function CompletionPage({
   const returnUrl = getQualtricsReturnUrl();
   const surveyUrl = returnUrl
     ? buildQualtricsReturnUrl(
-        returnUrl,
-        attentionFailed
-          ? { attention_failed: "1" }
-          : { completion_code: code }
-      )
+      returnUrl,
+      attentionFailed
+        ? { attention_failed: "1" }
+        : { completion_code: code }
+    )
     : null;
 
   useEffect(() => {
@@ -59,8 +59,8 @@ export default function CompletionPage({
               {attentionFailed
                 ? "This study session ended because the attention check was not passed. You will not continue to further scenarios, and no completion code will be issued."
                 : surveyUrl
-                ? "You finished all scenarios. Returning you to the survey…"
-                : "You finished all scenarios. Copy the completion code below and paste it into the survey form."}
+                  ? "You finished all scenarios. Returning you to the survey…"
+                  : "You finished all scenarios. Copy the completion code below and paste it into the qualtrics form you started from."}
             </p>
           </div>
 

@@ -233,7 +233,7 @@ export default function ReportPage({
 
           {/* Title */}
           <div className="text-center pb-2">
-            <h1 className="text-3xl font-bold text-gray-900">Performance Report</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Knowledge Check</h1>
             <p className="text-gray-500 mt-1">{sessionLabel}</p>
             {progressLabel && (
               <p className="text-sm text-gray-400 mt-1">{progressLabel} complete</p>

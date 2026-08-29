@@ -66,14 +66,11 @@ export default function EvaluationBriefPanel() {
             {PARTICIPANT_GOAL}
           </p>
         </section>
-
+        <br />
         <section className="space-y-2">
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Evaluation states
+            Your response should focus on:
           </h3>
-          <p className="text-xs text-gray-500 leading-relaxed">
-            Each reply is classified into one of these skills and scored on how well you perform it.
-          </p>
           <ul className="list-disc pl-5 space-y-1.5">
             {EVALUATION_STATES.map((state) => (
               <li key={state} className="text-sm text-gray-600 leading-relaxed">

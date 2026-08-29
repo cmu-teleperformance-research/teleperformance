@@ -595,7 +595,7 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
                     type="button"
                     onClick={() => endSessionWith(messages)}
                     disabled={loading}
-                    className="shrink-0 text-xs font-medium bg-gray-800 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition"
+                    className="shrink-0 text-xs font-medium bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
                   >
                     End Session
                   </button>

@@ -42,10 +42,9 @@ function shuffle(items) {
 const HOW_IT_WORKS = [
   "You'll be assigned a domain and complete a series of customer scenarios",
   "Talk with the customer in the chat at the bottom of the screen",
-  "Use the Internal Portal at the top like a company computer: look up the customer, read the record, and take the next correct action",
+  "Use the Internal Portal at the top to look up the customer, read the record, and take the next correct action",
   "Ask the customer for IDs or order numbers before searching — they will not tell you everything at once",
-  "When the portal says to return to the customer, switch back to chat and explain what you found",
-  "Review feedback after your replies (in training), then continue until you end the session",
+  "The customer will not see the internal portal, you will need to communicate with the customer and explain what you found"
 ];
 
 const CORRECT_SKILLS = SKILLS.map((s) => s.title);
@@ -53,7 +52,7 @@ const CORRECT_SKILLS = SKILLS.map((s) => s.title);
 const HOW_IT_WORKS_CORRECT = [
   "Talk with the customer in the chat at the bottom of the screen",
   "Ask the customer for IDs or order numbers before searching",
-  "When the portal says to return to the customer, switch back to chat",
+  "The customer will not see the internal portal",
 ];
 
 const HOW_IT_WORKS_DISTRACTORS = [
@@ -147,7 +146,7 @@ export function HomeGuideContent({
       {/*  attention check question to select all the skills they will be evaluated on */}
       {!hideQuestions && (
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-800">Attention Check</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Knowledge Check <span className="text-red-500" aria-hidden="true">*</span></h2>
           <p className="text-sm text-gray-600">
             Please select all the skills that will be part of the training to show you understand the task:
           </p>
@@ -183,7 +182,9 @@ export function HomeGuideContent({
 
       {!hideQuestions && (<section className="space-y-4">
 
-        <h2 className="text-lg font-semibold text-gray-800">Attention Check</h2>
+        <h2 className="text-lg font-semibold text-gray-800">
+          Knowledge Check <span className="text-red-500" aria-hidden="true">*</span>
+        </h2>
         <p className="text-sm text-gray-600">
           Please select all statements that correctly describe how the simulator works:
         </p>
