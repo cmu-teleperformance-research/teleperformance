@@ -5,7 +5,7 @@ export default function RefundCommunicate({ onAdvance, workflow, workflowData, u
   const outcome = workflowData.caseOutcome;
   const resolved = outcome === "resolved";
 
-  const title = "Communicate to Customer";
+  const title = "End Case";
 
   const status = resolved ? "Closed" : "Pending";
   const statusColor = resolved ? "text-green-700" : "text-amber-600";

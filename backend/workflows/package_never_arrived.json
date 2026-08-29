@@ -103,7 +103,7 @@
     },
     {
       "id": "communicate",
-      "label": "Communicate to Customer",
+      "label": "End Case",
       "icon": "💬",
       "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the resolution and next steps below." }
     }

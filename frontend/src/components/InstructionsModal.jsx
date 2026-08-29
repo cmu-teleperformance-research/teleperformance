@@ -31,7 +31,7 @@ export default function InstructionsModal({ onBegin, showCoaching }) {
             <ol className="list-decimal pl-5 space-y-2">
               <li>Talk with the customer in the chat at the bottom of the screen.</li>
               <li>
-                Use the Internal Portal at the top like a company computer: look up the customer, read the record, and take the next correct action.
+                Use the Internal Portal at the top to look up the customer, read the record, and take the next correct action.
               </li>
               <li>Ask the customer for IDs or order numbers before searching. They will not tell you everything at once.</li>
               <li>When the portal says to return to the customer, switch back to chat and explain what you found.</li>

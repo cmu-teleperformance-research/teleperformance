@@ -252,7 +252,7 @@ export default function WelcomePage({ onStart, navProps, title, description, wha
             {startError && <p className="text-sm text-red-500">{startError}</p>}
             {!attentionPassed && (
               <p className="text-sm text-red-500">
-                Complete the attention checks correctly above to start training.
+                Complete the knowledge checks correctly above to start training.
               </p>
             )}
             <button

@@ -50,7 +50,7 @@
     },
     {
       "id": "communicate",
-      "label": "Communicate to Passenger",
+      "label": "End Case",
       "icon": "💬",
       "prompt": { "type": "customer", "text": "Return to the customer tab and deliver the rebooking confirmation below." }
     }

@@ -5,7 +5,7 @@ export default function BaggageCommunicate({ onAdvance, workflow, workflowData, 
   const outcome = workflowData.caseOutcome;
   const resolved = outcome === "resolved";
 
-  const title = "Communicate to Passenger";
+  const title = "End Case";
 
   const status = resolved ? "Resolved" : "Escalated";
   const statusColor = resolved ? "text-green-700" : "text-amber-600";

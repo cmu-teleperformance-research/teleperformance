@@ -16,7 +16,7 @@ export default function BookCommunicate({ onAdvance, workflow, workflowData, upd
 
   return (
     <div className="space-y-4">
-      <h2 className="text-base font-semibold text-gray-800">Communicate to Passenger</h2>
+      <h2 className="text-base font-semibold text-gray-800">End Case</h2>
 
       <div className="border border-green-200 bg-green-50 rounded-xl p-4 text-sm space-y-1">
         <div><span className="text-gray-500">Confirmation Number: </span><strong>{booking.confirmationNumber}</strong></div>

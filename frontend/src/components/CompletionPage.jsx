@@ -131,13 +131,6 @@ export default function CompletionPage({
                 {copied ? "Copied!" : "Copy code"}
               </button>
 
-              <button
-                type="button"
-                onClick={onDone}
-                className="text-sm text-gray-500 hover:text-gray-800 transition"
-              >
-                Done — return home
-              </button>
             </>
           )}
         </div>

@@ -16,6 +16,9 @@ const API_URL = `${API_BASE_URL}/chat`;
 /** Max CSR messages per conversation before input is locked. */
 const MAX_USER_MESSAGES = 10;
 
+/** Min CSR messages (turns) required before End Session can be used. */
+const MIN_TURNS_TO_END = 5;
+
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
   baggage_delay: "Lost Baggage",
@@ -211,9 +214,11 @@ export default function ChatWindow({ sessionConfig, token, navProps, onEndSessio
 
   const traineeMessageCount = messages.filter((m) => m.role === "user").length;
   const messageLimitReached = traineeMessageCount >= MAX_USER_MESSAGES;
-  // Show End Session when the trainee reaches the last portal screen (no need to mark resolved).
+  // Trainee-controlled: End Session becomes available once both are true.
   const onLastPortalPage = portalStep >= totalPortalSteps - 1;
-  const canEndSession = onLastPortalPage || messageLimitReached;
+  const minTurnsReached = traineeMessageCount >= MIN_TURNS_TO_END;
+  // Hard cap: force-enable regardless of portal/turn state so the trainee isn't stuck once input is locked.
+  const canEndSession = (onLastPortalPage && minTurnsReached) || messageLimitReached;
 
   function endSessionWith(finalMessages) {
     if (sessionId) localStorage.removeItem(`messages_${sessionId}`);
