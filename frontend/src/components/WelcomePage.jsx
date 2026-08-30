@@ -5,22 +5,22 @@ const SKILLS = [
   {
     title: "Problem Interpretation",
     items: [
-      "Name the customer's specific problem, not just that something went wrong",
-      "Show you understand why it matters, based on what they actually said",
+      "Name the customer's specific problem, not just that something went wrong.",
+      "Show you understand why it matters, based on what they actually said.",
     ],
   },
   {
     title: "Problem Exploration",
     items: [
-      "Ask for information that diagnose the issue the customer has not given yet",
-      "Make clear what you are trying to pin down and why it's important",
+      "Ask for information that diagnose the issue the customer has not given yet.",
+      "Make clear what you are trying to pin down and why it's important.",
     ],
   },
   {
     title: "Problem Resolution",
     items: [
-      "Take an action that addresses the problem and tell the customer the result and what happens next",
-      "Do not close the conversation while something is still unresolved",
+      "Take an action that addresses the problem and tell the customer the result and what happens next.",
+      "Do not close the conversation while something is still unresolved.",
     ],
   },
 ];
@@ -40,23 +40,23 @@ function shuffle(items) {
 }
 
 const HOW_IT_WORKS = [
-  "You'll be assigned a domain and complete a series of customer scenarios",
-  "Talk with the customer in the chat at the bottom of the screen",
-  "Use the Internal Portal at the top to look up the customer, read the record, and take the next correct action",
-  "Ask the customer for IDs or order numbers before searching — they will not tell you everything at once",
-  "The customer will not see the internal portal, you will need to communicate with the customer and explain what you found"
+  "You’ll be assigned a domain, which refers to the type of customer service business, such as retail, airlines, or insurance. Within each domain, you’ll complete a series of customer scenarios, where a customer contacts customer support with a specific issue, question, or concern about a product or service.",
+  "Talk with the customer in the chat at the bottom of the screen.",
+  "Use the Internal Portal at the top to look up the customer, read the record, and take the next correct action.",
+  "Ask the customer for IDs or order numbers before searching — they will not tell you everything at once.",
+  "The customer will not see the Internal Portal, you will need to communicate with the customer and explain what you found."
 ];
 
 const CORRECT_SKILLS = SKILLS.map((s) => s.title);
 
 const HOW_IT_WORKS_CORRECT = [
-  "Talk with the customer in the chat at the bottom of the screen",
-  "Ask the customer for IDs or order numbers before searching",
-  "The customer will not see the internal portal",
+  "Talk with the customer in the chat at the bottom of the screen.",
+  "Ask the customer for IDs or order numbers before searching.",
+  "The customer will not see the internal portal.",
 ];
 
 const HOW_IT_WORKS_DISTRACTORS = [
-  "The customer will tell you all IDs and details at the start of the session",
+  "The customer will tell you all IDs and details at the start of the session.",
 ];
 
 function isExactSelection(selected, correct) {
@@ -120,7 +120,7 @@ export function HomeGuideContent({
         </h1>
         <p className="text-base text-gray-600 leading-relaxed">
           {what_to_expect ||
-            "In this simulation, you will interact with virtual customers and practice customer service de-escalation skills. During the conversation you will receive feedback designed to help you improve your communication and de-escalation abilities."}
+            "In this simulation, you will interact with virtual customers and practice customer service de-escalation skills."}
         </p>
       </div>
 

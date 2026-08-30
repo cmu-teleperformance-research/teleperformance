@@ -21,7 +21,7 @@ export default function InstructionsModal({ onBegin, showCoaching }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Instructions & grading criteria</h2>
+          <h2 className="text-xl font-bold text-gray-900">Instructions</h2>
           <p className="text-sm text-gray-500 mt-1">Read this before you begin the first scenario.</p>
         </div>
 
@@ -34,8 +34,7 @@ export default function InstructionsModal({ onBegin, showCoaching }) {
                 Use the Internal Portal at the top to look up the customer, read the record, and take the next correct action.
               </li>
               <li>Ask the customer for IDs or order numbers before searching. They will not tell you everything at once.</li>
-              <li>When the portal says to return to the customer, switch back to chat and explain what you found.</li>
-              <li>Do not invent company policies, actions, or facts. Use only what the customer said and what the portal shows.</li>
+              <li>The customer will not see the Internal Portal, you will need to communicate with the customer and explain what you found.</li>
             </ol>
           </section>
 
@@ -54,9 +53,9 @@ export default function InstructionsModal({ onBegin, showCoaching }) {
           )}
 
           <section className="space-y-3">
-            <h3 className="text-base font-semibold text-gray-900">Grading criteria</h3>
+            <h3 className="text-base font-semibold text-gray-900">Evaluation Criteria</h3>
             <p>
-              Each reply is classified into one problem-handling skill and scored on how well that skill is performed:
+              Each response is evaluated based on the three problem-handling skills and how effectively you demonstrate those skills.
             </p>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-4">
               {SKILLS.map((skill) => (

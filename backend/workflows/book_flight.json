@@ -44,6 +44,7 @@
     { "id": "carry_on", "label": "Carry-On Bag (included, no charge)", "price": 0 },
     { "id": "priority_boarding", "label": "Priority Boarding", "price": 15 },
     { "id": "wifi", "label": "Wi-Fi (full flight)", "price": 8 },
+    { "id": "refundable", "label": "Refundable Economy (+$60 vs. standard)", "price": 60 },
     { "id": "insurance", "label": "Travel Insurance", "price": 22 },
     { "id": "special_assistance", "label": "Special Assistance", "price": 0 }
   ],
@@ -76,7 +77,7 @@
       "id": "extras",
       "label": "Extras & Baggage",
       "icon": "🧳",
-      "prompt": { "type": "action", "text": "Add any extras the passenger asked for — checked bags, Wi-Fi, priority boarding, etc." }
+      "prompt": { "type": "action", "text": "Add any extras the passenger asked for — checked bags, Wi-Fi, refundable fare, etc." }
     },
     {
       "id": "fare",
@@ -133,6 +134,7 @@
           "Confirm arrival is before the noon deadline",
           "Confirm the aisle seat selection",
           "Confirm one checked bag was added",
+          "Confirm the refundable fare was applied",
           "State the total price and confirm the refund/change policy",
           "Provide the confirmation number and ticket number"
         ]

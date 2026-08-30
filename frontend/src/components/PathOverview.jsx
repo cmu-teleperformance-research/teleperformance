@@ -12,10 +12,10 @@ export default function PathOverview({ domainLabel, sessions, navProps, onNext }
         <div className="w-full max-w-lg">
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-gray-900">
-              Your scenarios{domainLabel ? ` — ${domainLabel}` : ""}
+              Your scenarios{domainLabel ? `: ${domainLabel}` : ""}
             </h2>
             <p className="text-sm text-gray-500 mt-2">
-              These were assigned in a random order. After each session you will see a report, then continue to the next one.
+              You will complete the following sessions in the order shown.
             </p>
           </div>
 
@@ -34,8 +34,8 @@ export default function PathOverview({ domainLabel, sessions, navProps, onNext }
                 </div>
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${s.training
-                      ? "bg-blue-50 text-blue-700"
-                      : "bg-amber-50 text-amber-800"
+                    ? "bg-blue-50 text-blue-700"
+                    : "bg-amber-50 text-amber-800"
                     }`}
                 >
                   {s.training ? "Training" : "Practice"}

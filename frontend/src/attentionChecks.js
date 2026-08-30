@@ -4,7 +4,7 @@ const ISSUE_OPTIONS = {
   flight_cancellation: "Their flight was cancelled",
   baggage_delay: "Their checked bag was missing or delayed",
   book_flight: "They wanted help booking a new flight",
-  refund_request: "They wanted a refund for a failed or incorrect transaction",
+  refund_request: "They wanted a refund for a failed or incorrect order",
   package_never_arrived: "Their package never arrived",
   exchange_item: "They wanted to exchange a purchased item",
   loan_delay: "Their personal loan was delayed",

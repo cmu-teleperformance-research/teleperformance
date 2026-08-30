@@ -53,15 +53,13 @@ export default function EvaluationBriefPanel() {
     >
       <div className="bg-gray-50 border-b border-gray-200 px-4 py-1.5 flex-shrink-0">
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-          Your Task
+          Your Goal
         </span>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
         <section className="space-y-2">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Goal
-          </h3>
+
           <p className="text-sm text-gray-700 leading-relaxed">
             {PARTICIPANT_GOAL}
           </p>

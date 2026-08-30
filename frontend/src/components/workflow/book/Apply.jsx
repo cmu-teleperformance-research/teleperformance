@@ -2,7 +2,7 @@ import { useState } from "react";
 import ActionButton from "../ActionButton";
 import WrongAction from "../WrongAction";
 
-const EXTRA_LINE_IDS = ["priority_boarding", "wifi", "insurance", "special_assistance"];
+const EXTRA_LINE_IDS = ["priority_boarding", "wifi", "refundable", "insurance", "special_assistance"];
 
 export default function BookApply({ onAdvance, workflowData, workflow }) {
   const [wrong, setWrong] = useState(false);
