@@ -8,7 +8,7 @@ export const CONDITIONS = {
     title: "Customer Service De-escalation Training Simulator",
     description: "Static VC only.",
     what_to_expect:
-      "You will be presented with AI-simulated customer and you will need to respond to them. You will not receive any feedback on your responses.",
+      "You will be presented with a simulated customer and you will need to respond to them. You will not receive any feedback on your responses.",
     showFeedbackPanel: false,
   },
   cond2: {
@@ -18,7 +18,7 @@ export const CONDITIONS = {
     description:
       "Static VC reply + side-panel coaching message: skill name + level + one actionable suggestion.",
     what_to_expect:
-      "You will be presented with AI-simulated customer and you will need to respond to them. You will receive feedback on your responses in the side-panel.",
+      "You will be presented with a simulated customer and you will need to respond to them. You will receive feedback on your responses in the side-panel.",
     showFeedbackPanel: true,
   },
   cond3: {
@@ -28,7 +28,7 @@ export const CONDITIONS = {
     description:
       "Adaptive VC — select 1 of 9 generation prompts (3 states × 3 levels). Each prompt fixes the persona, scenario facts, and dialogue history, and varies only the behavioral constraint — the VC's emotion, tone, and language at that level. The level determines how the customer feels and behaves; the LLM prompt determines the wording.",
     what_to_expect:
-      "You will be presented with AI-simulated customer and you will need to respond to them. You will interact with an AI-simulated customer and respond to their messages as a customer service representative (CSR). ",
+      "You will be presented with a simulated customer and you will need to respond to them. You will interact with an AI-simulated customer and respond to their messages as a customer service representative (CSR). ",
     showFeedbackPanel: false,
   },
   cond4: {
@@ -37,7 +37,7 @@ export const CONDITIONS = {
     title: "Customer Service De-escalation Training Simulator",
     description: "Both channels.",
     what_to_expect:
-      "You will be presented with AI-simulated customer and you will need to respond to them. You will receive feedback on your responses in the side-panel.",
+      "You will be presented with a simulated customer and you will need to respond to them. You will receive feedback on your responses in the side-panel.",
     showFeedbackPanel: true,
   },
 };
