@@ -26,7 +26,6 @@ const SKILLS = [
 ];
 
 const DISTRACTOR_SKILLS = [
-  "Emotional Empathy",
   "Case Handling Speed",
 ];
 
@@ -58,13 +57,6 @@ const HOW_IT_WORKS_CORRECT = [
 const HOW_IT_WORKS_DISTRACTORS = [
   "The customer will tell you all IDs and details at the start of the session.",
 ];
-
-function isExactSelection(selected, correct) {
-  return (
-    selected.size === correct.length &&
-    correct.every((item) => selected.has(item))
-  );
-}
 
 function toggleInSet(prev, item) {
   const next = new Set(prev);
@@ -216,10 +208,8 @@ export function HomeGuideContent({
 export default function WelcomePage({ onStart, navProps, title, description, what_to_expect, startLoading, startError }) {
   const [selectedSkills, setSelectedSkills] = useState(() => new Set());
   const [selectedHowItWorks, setSelectedHowItWorks] = useState(() => new Set());
-  const attentionPassed =
-    isExactSelection(selectedSkills, CORRECT_SKILLS) &&
-    isExactSelection(selectedHowItWorks, HOW_IT_WORKS_CORRECT);
-  const startDisabled = startLoading || !attentionPassed;
+  const attentionAnswered = selectedSkills.size > 0 && selectedHowItWorks.size > 0;
+  const startDisabled = startLoading || !attentionAnswered;
 
   function toggleSkill(skill) {
     setSelectedSkills((prev) => toggleInSet(prev, skill));
@@ -250,13 +240,18 @@ export default function WelcomePage({ onStart, navProps, title, description, wha
 
           <div className="flex flex-col items-center pb-4 mt-10 gap-3">
             {startError && <p className="text-sm text-red-500">{startError}</p>}
-            {!attentionPassed && (
-              <p className="text-sm text-red-500">
-                Complete the knowledge checks correctly above to start training.
+            {!attentionAnswered && (
+              <p className="text-sm text-gray-500">
+                Complete the knowledge checks above to start training.
               </p>
             )}
             <button
-              onClick={onStart}
+              onClick={() =>
+                onStart({
+                  skills: [...selectedSkills],
+                  howItWorks: [...selectedHowItWorks],
+                })
+              }
               disabled={startDisabled}
               className="bg-blue-600 text-white px-10 py-3 rounded-lg text-base font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >

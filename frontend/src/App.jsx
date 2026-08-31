@@ -52,6 +52,28 @@ function readStoredPath(conditionId) {
   }
 }
 
+function readStoredTally(conditionId) {
+  try {
+    const raw = localStorage.getItem("attentionTally");
+    if (!raw) return 0;
+    const parsed = JSON.parse(raw);
+    if (conditionId && parsed.condition && parsed.condition !== conditionId) {
+      localStorage.removeItem("attentionTally");
+      return 0;
+    }
+    return parsed.wrongCount ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+function persistTally(conditionId, wrongCount) {
+  localStorage.setItem(
+    "attentionTally",
+    JSON.stringify({ condition: conditionId || "default", wrongCount })
+  );
+}
+
 function sessionConfigFromPath(path, index, conditionId) {
   const session = path.sessions[index];
   return {
@@ -102,6 +124,9 @@ export default function App({ conditionId = null, pid = null }) {
   const [assigning, setAssigning] = useState(false);
   const [assignError, setAssignError] = useState(null);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [attentionWrongCount, setAttentionWrongCount] = useState(() =>
+    knownParticipant ? readStoredTally(conditionId) : 0
+  );
 
   // Persist experimental condition from the URL so it survives refresh
   useEffect(() => {
@@ -122,8 +147,10 @@ export default function App({ conditionId = null, pid = null }) {
         localStorage.removeItem("sessionId");
         localStorage.removeItem("sessionConfig");
         localStorage.removeItem("trainingPath");
+        localStorage.removeItem("attentionTally");
         setSessionConfig(null);
         setTrainingPath(null);
+        setAttentionWrongCount(0);
         setReport(null);
         setReportSessionId(null);
         setReportError(null);
@@ -154,7 +181,9 @@ export default function App({ conditionId = null, pid = null }) {
 
   function clearTrainingPath() {
     localStorage.removeItem("trainingPath");
+    localStorage.removeItem("attentionTally");
     setTrainingPath(null);
+    setAttentionWrongCount(0);
   }
 
   function clearStoredSession() {
@@ -222,7 +251,7 @@ export default function App({ conditionId = null, pid = null }) {
     setView("path-overview");
   }
 
-  async function handleStartTraining() {
+  async function handleStartTraining(answers) {
     setAssignError(null);
     setAssigning(true);
     try {
@@ -232,6 +261,22 @@ export default function App({ conditionId = null, pid = null }) {
       const outcome = me.data?.completions?.[conditionId || "default"];
       if (outcome?.status === "attention_failed") {
         setView("attention-failed");
+        return;
+      }
+      const checkRes = await axios.post(
+        `${API_BASE_URL}/attention-checks/welcome`,
+        {
+          condition: conditionId,
+          skills: answers?.skills ?? [],
+          how_it_works: answers?.howItWorks ?? [],
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const wrongCount = checkRes.data?.wrong_count ?? 0;
+      setAttentionWrongCount(wrongCount);
+      persistTally(conditionId, wrongCount);
+      if (checkRes.data?.path_ended) {
+        handleAttentionFailed();
         return;
       }
       const res = await axios.post(
@@ -260,6 +305,11 @@ export default function App({ conditionId = null, pid = null }) {
     setReportSessionId(null);
     setShowInstructions(false);
     setView("attention-failed");
+  }
+
+  function handleAttentionTally(wrongCount) {
+    setAttentionWrongCount(wrongCount);
+    persistTally(conditionId, wrongCount);
   }
 
   function handleSessionStarted(id) {
@@ -597,6 +647,8 @@ export default function App({ conditionId = null, pid = null }) {
         onAuthExpired={handleAuthExpired}
         conditionId={conditionId}
         onAttentionFailed={handleAttentionFailed}
+        attentionWrongCount={attentionWrongCount}
+        onAttentionTally={handleAttentionTally}
       />
     );
   }

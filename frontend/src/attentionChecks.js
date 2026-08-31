@@ -31,6 +31,9 @@ const DISTRACTORS = {
 
 export const ATTENTION_CHECK_PROMPT = "What was the customer's main issue?";
 
+/** Fail the path once this many of the 4 checks (2 welcome + 2 post-scenario) are wrong. */
+export const ATTENTION_FAIL_LIMIT = 2;
+
 function shuffle(items) {
   const arr = [...items];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -41,7 +44,9 @@ function shuffle(items) {
 }
 
 /** @returns {{ prompt: string, correctId: string, options: { id: string, label: string }[] } | null} */
-export function getAttentionCheck(scenario) {
+export function getAttentionCheck(scenario, { isLastScenario = false } = {}) {
+  if (isLastScenario) return null;
+
   const label = ISSUE_OPTIONS[scenario];
   const distractors = DISTRACTORS[scenario];
   if (!label || !distractors) return null;

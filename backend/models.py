@@ -31,6 +31,10 @@ def _as_datetime(value: Any) -> datetime:
     return _utcnow()
 
 
+# End the path once this many attention checks are wrong (2 welcome + 2 post-scenario).
+ATTENTION_FAIL_LIMIT = 2
+
+
 @dataclass
 class User:
     id: str
@@ -39,6 +43,7 @@ class User:
     hashed_password: str
     created_at: datetime
     completions: dict | None = None
+    attention_checks: dict | None = None
 
 
 @dataclass
@@ -76,6 +81,7 @@ def _user_from_doc(doc_id: str, data: dict) -> User:
         hashed_password=data["hashed_password"],
         created_at=_as_datetime(data.get("created_at")),
         completions=data.get("completions") or {},
+        attention_checks=data.get("attention_checks") or {},
     )
 
 
@@ -205,6 +211,77 @@ def save_user_completion(
     existing = (snap.to_dict() or {}).get("completions") or {}
     existing[condition] = completion
     ref.update({"completions": existing})
+
+
+def _tally_from_items(items: list[dict]) -> dict:
+    wrong_count = sum(1 for item in items if not item.get("correct"))
+    return {
+        "items": items,
+        "wrong_count": wrong_count,
+        "total_answered": len(items),
+        "path_ended": wrong_count >= ATTENTION_FAIL_LIMIT,
+    }
+
+
+def get_attention_tally(db: firestore.Client, user_id: str, condition: str) -> dict:
+    snap = db.collection("users").document(user_id).get()
+    if not snap.exists:
+        return _tally_from_items([])
+    buckets = (snap.to_dict() or {}).get("attention_checks") or {}
+    bucket = buckets.get(condition) or {}
+    return _tally_from_items(list(bucket.get("items") or []))
+
+
+def record_attention_items(
+    db: firestore.Client,
+    user_id: str,
+    condition: str,
+    items: list[dict],
+) -> dict:
+    """Append new attention-check items for this condition. First answer for an id wins.
+
+    Ends the path (attention_failed completion) once wrong_count hits ATTENTION_FAIL_LIMIT.
+    """
+    ref = db.collection("users").document(user_id)
+
+    @firestore.transactional
+    def _record(transaction: firestore.Transaction) -> tuple[dict, dict]:
+        snap = ref.get(transaction=transaction)
+        if not snap.exists:
+            raise ValueError("User not found")
+        data = snap.to_dict() or {}
+        buckets = dict(data.get("attention_checks") or {})
+        existing_items = list((buckets.get(condition) or {}).get("items") or [])
+        seen = {item.get("id") for item in existing_items}
+        for item in items:
+            item_id = item.get("id")
+            if not item_id or item_id in seen:
+                continue
+            existing_items.append(item)
+            seen.add(item_id)
+        tally = _tally_from_items(existing_items)
+        buckets[condition] = tally
+        update = {"attention_checks": buckets}
+        completions = dict(data.get("completions") or {})
+        if tally["path_ended"]:
+            existing = completions.get(condition) or {}
+            if not existing.get("code") and existing.get("status") != "attention_failed":
+                completion = {
+                    "status": "attention_failed",
+                    "reason": "attention_check_failed",
+                    "condition": condition if condition != "default" else None,
+                    "wrong_count": tally["wrong_count"],
+                    "total_answered": tally["total_answered"],
+                    "ended_at": _utcnow().isoformat(),
+                    "code": None,
+                }
+                completions[condition] = completion
+                update["completions"] = completions
+        transaction.update(ref, update)
+        return tally, completions
+
+    tally, _completions = _record(db.transaction())
+    return tally
 
 
 # ── Experiment domain balance ─────────────────────────────────────────────────

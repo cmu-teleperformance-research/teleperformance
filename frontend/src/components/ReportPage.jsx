@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import NavBar from "./NavBar";
 import API_BASE_URL from "../config";
-import { getAttentionCheck } from "../attentionChecks";
+import { ATTENTION_FAIL_LIMIT, getAttentionCheck } from "../attentionChecks";
 
 const SCENARIO_LABELS = {
   flight_cancellation: "Flight Cancellation",
@@ -120,6 +120,8 @@ export default function ReportPage({
   onAuthExpired,
   conditionId,
   onAttentionFailed,
+  attentionWrongCount = 0,
+  onAttentionTally,
 }) {
   const { scenario, training, scenarioLabel, condition } = sessionConfig ?? {};
   const activeCondition = conditionId || condition;
@@ -139,7 +141,9 @@ export default function ReportPage({
 
   const turns = report?.turn_by_turn ?? [];
 
-  const [attentionCheck] = useState(() => getAttentionCheck(scenario));
+  const [attentionCheck] = useState(() =>
+    getAttentionCheck(scenario, { isLastScenario: !hasNextSession })
+  );
   const [selectedId, setSelectedId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [checkFailed, setCheckFailed] = useState(false);
@@ -152,11 +156,19 @@ export default function ReportPage({
   }
 
   function applyCheckResult(optionId, result) {
-    const failed =
+    const thisWrong =
       result?.correct === false ||
-      result?.path_ended === true ||
       (result == null && Boolean(attentionCheck && optionId !== attentionCheck.correctId));
-    if (failed) {
+    const wrongCount =
+      result?.wrong_count ?? attentionWrongCount + (thisWrong ? 1 : 0);
+    const pathEnded =
+      result?.path_ended === true || wrongCount >= ATTENTION_FAIL_LIMIT;
+    if (typeof result?.wrong_count === "number") {
+      onAttentionTally?.(result.wrong_count);
+    } else if (thisWrong) {
+      onAttentionTally?.(wrongCount);
+    }
+    if (pathEnded) {
       setCheckFailed(true);
       onAttentionFailed?.();
       return false;

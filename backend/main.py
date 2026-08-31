@@ -36,6 +36,22 @@ VALID_PERSONAS = {"angry", "confused", "demanding", "anxious"}
 VALID_CONDITIONS = {"cond1", "cond2", "cond3", "cond4"}
 PATH_SESSION_COUNT = 3
 
+# Keep in sync with frontend WelcomePage.jsx (knowledge-check options).
+WELCOME_SKILLS_CORRECT = {
+    "Problem Interpretation",
+    "Problem Exploration",
+    "Problem Resolution",
+}
+WELCOME_SKILLS_VALID = WELCOME_SKILLS_CORRECT | {"Case Handling Speed"}
+HOW_IT_WORKS_CORRECT = {
+    "Talk with the customer in the chat at the bottom of the screen.",
+    "Ask the customer for IDs or order numbers before searching.",
+    "The customer will not see the internal portal.",
+}
+HOW_IT_WORKS_VALID = HOW_IT_WORKS_CORRECT | {
+    "The customer will tell you all IDs and details at the start of the session.",
+}
+
 
 def _completion_code_for(user_id: str, condition: str) -> str:
     """Deterministic completion hash for a participant + condition (for survey forms)."""
@@ -179,6 +195,20 @@ def complete_path(
         return existing
     if existing and existing.get("code"):
         return existing
+
+    tally = models.get_attention_tally(db, current_user.id, completion_key)
+    if tally.get("path_ended"):
+        existing_failed = existing or {
+            "status": "attention_failed",
+            "reason": "attention_check_failed",
+            "condition": condition,
+            "wrong_count": tally.get("wrong_count"),
+            "total_answered": tally.get("total_answered"),
+            "code": None,
+        }
+        if not (existing and existing.get("status") == "attention_failed"):
+            models.save_user_completion(db, current_user.id, completion_key, existing_failed)
+        return existing_failed
 
     sessions = [
         s for s in models.list_sessions_for_user(db, current_user.id)
@@ -356,6 +386,71 @@ def research_get_session(
     }
 
 
+def _exact_selection(selected: list[str], correct: set[str]) -> bool:
+    return set(selected) == correct
+
+
+def _attach_tally(payload: dict, tally: dict) -> dict:
+    payload["wrong_count"] = tally.get("wrong_count", 0)
+    payload["total_answered"] = tally.get("total_answered", 0)
+    payload["path_ended"] = bool(tally.get("path_ended"))
+    return payload
+
+
+class WelcomeAttentionCheckRequest(BaseModel):
+    condition: str | None = None
+    skills: list[str]
+    how_it_works: list[str]
+
+
+@app.post("/attention-checks/welcome")
+def submit_welcome_attention_checks(
+    request: WelcomeAttentionCheckRequest,
+    db: firestore.Client = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    condition = (request.condition or "").strip() or None
+    if condition and condition not in VALID_CONDITIONS:
+        raise HTTPException(status_code=400, detail=f"condition must be one of {VALID_CONDITIONS}")
+    if any(item not in WELCOME_SKILLS_VALID for item in request.skills):
+        raise HTTPException(status_code=400, detail="skills contains an unknown option")
+    if any(item not in HOW_IT_WORKS_VALID for item in request.how_it_works):
+        raise HTTPException(status_code=400, detail="how_it_works contains an unknown option")
+
+    completion_key = condition or "default"
+    answered_at = datetime.now(timezone.utc).isoformat()
+    items = [
+        {
+            "id": "welcome_skills",
+            "question_type": "welcome_skills",
+            "selected": request.skills,
+            "correct": _exact_selection(request.skills, WELCOME_SKILLS_CORRECT),
+            "answered_at": answered_at,
+        },
+        {
+            "id": "welcome_how_it_works",
+            "question_type": "welcome_how_it_works",
+            "selected": request.how_it_works,
+            "correct": _exact_selection(request.how_it_works, HOW_IT_WORKS_CORRECT),
+            "answered_at": answered_at,
+        },
+    ]
+    try:
+        tally = models.record_attention_items(db, current_user.id, completion_key, items)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "wrong_count": tally["wrong_count"],
+        "total_answered": tally["total_answered"],
+        "path_ended": tally["path_ended"],
+        "checks": [
+            {"id": item["id"], "correct": item["correct"]}
+            for item in tally["items"]
+            if item.get("id") in {"welcome_skills", "welcome_how_it_works"}
+        ],
+    }
+
+
 class AttentionCheckRequest(BaseModel):
     selected_id: str
 
@@ -371,54 +466,49 @@ def submit_attention_check(
     if not session or session.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    completion_key = session.condition or "default"
+
     if session.attention_check:
         existing_check = dict(session.attention_check)
-        existing_check["path_ended"] = existing_check.get("correct") is False
-        return existing_check
+        tally = models.get_attention_tally(db, current_user.id, completion_key)
+        return _attach_tally(existing_check, tally)
 
     if request.selected_id not in VALID_SCENARIOS:
         raise HTTPException(status_code=400, detail=f"selected_id must be one of {VALID_SCENARIOS}")
 
     correct = request.selected_id == session.scenario
+    answered_at = datetime.now(timezone.utc).isoformat()
     payload = {
         "question_type": "scenario_main_issue",
         "prompt": "What was the customer's main issue?",
         "selected_id": request.selected_id,
         "correct_id": session.scenario,
         "correct": correct,
-        "path_ended": not correct,
-        "answered_at": datetime.now(timezone.utc).isoformat(),
+        "answered_at": answered_at,
     }
-
-    if correct:
-        models.save_attention_check(db, session_id, payload)
-        return payload
-
+    tally = models.record_attention_items(
+        db,
+        current_user.id,
+        completion_key,
+        [
+            {
+                "id": f"scenario:{session_id}",
+                "question_type": "scenario_main_issue",
+                "session_id": session_id,
+                "scenario": session.scenario,
+                "selected_id": request.selected_id,
+                "correct": correct,
+                "answered_at": answered_at,
+            }
+        ],
+    )
+    _attach_tally(payload, tally)
     models.save_attention_check(
         db,
         session_id,
         payload,
-        ended_reason="attention_check_failed",
+        ended_reason="attention_check_failed" if tally["path_ended"] else None,
     )
-    completion_key = session.condition or "default"
-    existing = (current_user.completions or {}).get(completion_key) or {}
-    if not existing.get("code"):
-        models.save_user_completion(
-            db,
-            current_user.id,
-            completion_key,
-            {
-                "status": "attention_failed",
-                "reason": "attention_check_failed",
-                "condition": session.condition,
-                "session_id": session_id,
-                "scenario": session.scenario,
-                "selected_id": request.selected_id,
-                "correct_id": session.scenario,
-                "ended_at": payload["answered_at"],
-                "code": None,
-            },
-        )
     return payload
 
 
@@ -469,10 +559,11 @@ async def start(
 
     completion_key = (request.condition or "").strip() or "default"
     outcome = (current_user.completions or {}).get(completion_key) or {}
-    if outcome.get("status") == "attention_failed":
+    tally = models.get_attention_tally(db, current_user.id, completion_key)
+    if outcome.get("status") == "attention_failed" or tally.get("path_ended"):
         raise HTTPException(
             status_code=403,
-            detail="This session ended because the attention check was not passed.",
+            detail="This session ended because 2 out of 4 attention checks were not passed.",
         )
 
     result = start_conversation(request.scenario, request.persona, request.training)

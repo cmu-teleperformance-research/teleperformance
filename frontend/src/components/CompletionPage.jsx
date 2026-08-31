@@ -57,7 +57,7 @@ export default function CompletionPage({
             </h1>
             <p className="text-sm text-gray-500 mt-2">
               {attentionFailed
-                ? "This study session ended because the attention check was not passed. You will not continue to further scenarios, and no completion code will be issued."
+                ? "This study session ended because 2 attention checks were not passed. You will not continue to further scenarios, and no completion code was issued."
                 : surveyUrl
                   ? "You finished all scenarios. Returning you to the survey…"
                   : "You finished all scenarios. Copy the completion code below and paste it into the qualtrics form you started from."}
