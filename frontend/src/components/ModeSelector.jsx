@@ -35,7 +35,7 @@ const DOMAINS = [
       {
         id: "refund_request",
         label: "Refund Request",
-        description: "Help a customer requesting a refund for a failed or incorrect financial transaction. Address urgency and set expectations.",
+        description: "Help a customer requesting a refund for a defective product. Address urgency and set expectations.",
       },
       {
         id: "package_never_arrived",

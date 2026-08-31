@@ -2,11 +2,11 @@
 
 const ISSUE_OPTIONS = {
   flight_cancellation: "Their flight was cancelled",
-  baggage_delay: "Their checked bag was missing or delayed",
-  book_flight: "They wanted help booking a new flight",
-  refund_request: "They wanted a refund for a failed or incorrect order",
-  package_never_arrived: "Their package never arrived",
-  exchange_item: "They wanted to exchange a purchased item",
+  baggage_delay: "Their checked airline bag had been missing",
+  book_flight: "They wanted to purchase a ticket for a trip that was not already booked",
+  refund_request: "They received a defective product and wanted a refund",
+  package_never_arrived: "A shipped package was marked delivered but never arrived",
+  exchange_item: "They wanted to exchange an item for a different size",
   loan_delay: "Their personal loan was delayed",
 };
 
